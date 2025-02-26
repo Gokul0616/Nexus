@@ -25,6 +25,7 @@ import CustomVideoPlayer from '../../Components/CustomVideoPlayer';
 import {posts, stories} from '../../Components/DummyData';
 import DynamicImage from '../../Components/DynamicImage';
 import {HomeScreenStyles as styles} from '../../Components/Styles/Styles';
+import RenderStories from '../../Components/Stories';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -88,7 +89,7 @@ const HomeScreen = () => {
         duration: 300,
         useNativeDriver: true,
       }),
-      Animated.delay(500),
+      Animated.delay(350),
       Animated.timing(likeAnimations[postId], {
         toValue: 0,
         duration: 300,
@@ -98,21 +99,6 @@ const HomeScreen = () => {
       delete likeAnimations[postId];
     });
   };
-
-  const renderHeader = () => (
-    <Animated.View
-      style={[styles.navBar, {transform: [{translateY: headerTranslateY}]}]}>
-      <Text style={styles.logo}>{AppName}</Text>
-      <View style={styles.icons}>
-        <TouchableOpacity onPress={() => navigation.navigate('Message')}>
-          <Icon name="paper-plane-outline" size={28} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Icon name="heart-outline" size={28} color="#000" />
-        </TouchableOpacity>
-      </View>
-    </Animated.View>
-  );
 
   const scrollRef = useRef(null);
   const panResponder = useRef(
@@ -129,9 +115,15 @@ const HomeScreen = () => {
   ).current;
 
   const [viewableItems, setViewableItems] = useState([]);
-  const onViewableItemsChanged = ({viewableItems}) => {
-    setViewableItems(viewableItems);
-  };
+  const onViewableItemsChanged = useCallback(({viewableItems}) => {
+    setViewableItems(prevItems => {
+      if (JSON.stringify(prevItems) !== JSON.stringify(viewableItems)) {
+        return viewableItems;
+      }
+      return prevItems;
+    });
+  }, []);
+
   const viewabilityConfig = {
     itemVisiblePercentThreshold: 50,
   };
@@ -151,8 +143,21 @@ const HomeScreen = () => {
       lastTapTimes.current[postId] = now;
     }
   };
-  // const route = useRoute();
-  // console.log('Current route name:', route.name);
+
+  const renderHeader = () => (
+    <Animated.View
+      style={[styles.navBar, {transform: [{translateY: headerTranslateY}]}]}>
+      <Text style={styles.logo}>{AppName}</Text>
+      <View style={styles.icons}>
+        <TouchableOpacity onPress={() => navigation.navigate('Message')}>
+          <Icon name="paper-plane-outline" size={28} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Icon name="heart-outline" size={28} color="#000" />
+        </TouchableOpacity>
+      </View>
+    </Animated.View>
+  );
 
   const renderPost = ({item}) => {
     const isVisible = viewableItems.some(
@@ -407,33 +412,6 @@ const HomeScreen = () => {
     );
   };
 
-  const renderStories = () => (
-    <View style={styles.storiesContainer}>
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={stories}
-        keyExtractor={item => item.id}
-        renderItem={({item}) => (
-          <TouchableOpacity style={styles.storyContainer}>
-            <DynamicImage
-              uri={item.avatar}
-              style={styles.storyAvatar}
-              resizeMode="contain"
-              isConnected={isConnected}
-              item={item}
-              setLoadingPosts={setLoadingPosts}
-            />
-            <Text style={styles.storyName} numberOfLines={1}>
-              {item.name}
-            </Text>
-          </TouchableOpacity>
-        )}
-        contentContainerStyle={styles.storiesContent}
-      />
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       {renderHeader()}
@@ -441,7 +419,13 @@ const HomeScreen = () => {
         data={posts}
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={renderStories}
+        ListHeaderComponent={
+          <RenderStories
+            stories={stories}
+            isConnected={isConnected}
+            setLoadingPosts={setLoadingPosts}
+          />
+        }
         renderItem={renderPost}
         initialNumToRender={4}
         maxToRenderPerBatch={4}

@@ -31,7 +31,6 @@ const DynamicImage = ({
       },
     );
   }, [uri, isConnected]);
-
   if (errorMsg) {
     return (
       <View
@@ -50,8 +49,12 @@ const DynamicImage = ({
       source={{uri}}
       style={[{width: screenWidth, height: imgHeight}, style]}
       resizeMode={resizeMode}
-      onLoadStart={() => setLoadingPosts(prev => ({...prev, [item.id]: true}))}
-      onLoadEnd={() => setLoadingPosts(prev => ({...prev, [item.id]: false}))}
+      onLoadStart={() => {
+        if (item) setLoadingPosts(prev => ({...prev, [item.id]: true}));
+      }}
+      onLoadEnd={() => {
+        if (item) setLoadingPosts(prev => ({...prev, [item.id]: false}));
+      }}
       {...props}
     />
   );

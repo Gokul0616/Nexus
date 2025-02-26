@@ -209,6 +209,7 @@ const MessagesOutsideStyles = StyleSheet.create({
     paddingHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     borderRadius: 8,
     marginTop: 10,
     // Optional: add a subtle shadow (iOS only, or with elevation for Android)

@@ -714,26 +714,31 @@ export const dummySearchResults = [
   {
     id: '1',
     name: 'Alice Johnson',
+    recent: true,
     profileUrl: 'https://randomuser.me/api/portraits/women/1.jpg',
   },
   {
     id: '2',
     name: 'Bob Smith',
+    recent: false,
     profileUrl: 'https://randomuser.me/api/portraits/men/2.jpg',
   },
   {
     id: '3',
     name: 'Charlie Brown',
+    recent: false,
     profileUrl: 'https://randomuser.me/api/portraits/men/3.jpg',
   },
   {
     id: '4',
     name: 'Diana Prince',
+    recent: false,
     profileUrl: 'https://randomuser.me/api/portraits/women/4.jpg',
   },
   {
     id: '5',
-    name: 'Ethan Hunt',
+    name: 'Ethani Hunt',
+    recent: true,
     profileUrl: 'https://randomuser.me/api/portraits/men/5.jpg',
   },
 ];

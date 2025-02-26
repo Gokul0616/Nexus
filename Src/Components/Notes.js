@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import DynamicImage from './DynamicImage';
+import NetInfo from '@react-native-community/netinfo';
 
 /**
  * notes: Array of note objects
@@ -29,13 +31,27 @@ import {
  * onNotePress: Callback when a note is pressed
  */
 const Notes = ({notes, onNotePress}) => {
+  const [isConnected, setIsConnected] = useState(true);
+  const [mediaKey, setMediaKey] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected);
+      setMediaKey(prev => prev + 1);
+    });
+    return () => unsubscribe();
+  }, []);
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
         style={styles.noteContainer}
         onPress={() => onNotePress && onNotePress(item)}>
         <View style={styles.avatarContainer}>
-          <Image source={{uri: item.avatar}} style={styles.avatar} />
+          <DynamicImage
+            uri={item.avatar}
+            style={styles.avatar}
+            isConnected={isConnected}
+          />
           {/* Only render the note bubble if there's a note */}
           {item.note ? (
             <>
