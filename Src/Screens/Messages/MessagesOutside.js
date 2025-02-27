@@ -126,7 +126,8 @@ const MessagesOutside = () => {
                   <Text style={styles.messageContactsName}>{item.name}</Text>
                   <View style={styles.messageContactsLastMessageContainer}>
                     <Text style={styles.messageContactsLastMessage}>
-                      {item.lastMessage}
+                      {item.lastMessage.slice(0, 30)}
+                      {item.lastMessage.length > 30 ? '...' : ''}
                     </Text>
                     <Text style={styles.messageContactsLastMessageTimePeriod}>
                       {item.lastMessageTimePeriod}

@@ -9,6 +9,7 @@ const {width: screenWidth} = Dimensions.get('window');
 const TopStack = ({route}) => {
   // Set default index to 1 (BottomStack screen)
   const [currentIndex, setCurrentIndex] = useState(1);
+  const {setTopStackIndex} = useContext(NavigationContext);
   const scrollRef = useRef(null);
   // Called when user finishes swiping manually
   const handleMomentumScrollEnd = event => {
@@ -16,13 +17,14 @@ const TopStack = ({route}) => {
     const newIndex = Math.round(offsetX / screenWidth);
     setCurrentIndex(newIndex);
   };
-
+  useEffect(() => {
+    setTopStackIndex(currentIndex);
+  }, [currentIndex]);
   useEffect(() => {
     // If route.params?.index is provided, use it; otherwise, default to 1.
     const index = route.params?.index ?? 1;
     goToIndex(index);
   }, [route.params]);
-
   const goToIndex = index => {
     setCurrentIndex(index);
     if (scrollRef.current) {

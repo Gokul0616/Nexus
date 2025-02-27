@@ -755,7 +755,8 @@ export const messageDummyData = [
     id: '1',
     name: 'Michelle',
     avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    lastMessage: 'Check out this cool link!',
+    lastMessage:
+      'Check out this cool linkjhgsahgdasgdsagdasgdasghdashgdashgdhasgdag!',
     lastMessageTimePeriod: '2 min ago',
   },
   {
@@ -891,6 +892,7 @@ export const profileDummyData = [
     followersCount: 1200,
     followingCount: 300,
     location: 'Paris, France',
+    streakPercentsge: '54',
     joinedDate: '2021-01-10',
     images: {
       postImages: [

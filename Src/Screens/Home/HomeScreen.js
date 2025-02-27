@@ -37,10 +37,12 @@ import {NavigationContext} from '../../Services/Hooks/NavigationProvider';
 const {width: screenWidth} = Dimensions.get('window');
 
 const HomeScreen = () => {
-  const {currentIndex, setSwipeEnabled} = useContext(NavigationContext);
+  const {currentIndex, setSwipeEnabled, topStackIndex} =
+    useContext(NavigationContext);
   const navigation = useNavigation();
   const [likedPosts, setLikedPosts] = useState({});
   const [currentPage, setCurrentPage] = useState({});
+  ``;
   const [loadingPosts, setLoadingPosts] = useState({});
   const [isConnected, setIsConnected] = useState(true);
   const [mediaKey, setMediaKey] = useState(0);
@@ -208,7 +210,10 @@ const HomeScreen = () => {
 
   const renderPost = ({item}) => {
     const isVisible = viewableItems.some(
-      viewableItem => viewableItem.key === item.id && currentIndex === 0,
+      viewableItem =>
+        viewableItem.key === item.id &&
+        currentIndex === 0 &&
+        topStackIndex === 1,
     );
     return (
       <View style={styles.post}>
