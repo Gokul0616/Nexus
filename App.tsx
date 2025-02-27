@@ -1,15 +1,18 @@
 // App.js
 import React from 'react';
-import {MainStack} from './Src/Routes/MainRoute';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {NavigationContainer} from '@react-navigation/native';
-import TopStack from './Src/Routes/TopStack';
-
+import {MainStack} from './Src/Routes/MainRoute';
+import {NavigationProvider} from './Src/Services/Hooks/NavigationProvider';
+import {PaperProvider} from 'react-native-paper';
 const App = () => {
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <MainStack />
-    </SafeAreaView>
+    <NavigationProvider>
+      <PaperProvider>
+        <SafeAreaView style={{flex: 1}}>
+          <MainStack />
+        </SafeAreaView>
+      </PaperProvider>
+    </NavigationProvider>
   );
 };
 

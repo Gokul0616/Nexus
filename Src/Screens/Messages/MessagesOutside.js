@@ -5,17 +5,26 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {BackHandler, Pressable, ScrollView, Text, View} from 'react-native';
+import {
+  BackHandler,
+  FlatList,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import CustomHeader from '../../Components/CustomHeader';
 import {
   dummySearchResults as initialDummySearchResults,
+  messageDummyData,
   sampleNotes,
 } from '../../Components/DummyData';
 import DynamicImage from '../../Components/DynamicImage';
 import NexusInput from '../../Components/NexusInput';
 import Notes from '../../Components/Notes';
 import {MessagesOutsideStyles as styles} from '../../Components/Styles/Styles';
+import {TouchableRipple} from 'react-native-paper';
 
 const MessagesOutside = () => {
   const navigation = useNavigation();
@@ -32,7 +41,7 @@ const MessagesOutside = () => {
   }, [searchActive, navigation]);
 
   const naviBack = () => {
-    navigation.navigate('BottomTabs');
+    navigation.goBack();
   };
 
   useFocusEffect(
@@ -81,6 +90,56 @@ const MessagesOutside = () => {
       ),
     );
   };
+  const renderMessageContacts = item => {
+    return (
+      <FlatList
+        data={item}
+        keyExtractor={item => item.id}
+        ListHeaderComponent={() => {
+          return (
+            <>
+              <Pressable
+                style={styles.searchMessagesContainer}
+                onPress={() => setSearchActive(true)}>
+                <View style={styles.searchInputView}>
+                  <Text style={styles.searchText}>Search</Text>
+                </View>
+              </Pressable>
+              <Notes notes={sampleNotes} onNotePress={handleNotePress} />
+            </>
+          );
+        }}
+        renderItem={({item}) => {
+          return (
+            <TouchableRipple
+              style={styles.messageContactsContainer}
+              onPress={() => console.log('Pressed')}
+              rippleColor="rgba(0, 0, 0, .15)">
+              <>
+                <DynamicImage
+                  style={styles.messageContactsAvatar}
+                  accessibilityLabel={item.name}
+                  uri={item.avatar}
+                  isConnected={isConnected}
+                />
+                <View style={styles.messageContactsContentContainer}>
+                  <Text style={styles.messageContactsName}>{item.name}</Text>
+                  <View style={styles.messageContactsLastMessageContainer}>
+                    <Text style={styles.messageContactsLastMessage}>
+                      {item.lastMessage}
+                    </Text>
+                    <Text style={styles.messageContactsLastMessageTimePeriod}>
+                      {item.lastMessageTimePeriod}
+                    </Text>
+                  </View>
+                </View>
+              </>
+            </TouchableRipple>
+          );
+        }}
+      />
+    );
+  };
   return (
     <View style={styles.container}>
       {searchActive ? (
@@ -100,43 +159,42 @@ const MessagesOutside = () => {
             autoFocus={true}
             placeholder="Search"
           />
-          <ScrollView
+          <FlatList
+            data={displayResults}
+            keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{gap: 5, padding: 10}}>
-            {displayResults.length > 0 ? (
-              displayResults.map((item, index) => (
-                <Pressable
-                  style={styles.searchResultsContainer}
-                  key={`${index}-${item.name}`}>
-                  <View
+            contentContainerStyle={{padding: 10}}
+            keyExtractor={(item, index) => `${index}-${item.name}`}
+            renderItem={({item, index}) => (
+              <Pressable style={styles.searchResultsContainer}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <DynamicImage
+                    style={styles.searchResultProfileImage}
+                    accessibilityLabel={item.name}
+                    uri={item.profileUrl}
+                    isConnected={isConnected}
+                  />
+                  <Text style={styles.searchResultNames}>{item.name}</Text>
+                </View>
+                {item.recent && searchVal.trim() === '' && (
+                  <Pressable
+                    onPress={() => handleRemoveRecent(item.id)}
                     style={{
-                      flexDirection: 'row',
+                      height: 20,
+                      width: 20,
                       alignItems: 'center',
-                      gap: 20,
+                      justifyContent: 'center',
                     }}>
-                    <DynamicImage
-                      style={styles.searchResultProfileImage}
-                      accessibilityLabel={item.name}
-                      uri={item.profileUrl}
-                      isConnected={isConnected}
-                    />
-                    <Text style={styles.searchResultNames}>{item.name}</Text>
-                  </View>
-                  {item.recent && searchVal.trim() === '' && (
-                    <Pressable
-                      onPress={() => handleRemoveRecent(item.id)}
-                      style={{
-                        height: 20,
-                        width: 20,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                      <Feather name="x" size={15} color={'#ccc'} />
-                    </Pressable>
-                  )}
-                </Pressable>
-              ))
-            ) : (
+                    <Feather name="x" size={15} color="#ccc" />
+                  </Pressable>
+                )}
+              </Pressable>
+            )}
+            ListEmptyComponent={() => (
               <View style={{alignItems: 'center', marginTop: 20}}>
                 <Text style={{fontSize: 16, color: '#666'}}>
                   {searchVal.trim() === ''
@@ -145,7 +203,7 @@ const MessagesOutside = () => {
                 </Text>
               </View>
             )}
-          </ScrollView>
+          />
         </View>
       ) : (
         <>
@@ -154,19 +212,9 @@ const MessagesOutside = () => {
             leftIconFunction={() => naviBack()}
             headerTitle="Direct Messages"
           />
-          <Pressable
-            style={styles.searchMessagesContainer}
-            onPress={() => setSearchActive(true)}>
-            <View style={styles.searchInputView}>
-              <Text style={styles.searchText}>Search</Text>
-            </View>
-          </Pressable>
-          <View>
-            <Notes notes={sampleNotes} onNotePress={handleNotePress} />
-          </View>
-          <View>
-            <Text>Hello</Text>
-          </View>
+
+          <View></View>
+          <View>{renderMessageContacts(messageDummyData)}</View>
         </>
       )}
     </View>

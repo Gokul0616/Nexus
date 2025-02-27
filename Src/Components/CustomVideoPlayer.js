@@ -21,13 +21,14 @@ const CustomVideoPlayer = ({
   item,
   setLoadingPosts,
   resizeMode = 'contain',
+  onVideoLoad,
   ...props
 }) => {
   const [paused, setPaused] = useState(true);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isEnded, setIsEnded] = useState(false);
-  const [videoHeight, setVideoHeight] = useState(screenWidth);
+  const [videoHeight, setVideoHeight] = useState();
   const controlsOpacity = useRef(new Animated.Value(1)).current;
   const videoRef = useRef(null);
 
@@ -85,13 +86,14 @@ const CustomVideoPlayer = ({
     }).start();
   };
 
-  const onVideoLoad = data => {
+  const handleVideoLoad = data => {
     setLoadingPosts(prev => ({...prev, [item.id]: false}));
-    if (data?.naturalSize?.width && data?.naturalSize?.height) {
-      const computedHeight =
-        (screenWidth * data.naturalSize.height) / data.naturalSize.width;
-      setVideoHeight(computedHeight);
-    }
+    // if (data?.naturalSize?.width && data?.naturalSize?.height) {
+    //   const computedHeight =
+    //     (screenWidth * data.naturalSize.height) / data.naturalSize.width;
+    //   setVideoHeight(computedHeight);
+    // }
+    onVideoLoad(data);
   };
 
   useEffect(() => {
@@ -113,7 +115,7 @@ const CustomVideoPlayer = ({
   }, [isVisible, isConnected, controlsOpacity]);
 
   return (
-    <View style={[style, styles.container, {height: videoHeight}]}>
+    <View style={[style, styles.container]}>
       <Video
         ref={videoRef}
         source={source}
@@ -122,7 +124,7 @@ const CustomVideoPlayer = ({
         paused={!isVisible || paused}
         onError={onVideoError}
         onEnd={onVideoEnd}
-        onLoad={onVideoLoad}
+        onLoad={handleVideoLoad}
         onLoadStart={() =>
           setLoadingPosts(prev => ({...prev, [item.id]: true}))
         }

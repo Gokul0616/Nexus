@@ -1,13 +1,14 @@
-import React, {useContext} from 'react';
-import {TouchableOpacity} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, {useCallback, useContext} from 'react';
+import {BackHandler, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import HomeScreen from '../Screens/Home/HomeScreen';
-import Explore from '../Screens/Home/Explore';
 import AddPost from '../Screens/Home/AddPost';
-import Notification from '../Screens/Home/Notification';
+import Community from '../Screens/Home/Community';
+import Explore from '../Screens/Home/Explore';
+import HomeScreen from '../Screens/Home/HomeScreen';
 import Profile from '../Screens/Home/Profile';
 import {NavigationContext} from '../Services/Hooks/NavigationProvider';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
@@ -40,6 +41,8 @@ export default function BottomStack() {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Explore') {
             iconName = focused ? 'search' : 'search-outline';
+          } else if (route.name === 'Community') {
+            iconName = focused ? 'people' : 'people-outline';
           } else if (route.name === 'Notification') {
             iconName = focused ? 'notifications' : 'notifications-outline';
           } else if (route.name === 'Profile') {
@@ -75,9 +78,11 @@ export default function BottomStack() {
         options={({navigation}) => ({
           tabBarIcon: () => null,
           tabBarButton: props => (
-            <CustomAddPostButton
-              onPress={() => navigation.navigate('AddPost')}
-            />
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+              <CustomAddPostButton
+                onPress={() => navigation.navigate('AddPost')}
+              />
+            </View>
           ),
         })}
         listeners={{
@@ -85,8 +90,8 @@ export default function BottomStack() {
         }}
       />
       <Tab.Screen
-        name="Notification"
-        component={Notification}
+        name="Community"
+        component={Community}
         listeners={{
           focus: () => setCurrentIndex(3),
         }}

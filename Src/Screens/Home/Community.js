@@ -1,12 +1,13 @@
-import {BackHandler, StyleSheet, Text, View} from 'react-native';
-import React, {useCallback} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+
 import {
   CommonActions,
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-
-const AddPost = () => {
+import React, {useCallback} from 'react';
+import {BackHandler} from 'react-native';
+const Community = () => {
   const navigation = useNavigation();
   const clearStackAndNavigate = () => {
     navigation.dispatch(
@@ -37,11 +38,11 @@ const AddPost = () => {
   );
   return (
     <View>
-      <Text>AddPost</Text>
+      <Text>Community</Text>
     </View>
   );
 };
 
-export default AddPost;
+export default Community;
 
 const styles = StyleSheet.create({});

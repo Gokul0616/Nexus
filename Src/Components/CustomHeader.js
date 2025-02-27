@@ -4,11 +4,13 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 const CustomHeader = ({
   navigation,
-  headerTitle = 'Direct',
+  headerTitle,
   leftIcon,
   leftIconFunction,
   rightIconFunction,
   rightIcon,
+  style,
+  isLeftIcon = true,
 }) => {
   const handlePress = side => {
     if (side === 'left') {
@@ -26,16 +28,20 @@ const CustomHeader = ({
     }
   };
   return (
-    <View style={styles.headerContainer}>
-      <TouchableOpacity
-        style={styles.leftIconContainer}
-        onPress={() => handlePress('left')}>
-        {leftIcon ? (
-          leftIcon
-        ) : (
-          <Icon name="chevron-back" size={28} color="#000" />
-        )}
-      </TouchableOpacity>
+    <View style={[styles.headerContainer, style]}>
+      {isLeftIcon ? (
+        <TouchableOpacity
+          style={styles.leftIconContainer}
+          onPress={() => handlePress('left')}>
+          {leftIcon ? (
+            leftIcon
+          ) : (
+            <Icon name="chevron-back" size={28} color="#000" />
+          )}
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.emptyIcon} />
+      )}
       <Text style={styles.headerTitle}>{headerTitle}</Text>
       {rightIcon ? (
         <TouchableOpacity
@@ -60,7 +66,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 5,
     borderBottomWidth: 0.2,
-    borderBottomColor: '#ccc',
+    backgroundColor: '#fff',
+    borderBottomColor: '#ddd',
   },
   leftIconContainer: {
     padding: 8,

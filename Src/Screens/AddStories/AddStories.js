@@ -2,12 +2,13 @@ import {BackHandler, StyleSheet, Text, View} from 'react-native';
 import React, {useCallback} from 'react';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
-const AddStories = () => {
+const AddStories = ({setIndex}) => {
   const navigation = useNavigation();
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        navigation.navigate('BottomTabs');
+        // Switch to BottomStack (index 1) when back is pressed
+        setIndex(1);
         return true;
       };
 
@@ -16,11 +17,11 @@ const AddStories = () => {
         onBackPress,
       );
       return () => subscription.remove();
-    }, [navigation]),
+    }, [navigation, setIndex]),
   );
 
   return (
-    <View>
+    <View style={styles.container}>
       <Text>AddStories</Text>
     </View>
   );
@@ -28,4 +29,10 @@ const AddStories = () => {
 
 export default AddStories;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

@@ -1,28 +1,60 @@
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import React, {useContext} from 'react';
+import React, {useState, useRef, useEffect, useContext} from 'react';
+import {ScrollView, Dimensions, View, StyleSheet} from 'react-native';
 import AddStories from '../Screens/AddStories/AddStories';
-import MessagesOutside from '../Screens/Messages/MessagesOutside';
-import {NavigationContext} from '../Services/Hooks/NavigationProvider';
 import BottomStack from './BottomStack';
+import {NavigationContext} from '../Services/Hooks/NavigationProvider';
 
-const Tab = createMaterialTopTabNavigator();
+const {width: screenWidth} = Dimensions.get('window');
 
-export default function TopStack() {
-  const {currentIndex} = useContext(NavigationContext);
+const TopStack = ({route}) => {
+  // Set default index to 1 (BottomStack screen)
+  const [currentIndex, setCurrentIndex] = useState(1);
+  const scrollRef = useRef(null);
+  // Called when user finishes swiping manually
+  const handleMomentumScrollEnd = event => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const newIndex = Math.round(offsetX / screenWidth);
+    setCurrentIndex(newIndex);
+  };
+
+  useEffect(() => {
+    // If route.params?.index is provided, use it; otherwise, default to 1.
+    const index = route.params?.index ?? 1;
+    goToIndex(index);
+  }, [route.params]);
+
+  const goToIndex = index => {
+    setCurrentIndex(index);
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({x: index * screenWidth, animated: true});
+    }
+  };
 
   return (
-    <Tab.Navigator initialRouteName="BottomTabs" tabBar={() => null}>
-      <Tab.Screen name="AddPost_TopStack" component={AddStories} />
-      <Tab.Screen name="BottomTabs" component={BottomStack} />
-      {currentIndex === 0 && (
-        <Tab.Screen
-          name="Message"
-          component={MessagesOutside}
-          options={({route}) => ({
-            swipeEnabled: route?.params?.swipeEnabled ?? true,
-          })}
-        />
-      )}
-    </Tab.Navigator>
+    <ScrollView
+      ref={scrollRef}
+      horizontal
+      pagingEnabled
+      showsHorizontalScrollIndicator={false}
+      onMomentumScrollEnd={handleMomentumScrollEnd}
+      style={styles.container}>
+      <View style={[styles.screen, {width: screenWidth}]}>
+        <AddStories setIndex={goToIndex} />
+      </View>
+      <View style={[styles.screen, {width: screenWidth}]}>
+        <BottomStack activeIndex={route.params?.index ?? 1} />
+      </View>
+    </ScrollView>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  screen: {
+    flex: 1,
+  },
+});
+
+export default TopStack;

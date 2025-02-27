@@ -4,7 +4,13 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   Animated,
   BackHandler,
@@ -26,10 +32,12 @@ import {posts, stories} from '../../Components/DummyData';
 import DynamicImage from '../../Components/DynamicImage';
 import {HomeScreenStyles as styles} from '../../Components/Styles/Styles';
 import RenderStories from '../../Components/Stories';
+import {NavigationContext} from '../../Services/Hooks/NavigationProvider';
 
 const {width: screenWidth} = Dimensions.get('window');
 
 const HomeScreen = () => {
+  const {currentIndex, setSwipeEnabled} = useContext(NavigationContext);
   const navigation = useNavigation();
   const [likedPosts, setLikedPosts] = useState({});
   const [currentPage, setCurrentPage] = useState({});
@@ -37,7 +45,9 @@ const HomeScreen = () => {
   const [isConnected, setIsConnected] = useState(true);
   const [mediaKey, setMediaKey] = useState(0);
   const likeAnimations = useRef({}).current;
-
+  const [hasMessageNotification, setHasMessageNotification] = useState(false);
+  const [hasNotification, setHasNotification] = useState(false);
+  const [gestureCaptured, setGestureCaptured] = useState(false);
   const headerTranslateY = useRef(new Animated.Value(0)).current;
   const lastOffsetY = useRef(0);
   const isHeaderHidden = useRef(false);
@@ -99,7 +109,21 @@ const HomeScreen = () => {
       delete likeAnimations[postId];
     });
   };
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // Exit the app when on HomeScreen
+        BackHandler.exitApp();
+        return true;
+      };
 
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress,
+      );
+      return () => subscription.remove();
+    }, []),
+  );
   const scrollRef = useRef(null);
   const panResponder = useRef(
     PanResponder.create({
@@ -149,19 +173,42 @@ const HomeScreen = () => {
       style={[styles.navBar, {transform: [{translateY: headerTranslateY}]}]}>
       <Text style={styles.logo}>{AppName}</Text>
       <View style={styles.icons}>
-        <TouchableOpacity onPress={() => navigation.navigate('Message')}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Message')}
+          style={styles.iconsContainer}>
           <Icon name="paper-plane-outline" size={28} color="#000" />
+          {hasMessageNotification && <View style={styles.dotMessage} />}
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity style={styles.iconsContainer}>
           <Icon name="heart-outline" size={28} color="#000" />
+          {hasNotification && <View style={styles.dotNotification} />}
         </TouchableOpacity>
       </View>
     </Animated.View>
   );
+  useEffect(() => {
+    if (gestureCaptured) {
+      setSwipeEnabled(false);
+    } else {
+      setSwipeEnabled(true);
+    }
+  }, [gestureCaptured]);
+  const [videoHeights, setVideoHeights] = useState({});
+
+  const handleVideoLoad = (data, itemId) => {
+    if (data?.naturalSize?.width && data?.naturalSize?.height) {
+      setVideoHeights(prev => {
+        if (prev[itemId]) return prev; // Prevent re-setting once it's computed
+        const computedHeight =
+          (screenWidth * data.naturalSize.height) / data.naturalSize.width;
+        return {...prev, [itemId]: computedHeight};
+      });
+    }
+  };
 
   const renderPost = ({item}) => {
     const isVisible = viewableItems.some(
-      viewableItem => viewableItem.key === item.id,
+      viewableItem => viewableItem.key === item.id && currentIndex === 0,
     );
     return (
       <View style={styles.post}>
@@ -239,13 +286,18 @@ const HomeScreen = () => {
             <CustomVideoPlayer
               key={`${item.id}-${mediaKey}`}
               source={{uri: item.content}}
-              style={styles.postImage}
+              style={[
+                styles.postImage,
+                {height: videoHeights[item.id] || screenWidth},
+              ]} // Default to screenWidth until computed
               setLoadingPosts={setLoadingPosts}
               item={item}
               isVisible={isVisible}
               resizeMode="contain"
               isConnected={isConnected}
+              onVideoLoad={data => handleVideoLoad(data, item.id)}
             />
+
             {likedPosts[item.id] && (
               <Animated.View
                 pointerEvents="none"
@@ -272,28 +324,35 @@ const HomeScreen = () => {
         )}
         {item.type === 'carousel' && (
           <View>
-            <Pressable
-              activeOpacity={0.9}
-              onPress={() => {
-                handleDoubleTap(item.id);
-              }}>
-              <ScrollView
-                {...panResponder.panHandlers}
-                horizontal
-                ref={scrollRef}
-                pagingEnabled
-                onScroll={event => {
-                  const offsetX = event.nativeEvent.contentOffset.x;
-                  const currentPageIndex = Math.round(offsetX / screenWidth);
-                  setCurrentPage(prev => ({
-                    ...prev,
-                    [item.id]: currentPageIndex,
-                  }));
-                }}
-                scrollEventThrottle={16}>
-                {item.content.map((image, index) => (
+            <ScrollView
+              horizontal
+              pagingEnabled
+              nestedScrollEnabled
+              onTouchStart={() => {
+                setGestureCaptured(true);
+              }}
+              onMomentumScrollBegin={() => {
+                setGestureCaptured(true);
+              }}
+              onMomentumScrollEnd={() => {
+                setGestureCaptured(false);
+              }}
+              onScroll={event => {
+                const offsetX = event.nativeEvent.contentOffset.x;
+                const currentPageIndex = Math.round(offsetX / screenWidth);
+
+                setCurrentPage(prev => ({
+                  ...prev,
+                  [item.id]: currentPageIndex,
+                }));
+              }}
+              scrollEventThrottle={16}>
+              {item.content.map((image, index) => (
+                <Pressable
+                  key={`${item.id}-${index}-${mediaKey}`}
+                  onPress={() => handleDoubleTap(item.id)}
+                  activeOpacity={0.9}>
                   <DynamicImage
-                    key={`${item.id}-${index}-${mediaKey}`}
                     uri={image}
                     style={styles.postImage}
                     setLoadingPosts={setLoadingPosts}
@@ -301,17 +360,17 @@ const HomeScreen = () => {
                     resizeMode="contain"
                     isConnected={isConnected}
                   />
-                ))}
-              </ScrollView>
-              <View style={styles.carouselIndicator}>
-                <Text style={styles.carouselIndicatorText}>
-                  {currentPage[item.id] !== undefined
-                    ? currentPage[item.id] + 1
-                    : 1}
-                  /{item.content.length}
-                </Text>
-              </View>
-            </Pressable>
+                </Pressable>
+              ))}
+            </ScrollView>
+            <View style={styles.carouselIndicator}>
+              <Text style={styles.carouselIndicatorText}>
+                {currentPage[item.id] !== undefined
+                  ? currentPage[item.id] + 1
+                  : 1}
+                /{item.content.length}
+              </Text>
+            </View>
             {likedPosts[item.id] && (
               <Animated.View
                 pointerEvents="none"
@@ -424,6 +483,9 @@ const HomeScreen = () => {
             stories={stories}
             isConnected={isConnected}
             setLoadingPosts={setLoadingPosts}
+            navigation={navigation}
+            setGestureCaptured={setGestureCaptured}
+            gestureCaptured={gestureCaptured}
           />
         }
         renderItem={renderPost}
