@@ -21,6 +21,8 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import CustomHeader from '../../Components/CustomHeader';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const {width} = Dimensions.get('window');
 
@@ -83,7 +85,18 @@ const Profile = () => {
         return [];
     }
   };
-
+  const formatNumber = num => {
+    if (num >= 1e9) {
+      return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+    }
+    if (num >= 1e6) {
+      return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+    }
+    if (num >= 1e3) {
+      return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+    }
+    return num.toString();
+  };
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity style={styles.gridItem}>
@@ -103,9 +116,17 @@ const Profile = () => {
   return (
     <>
       <CustomHeader
-        isLeftIcon={false}
+        isLeftIcon={true}
+        leftIcon={<FontAwesome5 name="user-edit" size={20} color="black" />}
+        leftIconFunction={() => {
+          navigation.navigate('EditProfile');
+        }}
+        rightIcon={<Ionicons name="menu" size={25} color="black" />}
+        rightIconFunction={() => {
+          navigation.navigate('ProfileMenu');
+        }}
         headerTitle={profile.username}
-        style={{borderBottomWidth: 1, borderBottomColor: '#ddd'}}
+        style={{borderBottomWidth: 1, borderBottomColor: '#ddd', height: 50}}
       />
       <ScrollView
         style={styles.container}
@@ -141,15 +162,21 @@ const Profile = () => {
 
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{profile.postsCount}</Text>
+              <Text style={styles.statNumber}>
+                {formatNumber(profile.postsCount)}
+              </Text>
               <Text style={styles.statLabel}>Posts</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{profile.followersCount}</Text>
+              <Text style={styles.statNumber}>
+                {formatNumber(profile.followersCount)}
+              </Text>
               <Text style={styles.statLabel}>Followers</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{profile.followingCount}</Text>
+              <Text style={styles.statNumber}>
+                {formatNumber(profile.followingCount)}
+              </Text>
               <Text style={styles.statLabel}>Following</Text>
             </View>
             <View style={styles.statItem}>

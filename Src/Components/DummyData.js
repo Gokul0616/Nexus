@@ -2,27 +2,127 @@ export const stories = [
   {
     id: '1',
     name: 'Your Story',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg ',
+    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
   },
   {
     id: '2',
     name: 'Alice',
-    avatar: 'https://randomuser.me/api/portraits/women/2.jpg ',
+    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
   },
   {
     id: '3',
     name: 'Bob',
-    avatar: 'https://randomuser.me/api/portraits/men/3.jpg ',
+    avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
   },
   {
     id: '4',
     name: 'Charlie',
-    avatar: 'https://randomuser.me/api/portraits/women/4.jpg ',
+    avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
   },
   {
     id: '5',
     name: 'David',
-    avatar: 'https://randomuser.me/api/portraits/men/5.jpg ',
+    avatar: 'https://randomuser.me/api/portraits/men/5.jpg',
+  },
+  {
+    id: '6',
+    name: 'Emily',
+    avatar: 'https://randomuser.me/api/portraits/women/6.jpg',
+  },
+  {
+    id: '7',
+    name: 'Frank',
+    avatar: 'https://randomuser.me/api/portraits/men/7.jpg',
+  },
+  {
+    id: '8',
+    name: 'Grace',
+    avatar: 'https://randomuser.me/api/portraits/women/8.jpg',
+  },
+  {
+    id: '9',
+    name: 'Henry',
+    avatar: 'https://randomuser.me/api/portraits/men/9.jpg',
+  },
+  {
+    id: '10',
+    name: 'Ivy',
+    avatar: 'https://randomuser.me/api/portraits/women/10.jpg',
+  },
+  {
+    id: '11',
+    name: 'Jack',
+    avatar: 'https://randomuser.me/api/portraits/men/11.jpg',
+  },
+  {
+    id: '12',
+    name: 'Kate',
+    avatar: 'https://randomuser.me/api/portraits/women/12.jpg',
+  },
+  {
+    id: '13',
+    name: 'Leo',
+    avatar: 'https://randomuser.me/api/portraits/men/13.jpg',
+  },
+  {
+    id: '14',
+    name: 'Mia',
+    avatar: 'https://randomuser.me/api/portraits/women/14.jpg',
+  },
+  {
+    id: '15',
+    name: 'Nick',
+    avatar: 'https://randomuser.me/api/portraits/men/15.jpg',
+  },
+  {
+    id: '16',
+    name: 'Olivia',
+    avatar: 'https://randomuser.me/api/portraits/women/16.jpg',
+  },
+  {
+    id: '17',
+    name: 'Paul',
+    avatar: 'https://randomuser.me/api/portraits/men/17.jpg',
+  },
+  {
+    id: '18',
+    name: 'Quinn',
+    avatar: 'https://randomuser.me/api/portraits/women/18.jpg',
+  },
+  {
+    id: '19',
+    name: 'Ryan',
+    avatar: 'https://randomuser.me/api/portraits/men/19.jpg',
+  },
+  {
+    id: '20',
+    name: 'Sophia',
+    avatar: 'https://randomuser.me/api/portraits/women/20.jpg',
+  },
+  {
+    id: '21',
+    name: 'Tom',
+    avatar: 'https://randomuser.me/api/portraits/men/21.jpg',
+  },
+  {
+    id: '22',
+    name: 'Uma',
+    avatar: 'https://randomuser.me/api/portraits/women/22.jpg',
+  },
+  {
+    id: '23',
+    name: 'Victor',
+    avatar: 'https://randomuser.me/api/portraits/men/23.jpg',
+  },
+  {
+    id: '24',
+    name: 'Wendy',
+    avatar: 'https://randomuser.me/api/portraits/women/24.jpg',
+  },
+  {
+    id: '25',
+    name: 'Xander',
+    avatar: 'https://randomuser.me/api/portraits/men/25.jpg',
   },
 ];
 
@@ -755,8 +855,7 @@ export const messageDummyData = [
     id: '1',
     name: 'Michelle',
     avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    lastMessage:
-      'Check out this cool linkjhgsahgdasgdsagdasgdasghdashgdashgdhasgdag!',
+    lastMessage: 'Check out this cool link!',
     lastMessageTimePeriod: '2 min ago',
   },
   {

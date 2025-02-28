@@ -90,11 +90,47 @@ const MessagesOutside = () => {
       ),
     );
   };
+  const renderMessage = item => {
+    return (
+      <TouchableRipple
+        style={styles.messageContactsContainer}
+        onPress={() => console.log('Pressed')}
+        rippleColor="rgba(0, 0, 0, .15)">
+        <>
+          <DynamicImage
+            style={styles.messageContactsAvatar}
+            accessibilityLabel={item.name}
+            uri={item.avatar}
+            isConnected={isConnected}
+          />
+          <View style={styles.messageContactsContentContainer}>
+            <Text style={styles.messageContactsName}>{item.name}</Text>
+            <View style={styles.messageContactsLastMessageContainer}>
+              <Text style={styles.messageContactsLastMessage}>
+                {item.lastMessage.slice(0, 30)}
+                {item.lastMessage.length > 30 ? '...' : ''}
+              </Text>
+              <Text style={styles.messageContactsLastMessageTimePeriod}>
+                {item.lastMessageTimePeriod}
+              </Text>
+            </View>
+          </View>
+        </>
+      </TouchableRipple>
+    );
+  };
   const renderMessageContacts = item => {
     return (
       <FlatList
         data={item}
         keyExtractor={item => item.id}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        updateCellsBatchingPeriod={50}
+        contentContainerStyle={{paddingBottom: 60}}
+        removeClippedSubviews={true}
+        onEndReachedThreshold={0.5}
         ListHeaderComponent={() => {
           return (
             <>
@@ -110,33 +146,7 @@ const MessagesOutside = () => {
           );
         }}
         renderItem={({item}) => {
-          return (
-            <TouchableRipple
-              style={styles.messageContactsContainer}
-              onPress={() => console.log('Pressed')}
-              rippleColor="rgba(0, 0, 0, .15)">
-              <>
-                <DynamicImage
-                  style={styles.messageContactsAvatar}
-                  accessibilityLabel={item.name}
-                  uri={item.avatar}
-                  isConnected={isConnected}
-                />
-                <View style={styles.messageContactsContentContainer}>
-                  <Text style={styles.messageContactsName}>{item.name}</Text>
-                  <View style={styles.messageContactsLastMessageContainer}>
-                    <Text style={styles.messageContactsLastMessage}>
-                      {item.lastMessage.slice(0, 30)}
-                      {item.lastMessage.length > 30 ? '...' : ''}
-                    </Text>
-                    <Text style={styles.messageContactsLastMessageTimePeriod}>
-                      {item.lastMessageTimePeriod}
-                    </Text>
-                  </View>
-                </View>
-              </>
-            </TouchableRipple>
-          );
+          return renderMessage(item);
         }}
       />
     );
@@ -211,7 +221,7 @@ const MessagesOutside = () => {
           <CustomHeader
             navigation={navigation}
             leftIconFunction={() => naviBack()}
-            headerTitle="Direct Messages"
+            headerTitle="Chats"
           />
 
           <View></View>

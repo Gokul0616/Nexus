@@ -40,9 +40,10 @@ const HomeScreen = () => {
   const {currentIndex, setSwipeEnabled, topStackIndex} =
     useContext(NavigationContext);
   const navigation = useNavigation();
+  const route = useRoute();
   const [likedPosts, setLikedPosts] = useState({});
   const [currentPage, setCurrentPage] = useState({});
-  ``;
+  const [viewVisible, setViewVisible] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState({});
   const [isConnected, setIsConnected] = useState(true);
   const [mediaKey, setMediaKey] = useState(0);
@@ -67,6 +68,16 @@ const HomeScreen = () => {
       );
 
       return () => subscription.remove();
+    }, [navigation]),
+  );
+  useFocusEffect(
+    useCallback(() => {
+      // When HomeScreen is focused, set viewVisible to true
+      setViewVisible(true);
+      return () => {
+        // When HomeScreen loses focus, you may pause the video by setting viewVisible to false
+        setViewVisible(false);
+      };
     }, []),
   );
   useEffect(() => {
@@ -181,7 +192,9 @@ const HomeScreen = () => {
           <Icon name="paper-plane-outline" size={28} color="#000" />
           {hasMessageNotification && <View style={styles.dotMessage} />}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconsContainer}>
+        <TouchableOpacity
+          style={styles.iconsContainer}
+          onPress={() => navigation.navigate('NotificationScreen')}>
           <Icon name="heart-outline" size={28} color="#000" />
           {hasNotification && <View style={styles.dotNotification} />}
         </TouchableOpacity>
@@ -213,6 +226,7 @@ const HomeScreen = () => {
       viewableItem =>
         viewableItem.key === item.id &&
         currentIndex === 0 &&
+        viewVisible &&
         topStackIndex === 1,
     );
     return (

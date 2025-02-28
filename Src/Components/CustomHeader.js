@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {TouchableRipple} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const CustomHeader = ({
@@ -30,7 +31,7 @@ const CustomHeader = ({
   return (
     <View style={[styles.headerContainer, style]}>
       {isLeftIcon ? (
-        <TouchableOpacity
+        <TouchableRipple
           style={styles.leftIconContainer}
           onPress={() => handlePress('left')}>
           {leftIcon ? (
@@ -38,17 +39,17 @@ const CustomHeader = ({
           ) : (
             <Icon name="chevron-back" size={28} color="#000" />
           )}
-        </TouchableOpacity>
+        </TouchableRipple>
       ) : (
         <View style={styles.emptyIcon} />
       )}
       <Text style={styles.headerTitle}>{headerTitle}</Text>
       {rightIcon ? (
-        <TouchableOpacity
+        <TouchableRipple
           style={styles.rightIconContainer}
-          onPress={handlePress('right')}>
+          onPress={() => handlePress('right')}>
           {rightIcon}
-        </TouchableOpacity>
+        </TouchableRipple>
       ) : (
         <View style={styles.emptyIcon} />
       )}
@@ -60,13 +61,14 @@ export default CustomHeader;
 
 const styles = StyleSheet.create({
   headerContainer: {
-    height: 60,
+    height: 50,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 5,
     borderBottomWidth: 0.2,
     backgroundColor: '#fff',
+    elevation: 3,
     borderBottomColor: '#ddd',
   },
   leftIconContainer: {

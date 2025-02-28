@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   Text,
   Dimensions,
+  Pressable,
 } from 'react-native';
 import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -28,6 +30,7 @@ const CustomVideoPlayer = ({
   const [controlsVisible, setControlsVisible] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isEnded, setIsEnded] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [videoHeight, setVideoHeight] = useState();
   const controlsOpacity = useRef(new Animated.Value(1)).current;
   const videoRef = useRef(null);
@@ -123,6 +126,7 @@ const CustomVideoPlayer = ({
         resizeMode={resizeMode}
         paused={!isVisible || paused}
         onError={onVideoError}
+        muted={isMuted}
         onEnd={onVideoEnd}
         onLoad={handleVideoLoad}
         onLoadStart={() =>
@@ -136,7 +140,11 @@ const CustomVideoPlayer = ({
         </View>
       )}
       {(controlsVisible || isVisible) && !errorMsg && (
-        <Animated.View style={[styles.overlay, {opacity: controlsOpacity}]}>
+        <Animated.View
+          style={[
+            styles.overlay,
+            {opacity: controlsOpacity, backgroundColor: 'rgb(0,0,0,0.5)'},
+          ]}>
           <TouchableOpacity onPress={togglePlayPause}>
             {isEnded ? (
               <Icon name="reload-circle-outline" size={60} color="#fff" />
@@ -150,6 +158,26 @@ const CustomVideoPlayer = ({
           </TouchableOpacity>
         </Animated.View>
       )}
+      {!isEnded && (
+        <Pressable
+          style={styles.muteButton}
+          onPress={() => {
+            setIsMuted(!isMuted);
+          }}>
+          {isMuted ? (
+            <Icon name="volume-mute" size={16} color="#fff" />
+          ) : (
+            <Icon name="volume-high" size={16} color="#fff" />
+          )}
+        </Pressable>
+      )}
+      <Pressable
+        style={styles.fulllscreenButton}
+        onPress={() => {
+          console.log('Full screen');
+        }}>
+        <MaterialIcons name="fullscreen" size={20} color="#fff" />
+      </Pressable>
     </View>
   );
 };
@@ -174,6 +202,28 @@ const styles = StyleSheet.create({
     color: '#f00',
     fontSize: 16,
     textAlign: 'center',
+  },
+  muteButton: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000',
+    height: 25,
+    borderRadius: 12.5,
+    width: 25,
+  },
+  fulllscreenButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000',
+    height: 25,
+    borderRadius: 12.5,
+    width: 25,
   },
 });
 
