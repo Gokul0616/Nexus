@@ -1,34 +1,38 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  Linking,
-  Animated,
-  FlatList,
-  Dimensions,
-  BackHandler,
-} from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {profileDummyData} from '../../Components/DummyData';
 import {
   CommonActions,
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import CustomHeader from '../../Components/CustomHeader';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import NetInfo from '@react-native-community/netinfo';
+import {
+  Animated,
+  BackHandler,
+  Dimensions,
+  FlatList,
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import CustomHeader from '../../Components/CustomHeader';
+import {profileDummyData} from '../../Components/DummyData';
+import DynamicImage from '../../Components/DynamicImage';
 
 const {width} = Dimensions.get('window');
 
 const Profile = () => {
   const [selectedTab, setSelectedTab] = useState('posts');
   const profile = profileDummyData[0];
+  const [isConnected, setIsConnected] = useState(true);
+  const [mediaKey, setMediaKey] = useState(0);
   const spinAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
   const clearStackAndNavigate = () => {
@@ -47,7 +51,8 @@ const Profile = () => {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        clearStackAndNavigate(0);
+        clearStackAndNavigate();
+
         return true;
       };
 
@@ -97,6 +102,13 @@ const Profile = () => {
     }
     return num.toString();
   };
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected);
+      setMediaKey(prev => prev + 1);
+    });
+    return () => unsubscribe();
+  }, []);
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity style={styles.gridItem}>
@@ -154,7 +166,11 @@ const Profile = () => {
         }>
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
-            <Image source={{uri: profile.avatar}} style={styles.avatar} />
+            <DynamicImage
+              uri={profile.avatar}
+              isConnected={isConnected}
+              style={styles.avatar}
+            />
             <Animated.View
               style={[styles.streakBorder, {transform: [{rotate: spin}]}]}
             />

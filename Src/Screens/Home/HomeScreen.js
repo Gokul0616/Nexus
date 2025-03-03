@@ -30,9 +30,10 @@ import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
 import CustomVideoPlayer from '../../Components/CustomVideoPlayer';
 import {posts, stories} from '../../Components/DummyData';
 import DynamicImage from '../../Components/DynamicImage';
-import {HomeScreenStyles as styles} from '../../Components/Styles/Styles';
 import RenderStories from '../../Components/Stories';
+import {HomeScreenStyles as styles} from '../../Components/Styles/Styles';
 import {NavigationContext} from '../../Services/Hooks/NavigationProvider';
+import Comment from '../../Components/Comment';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -45,6 +46,7 @@ const HomeScreen = () => {
   const [currentPage, setCurrentPage] = useState({});
   const [viewVisible, setViewVisible] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState({});
+  const [commentVisible, setCommentVisible] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
   const [mediaKey, setMediaKey] = useState(0);
   const likeAnimations = useRef({}).current;
@@ -72,10 +74,8 @@ const HomeScreen = () => {
   );
   useFocusEffect(
     useCallback(() => {
-      // When HomeScreen is focused, set viewVisible to true
       setViewVisible(true);
       return () => {
-        // When HomeScreen loses focus, you may pause the video by setting viewVisible to false
         setViewVisible(false);
       };
     }, []),
@@ -125,7 +125,6 @@ const HomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        // Exit the app when on HomeScreen
         BackHandler.exitApp();
         return true;
       };
@@ -213,7 +212,7 @@ const HomeScreen = () => {
   const handleVideoLoad = (data, itemId) => {
     if (data?.naturalSize?.width && data?.naturalSize?.height) {
       setVideoHeights(prev => {
-        if (prev[itemId]) return prev; // Prevent re-setting once it's computed
+        if (prev[itemId]) return prev;
         const computedHeight =
           (screenWidth * data.naturalSize.height) / data.naturalSize.width;
         return {...prev, [itemId]: computedHeight};
@@ -308,7 +307,7 @@ const HomeScreen = () => {
               style={[
                 styles.postImage,
                 {height: videoHeights[item.id] || screenWidth},
-              ]} // Default to screenWidth until computed
+              ]}
               setLoadingPosts={setLoadingPosts}
               item={item}
               isVisible={isVisible}
@@ -359,7 +358,6 @@ const HomeScreen = () => {
               onScroll={event => {
                 const offsetX = event.nativeEvent.contentOffset.x;
                 const currentPageIndex = Math.round(offsetX / screenWidth);
-
                 setCurrentPage(prev => ({
                   ...prev,
                   [item.id]: currentPageIndex,
@@ -462,7 +460,10 @@ const HomeScreen = () => {
                 color={likedPosts[item.id] ? '#ed4956' : '#000'}
               />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setCommentVisible(true);
+              }}>
               <Icon name="chatbubble-outline" size={26} color="#000" />
             </TouchableOpacity>
             <TouchableOpacity>
@@ -492,6 +493,11 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Comment
+        modalVisible={commentVisible}
+        setModalVisible={setCommentVisible}
+        isConnected={isConnected}
+      />
       {renderHeader()}
       <FlatList
         data={posts}

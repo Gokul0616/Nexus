@@ -12,6 +12,7 @@ import BottomStack from './BottomStack';
 import TopStack from './TopStack';
 import ProfileMenu from '../Components/ProfileMenu';
 import NotificationScreen from '../Components/NotificationScreen';
+import MessageChatScreen from '../Screens/Messages/MessageChatScreen';
 const Stack = createStackNavigator();
 
 export const MainStack = () => {
@@ -46,6 +47,7 @@ export const MainStack = () => {
         <Stack.Screen name="MyTabs" component={BottomStack} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="ProfileMenu" component={ProfileMenu} />
+        <Stack.Screen name="ChatScreen" component={MessageChatScreen} />
         <Stack.Screen
           name="NotificationScreen"
           component={NotificationScreen}

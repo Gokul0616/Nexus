@@ -1,23 +1,14 @@
-import React, {useState} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
-import {profileDummyData} from './DummyData';
-import CustomHeader from './CustomHeader';
 import {useNavigation} from '@react-navigation/native';
-import NexusInput from './NexusInput';
+import React, {useState} from 'react';
+import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {TouchableRipple} from 'react-native-paper';
+import CustomHeader from './CustomHeader';
+import {profileDummyData} from './DummyData';
+import NexusInput from './NexusInput';
 
 const EditProfile = () => {
-  // Use the first profile from the dummy data.
   const profile = profileDummyData[0];
   const navigation = useNavigation();
-  // Local state for editable fields
   const [name, setName] = useState(profile.name);
   const [username, setUsername] = useState(profile.username);
   const [bio, setBio] = useState(profile.bio);

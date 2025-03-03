@@ -24,7 +24,8 @@ const AddPost = () => {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        clearStackAndNavigate(0);
+        clearStackAndNavigate();
+
         return true;
       };
 

@@ -5,14 +5,8 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  BackHandler,
-  FlatList,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {BackHandler, FlatList, Pressable, Text, View} from 'react-native';
+import {TouchableRipple} from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
 import CustomHeader from '../../Components/CustomHeader';
 import {
@@ -24,7 +18,6 @@ import DynamicImage from '../../Components/DynamicImage';
 import NexusInput from '../../Components/NexusInput';
 import Notes from '../../Components/Notes';
 import {MessagesOutsideStyles as styles} from '../../Components/Styles/Styles';
-import {TouchableRipple} from 'react-native-paper';
 
 const MessagesOutside = () => {
   const navigation = useNavigation();
@@ -35,7 +28,6 @@ const MessagesOutside = () => {
   const [mediaKey, setMediaKey] = useState(0);
 
   const [searchResults, setSearchResults] = useState(initialDummySearchResults);
-
   useEffect(() => {
     navigation.setParams({swipeEnabled: !searchActive});
   }, [searchActive, navigation]);
@@ -94,7 +86,9 @@ const MessagesOutside = () => {
     return (
       <TouchableRipple
         style={styles.messageContactsContainer}
-        onPress={() => console.log('Pressed')}
+        onPress={() =>
+          navigation.navigate('ChatScreen', {receiverDetails: item})
+        }
         rippleColor="rgba(0, 0, 0, .15)">
         <>
           <DynamicImage

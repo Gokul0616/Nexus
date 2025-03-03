@@ -1085,3 +1085,422 @@ export const profileDummyData = [
     ],
   },
 ];
+
+export const reelData = [
+  {
+    id: 1,
+    username: '@fitnessjunkie',
+    description: 'Morning workout routine 💪 #FitnessMotivation',
+    likesCount: 15400,
+    commentsCount: 320,
+    shares: 580,
+    videoUrl:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
+  },
+  {
+    id: 2,
+    username: '@foodieadventures',
+    description: 'Homemade pizza from scratch 🍕 #CookingTutorial',
+    likesCount: 8900,
+    commentsCount: 185,
+    shares: 300,
+    videoUrl:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  },
+  {
+    id: 3,
+    username: '@travelbug',
+    description: 'Sunset views in Santorini 🌅 #Wanderlust',
+    likesCount: 23100,
+    commentsCount: 410,
+    shares: 1200,
+    videoUrl:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  },
+  {
+    id: 4,
+    username: '@techguru',
+    description: 'Unboxing the new iPhone 20 📱 #TechReview',
+    likesCount: 6750,
+    commentsCount: 95,
+    shares: 200,
+    videoUrl:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+  },
+  {
+    id: 5,
+    username: '@comedycentral',
+    description: 'When you forget your coffee ☕ #FunnyMoments',
+    likesCount: 34200,
+    commentsCount: 780,
+    shares: 1500,
+    videoUrl:
+      'https://firebasestorage.googleapis.com/v0/b/tieoda.appspot.com/o/post%2F9QwvEOpJXXM5bn8BjUIP1D6UL6A2%2F344741e3-5fe7-4a98-a1ce-7bb0ac96ab9f%2Fvideo?alt=media&token=e8ac526c-edd0-4118-a813-56781d5fc7f8',
+  },
+];
+export const commentData = [
+  {
+    id: 'c1',
+    user: {
+      id: 'u1',
+      name: 'John Doe',
+      avatar:
+        'https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?cs=srgb&dl=pexels-sulimansallehi-1704488.jpg&fm=jpg',
+    },
+    text: 'Great video! Loved every second of it.',
+    timestamp: '2023-08-01T12:00:00Z',
+    replies: [
+      {
+        id: 'c1r1',
+        user: {
+          id: 'u2',
+          name: 'Jane Smith',
+          avatar:
+            'https://images.pexels.com/photos/1081685/pexels-photo-1081685.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        },
+        text: 'Totally agree!',
+        timestamp: '2023-08-01T12:05:00Z',
+        replies: [
+          {
+            id: 'c1r1r1',
+            user: {
+              id: 'u10',
+              name: 'Reply User 1',
+              avatar: 'https://via.placeholder.com/150',
+            },
+            text: 'Reply level 2 to Jane Smith',
+            timestamp: '2023-08-01T12:06:00Z',
+            replies: [
+              {
+                id: 'c1r1r1r1',
+                user: {
+                  id: 'u11',
+                  name: 'Reply User 2',
+                  avatar: 'https://via.placeholder.com/150',
+                },
+                text: 'Reply level 3 to Jane Smith',
+                timestamp: '2023-08-01T12:07:00Z',
+                replies: [
+                  {
+                    id: 'c1r1r1r1r1',
+                    user: {
+                      id: 'u12',
+                      name: 'Reply User 3',
+                      avatar: 'https://via.placeholder.com/150',
+                    },
+                    text: 'Reply level 4 to Jane Smith',
+                    timestamp: '2023-08-01T12:08:00Z',
+                    replies: [
+                      {
+                        id: 'c1r1r1r1r1r1',
+                        user: {
+                          id: 'u13',
+                          name: 'Reply User 4',
+                          avatar: 'https://via.placeholder.com/150',
+                        },
+                        text: 'Reply level 5 to Jane Smithasdasasdasdasdasdasads',
+                        timestamp: '2023-08-01T12:09:00Z',
+                        replies: [],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'c1r2',
+        user: {
+          id: 'u3',
+          name: 'Alex Johnson',
+          avatar:
+            'https://media.istockphoto.com/id/1437816897/photo/business-woman-manager-or-human-resources-portrait-for-career-success-company-we-are-hiring.jpg?s=612x612&w=0&k=20&c=tyLvtzutRh22j9GqSGI33Z4HpIwv9vL_MZw_xOE19NQ=',
+        },
+        text: 'Awesome video indeed!',
+        timestamp: '2023-08-01T12:10:00Z',
+        replies: [
+          {
+            id: 'c1r2r1',
+            user: {
+              id: 'u4',
+              name: 'Emily Davis',
+              avatar:
+                'https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg',
+            },
+            text: 'I second that!',
+            timestamp: '2023-08-01T12:15:00Z',
+            replies: [
+              {
+                id: 'c1r2r1r1',
+                user: {
+                  id: 'u14',
+                  name: 'Reply User A',
+                  avatar: 'https://via.placeholder.com/150',
+                },
+                text: 'Reply level 2 to Alex Johnson',
+                timestamp: '2023-08-01T12:16:00Z',
+                replies: [
+                  {
+                    id: 'c1r2r1r1r1',
+                    user: {
+                      id: 'u15',
+                      name: 'Reply User B',
+                      avatar: 'https://via.placeholder.com/150',
+                    },
+                    text: 'Reply level 3 to Alex Johnson',
+                    timestamp: '2023-08-01T12:17:00Z',
+                    replies: [
+                      {
+                        id: 'c1r2r1r1r1r1',
+                        user: {
+                          id: 'u16',
+                          name: 'Reply User C',
+                          avatar: 'https://via.placeholder.com/150',
+                        },
+                        text: 'Reply level 4 to Alex Johnson',
+                        timestamp: '2023-08-01T12:18:00Z',
+                        replies: [
+                          {
+                            id: 'c1r2r1r1r1r1r1',
+                            user: {
+                              id: 'u17',
+                              name: 'Reply User D',
+                              avatar: 'https://via.placeholder.com/150',
+                            },
+                            text: 'Reply level 5 to Alex Johnson',
+                            timestamp: '2023-08-01T12:19:00Z',
+                            replies: [],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'c2',
+    user: {
+      id: 'u5',
+      name: 'Alice Brown',
+      avatar:
+        'https://media.istockphoto.com/id/1682296067/photo/happy-studio-portrait-or-professional-man-real-estate-agent-or-asian-businessman-smile-for.jpg?s=612x612&w=0&k=20&c=9zbG2-9fl741fbTWw5fNgcEEe4ll-JegrGlQQ6m54rg=',
+    },
+    text: 'This part was so funny!',
+    timestamp: '2023-08-01T13:00:00Z',
+    replies: [
+      {
+        id: 'c2r1',
+        user: {
+          id: 'u6',
+          name: 'Mike Wilson',
+          avatar:
+            'https://images.pexels.com/photos/14653174/pexels-photo-14653174.jpeg',
+        },
+        text: "Haha, I couldn't stop laughing!",
+        timestamp: '2023-08-01T13:05:00Z',
+        replies: [],
+      },
+    ],
+  },
+  {
+    id: 'c3',
+    user: {
+      id: 'u7',
+      name: 'Sarah Lee',
+      avatar:
+        'https://t4.ftcdn.net/jpg/06/08/55/73/360_F_608557356_ELcD2pwQO9pduTRL30umabzgJoQn5fnd.jpg',
+    },
+    text: 'The editing in this video is on point!',
+    timestamp: '2023-08-01T14:00:00Z',
+    replies: [
+      {
+        id: 'c3r1',
+        user: {
+          id: 'u8',
+          name: 'David Kim',
+          avatar:
+            'https://thumbs.dreamstime.com/b/beautiful-smiling-young-woman-profile-looking-down-long-ama-amazing-hair-nature-bright-sunset-summer-background-closeup-119826079.jpg',
+        },
+        text: 'Absolutely, the transitions were smooth.',
+        timestamp: '2023-08-01T14:05:00Z',
+        replies: [
+          {
+            id: 'c3r1r1',
+            user: {
+              id: 'u9',
+              name: 'Laura Green',
+              avatar:
+                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D',
+            },
+            text: 'I love how every cut feels intentional.',
+            timestamp: '2023-08-01T14:10:00Z',
+            replies: [],
+          },
+        ],
+      },
+    ],
+  },
+];
+
+export const conversationData = [
+  {
+    id: '1',
+    text: "Hey, how's it going?",
+    isSender: false,
+    timestamp: '2025-03-03T10:00:00Z',
+    hasReply: {id: '1', text: "Hey, how's it going?"},
+  },
+  {
+    id: '2',
+    text: 'Pretty good, thanks! What about you?',
+    isSender: true,
+    timestamp: '2025-03-03T10:00:05Z',
+    hasReply: {id: '1', text: "Hey, how's it going?"},
+  },
+  {
+    id: '3',
+    text: "I'm doing well. Did you see the game last night?",
+    isSender: false,
+    timestamp: '2025-03-03T10:01:00Z',
+    hasReply: null,
+  },
+  {
+    id: '4',
+    text: 'Yeah, it was amazing! That final goal was incredible.',
+    isSender: true,
+    timestamp: '2025-03-03T10:01:10Z',
+    hasReply: {
+      id: '3',
+      text: "I'm doing well. Did you see the game last night?",
+    },
+  },
+  {
+    id: '5',
+    text: 'Absolutely. Who was your favorite player?',
+    isSender: false,
+    timestamp: '2025-03-03T10:02:00Z',
+    hasReply: null,
+  },
+  {
+    id: '6',
+    text: 'I think it was the striker – he really pulled it off.',
+    isSender: true,
+    timestamp: '2025-03-03T10:02:15Z',
+    hasReply: {id: '5', text: 'Absolutely. Who was your favorite player?'},
+  },
+  {
+    id: '7',
+    text: 'I agree. By the way, are you free for a coffee later?',
+    isSender: false,
+    timestamp: '2025-03-03T10:03:00Z',
+    hasReply: null,
+  },
+  {
+    id: '8',
+    text: 'Sure, that sounds great!',
+    isSender: true,
+    timestamp: '2025-03-03T10:03:10Z',
+    hasReply: {
+      id: '7',
+      text: 'I agree. By the way, are you free for a coffee later?',
+    },
+  },
+  {
+    id: '9',
+    text: "Awesome. Let's meet at our usual spot at 2 PM.",
+    isSender: false,
+    timestamp: '2025-03-03T10:04:00Z',
+    hasReply: null,
+  },
+  {
+    id: '10',
+    text: 'Perfect, see you then.',
+    isSender: true,
+    timestamp: '2025-03-03T10:04:05Z',
+    hasReply: {id: '9', text: "Awesome. Let's meet at our usual spot at 2 PM."},
+  },
+  {
+    id: '11',
+    text: 'Do you need a ride or are you taking public transport?',
+    isSender: false,
+    timestamp: '2025-03-03T10:05:00Z',
+    hasReply: null,
+  },
+  {
+    id: '12',
+    text: "I'm taking the bus, thanks for asking.",
+    isSender: true,
+    timestamp: '2025-03-03T10:05:10Z',
+    hasReply: {
+      id: '11',
+      text: 'Do you need a ride or are you taking public transport?',
+    },
+  },
+  {
+    id: '13',
+    text: 'Cool, did you check out that new movie trailer?',
+    isSender: false,
+    timestamp: '2025-03-03T10:06:00Z',
+    hasReply: null,
+  },
+  {
+    id: '14',
+    text: 'Not yet, but I plan to watch it soon.',
+    isSender: true,
+    timestamp: '2025-03-03T10:06:10Z',
+    hasReply: {
+      id: '13',
+      text: 'Cool, did you check out that new movie trailer?',
+    },
+  },
+  {
+    id: '15',
+    text: "I've heard it's really good.",
+    isSender: false,
+    timestamp: '2025-03-03T10:07:00Z',
+    hasReply: null,
+  },
+  {
+    id: '16',
+    text: 'Yeah, the reviews are all positive.',
+    isSender: true,
+    timestamp: '2025-03-03T10:07:10Z',
+    hasReply: {id: '15', text: "I've heard it's really good."},
+  },
+  {
+    id: '17',
+    text: 'Let me know what you think once you watch it.',
+    isSender: false,
+    timestamp: '2025-03-03T10:08:00Z',
+    hasReply: null,
+  },
+  {
+    id: '18',
+    text: "Will do! I'm excited to see it.",
+    isSender: true,
+    timestamp: '2025-03-03T10:08:05Z',
+    hasReply: {id: '17', text: 'Let me know what you think once you watch it.'},
+  },
+  {
+    id: '19',
+    text: 'By the way, did you get the report I sent?',
+    isSender: false,
+    timestamp: '2025-03-03T10:09:00Z',
+    hasReply: null,
+  },
+  {
+    id: '20',
+    text: 'Yes, I reviewed it. We should discuss it over coffee.',
+    isSender: true,
+    timestamp: '2025-03-03T10:09:10Z',
+    hasReply: {id: '19', text: 'By the way, did you get the report I sent?'},
+  },
+];
