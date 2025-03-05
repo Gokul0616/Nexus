@@ -14,7 +14,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {notificationsData, stories} from '../../Components/DummyData';
 import CustomHeader from '../../Components/CustomHeader';
 import {TouchableRipple} from 'react-native-paper';
-
+import {NotificationScreenStyles as styles} from '../../Components/Styles/Styles';
+import {PrimaryColor} from '../../Components/CommonData';
 const NotificationScreen = () => {
   const [loadingPosts, setLoadingPosts] = useState({});
   const {isConnected} = useContext(NavigationContext);
@@ -54,29 +55,33 @@ const NotificationScreen = () => {
         break;
       case 'follow':
         rightComponent = (
-          <TouchableOpacity style={styles.followButton}>
+          <TouchableRipple
+            rippleColor={'rgba(0, 0, 0, .15)'}
+            borderless={true}
+            style={styles.followButton}
+            onPress={() => {}}>
             <Text style={styles.followButtonText}>Follow</Text>
-          </TouchableOpacity>
+          </TouchableRipple>
         );
         break;
       case 'comment':
         rightComponent = (
           <View style={styles.rightIconContainer}>
-            <Icon name="chatbubble" size={20} color="#34C759" />
+            <Icon name="chatbubble" size={20} color={PrimaryColor} />
           </View>
         );
         break;
       case 'mention':
         rightComponent = (
           <View style={styles.rightIconContainer}>
-            <Icon name="at" size={20} color="#5856D6" />
+            <Icon name="at" size={20} color={PrimaryColor} />
           </View>
         );
         break;
       case 'share':
         rightComponent = (
           <View style={styles.rightIconContainer}>
-            <Icon name="share-social" size={20} color="#FF9500" />
+            <Icon name="share-social" size={20} color={PrimaryColor} />
           </View>
         );
         break;
@@ -88,6 +93,7 @@ const NotificationScreen = () => {
       <TouchableRipple
         rippleColor={'rgba(0, 0, 0, .15)'}
         style={styles.notificationItem}
+        borderless={true}
         onPress={() => {}}>
         <>
           <Image
@@ -145,82 +151,3 @@ const NotificationScreen = () => {
 };
 
 export default NotificationScreen;
-
-const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#fff'},
-  dotNotification: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#ff0000',
-    alignSelf: 'flex-end',
-  },
-  notificationList: {
-    paddingVertical: 10,
-  },
-  notificationItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-  },
-  notificationImage: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-  },
-  notificationTextContainer: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  notificationMessage: {
-    fontSize: 15,
-    color: '#000',
-  },
-  notificationTimestamp: {
-    fontSize: 12,
-    color: '#888',
-    marginTop: 4,
-  },
-  rightIconContainer: {
-    marginLeft: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  followButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#1DA1F2',
-  },
-  followButtonText: {
-    color: '#1DA1F2',
-    fontSize: 14,
-  },
-  videoThumbnail: {
-    width: 45,
-    height: 45,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  usernameText: {
-    fontWeight: 'bold',
-  },
-  activityHeaderContainer: {
-    backgroundColor: '#fff',
-    paddingVertical: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    // borderBottomWidth: StyleSheet.hairlineWidth,
-    // borderBottomColor: '#ccc',
-    marginTop: 10,
-  },
-  activityHeaderText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
-    letterSpacing: 1,
-  },
-});

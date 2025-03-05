@@ -25,6 +25,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CustomHeader from '../../Components/CustomHeader';
 import {profileDummyData} from '../../Components/DummyData';
 import DynamicImage from '../../Components/DynamicImage';
+import {formatNumber} from '../../Components/CommonData';
 
 const {width} = Dimensions.get('window');
 
@@ -63,18 +64,7 @@ const Profile = () => {
         return [];
     }
   };
-  const formatNumber = num => {
-    if (num >= 1e9) {
-      return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
-    }
-    if (num >= 1e6) {
-      return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
-    }
-    if (num >= 1e3) {
-      return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
-    }
-    return num.toString();
-  };
+
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);

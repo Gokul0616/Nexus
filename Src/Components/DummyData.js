@@ -1765,3 +1765,327 @@ export const notificationsData = [
     timestamp: '2025-03-05T06:00:00Z',
   },
 ];
+
+export const exploreData = [
+  {
+    id: '1',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
+    username: '@fitnessjunkie',
+    caption: 'Morning workout routine 💪 #FitnessMotivation',
+    likes: 15400,
+    comments: 320,
+    shares: 580,
+    musicTitle: 'Original Sound - @fitnessjunkie',
+    profilePic: 'https://randomuser.me/api/portraits/men/32.jpg',
+    videoThumbnail:
+      'https://images.pexels.com/photos/1552249/pexels-photo-1552249.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    category: ['trending', 'fitness'],
+  },
+  {
+    id: '2',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    username: '@foodieadventures',
+    caption: 'Homemade pizza from scratch 🍕 #CookingTutorial',
+    likes: 8900,
+    comments: 185,
+    shares: 300,
+    musicTitle: 'Original Sound - @foodieadventures',
+    profilePic: 'https://randomuser.me/api/portraits/women/44.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1601924582972-5b7dce16f232?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D',
+    category: ['new', 'food'],
+  },
+  {
+    id: '3',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    username: '@travelbug',
+    caption: 'Sunset views in Santorini 🌅 #Wanderlust',
+    likes: 23100,
+    comments: 410,
+    shares: 1200,
+    musicTitle: 'Original Sound - @travelbug',
+    profilePic: 'https://randomuser.me/api/portraits/men/55.jpg',
+    videoThumbnail:
+      'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    category: ['trending', 'travel'],
+  },
+  {
+    id: '4',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    username: '@techguru',
+    caption: 'Unboxing the new iPhone 20 📱 #TechReview',
+    likes: 6750,
+    comments: 95,
+    shares: 200,
+    musicTitle: 'Original Sound - @techguru',
+    profilePic: 'https://randomuser.me/api/portraits/women/66.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['new', 'tech'],
+  },
+  {
+    id: '5',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    username: '@cinemalover',
+    caption: 'A glimpse of modern animation 🎬 #Sintel',
+    likes: 12000,
+    comments: 210,
+    shares: 500,
+    musicTitle: 'Original Sound - @cinemalover',
+    profilePic: 'https://randomuser.me/api/portraits/men/45.jpg',
+    videoThumbnail:
+      'https://images.pexels.com/photos/355948/pexels-photo-355948.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    category: ['trending', 'animation'],
+  },
+  {
+    id: '6',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    username: '@scififan',
+    caption: 'Epic sci-fi moments 🚀 #TearsOfSteel',
+    likes: 18000,
+    comments: 350,
+    shares: 800,
+    musicTitle: 'Original Sound - @scififan',
+    profilePic: 'https://randomuser.me/api/portraits/women/23.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1562072541-2b8ed0e48c05?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['trending', 'sci-fi', 'new'],
+  },
+  {
+    id: '7',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
+    username: '@clothescentral',
+    caption: 'New season styles 👗 #Fashion',
+    likes: 9800,
+    comments: 150,
+    shares: 250,
+    musicTitle: 'Original Sound - @clothescentral',
+    profilePic: 'https://randomuser.me/api/portraits/women/12.jpg',
+    videoThumbnail:
+      'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    category: ['clothes', 'fashion'],
+  },
+  {
+    id: '8',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    username: '@gourmetchef',
+    caption: 'Delicious recipes for home cooks 🍲 #Foodie',
+    likes: 13400,
+    comments: 220,
+    shares: 400,
+    musicTitle: 'Original Sound - @gourmetchef',
+    profilePic: 'https://randomuser.me/api/portraits/men/10.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1525755662778-989d0524087e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['food', 'new'],
+  },
+  {
+    id: '9',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    username: '@adventureseeker',
+    caption: 'Hiking through the wilderness 🏞️ #Adventure',
+    likes: 15000,
+    comments: 310,
+    shares: 620,
+    musicTitle: 'Original Sound - @adventureseeker',
+    profilePic: 'https://randomuser.me/api/portraits/men/77.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['trending', 'adventure'],
+  },
+  {
+    id: '10',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    username: '@musicvibes',
+    caption: 'Chill beats for a relaxing day 🎵 #Music',
+    likes: 9900,
+    comments: 130,
+    shares: 300,
+    musicTitle: 'Original Sound - @musicvibes',
+    profilePic: 'https://randomuser.me/api/portraits/women/31.jpg',
+    videoThumbnail:
+      'https://images.pexels.com/photos/36753/amazing-animal-beautiful-beautifull.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    category: ['trending', 'music'],
+  },
+  {
+    id: '11',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    username: '@artistlife',
+    caption: 'Time-lapse of my latest painting 🎨 #Art',
+    likes: 8700,
+    comments: 90,
+    shares: 220,
+    musicTitle: 'Original Sound - @artistlife',
+    profilePic: 'https://randomuser.me/api/portraits/men/50.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1481349518771-20055b2a7b24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['new', 'art'],
+  },
+  {
+    id: '12',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    username: '@naturelover',
+    caption: 'The beauty of nature captured in time 🌳 #Nature',
+    likes: 14200,
+    comments: 200,
+    shares: 340,
+    musicTitle: 'Original Sound - @naturelover',
+    profilePic: 'https://randomuser.me/api/portraits/women/60.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['trending', 'nature'],
+  },
+  {
+    id: '13',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
+    username: '@urbanstyle',
+    caption: 'City vibes and street style 🏙️ #UrbanFashion',
+    likes: 16500,
+    comments: 275,
+    shares: 410,
+    musicTitle: 'Original Sound - @urbanstyle',
+    profilePic: 'https://randomuser.me/api/portraits/men/65.jpg',
+    videoThumbnail:
+      'https://images.pexels.com/photos/1300400/pexels-photo-1300400.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    category: ['clothes', 'trending', 'urban'],
+  },
+  {
+    id: '14',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    username: '@techreviewer',
+    caption: 'In-depth review of the latest gadgets 🔧 #Tech',
+    likes: 12300,
+    comments: 180,
+    shares: 350,
+    musicTitle: 'Original Sound - @techreviewer',
+    profilePic: 'https://randomuser.me/api/portraits/women/70.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['new', 'tech'],
+  },
+  {
+    id: '15',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    username: '@globetrotter',
+    caption: 'Exploring hidden gems around the world 🌍 #Travel',
+    likes: 20500,
+    comments: 450,
+    shares: 900,
+    musicTitle: 'Original Sound - @globetrotter',
+    profilePic: 'https://randomuser.me/api/portraits/men/90.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1530639837122-18a1f74b4578?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['trending', 'travel', 'new'],
+  },
+  {
+    id: '16',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    username: '@dancemoves',
+    caption: 'New dance challenge! 💃 #Dance',
+    likes: 17500,
+    comments: 290,
+    shares: 600,
+    musicTitle: 'Original Sound - @dancemoves',
+    profilePic: 'https://randomuser.me/api/portraits/women/85.jpg',
+    videoThumbnail:
+      'https://images.pexels.com/photos/210186/pexels-photo-210186.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    category: ['trending', 'dance'],
+  },
+  {
+    id: '17',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    username: '@comedycentral',
+    caption: 'When you forget your coffee ☕ #FunnyMoments',
+    likes: 34200,
+    comments: 780,
+    shares: 1500,
+    musicTitle: 'Original Sound - @comedycentral',
+    profilePic: 'https://randomuser.me/api/portraits/men/77.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['trending', 'comedy'],
+  },
+  {
+    id: '18',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    username: '@petlovers',
+    caption: 'Cute moments with my dog 🐶 #Pets',
+    likes: 11200,
+    comments: 150,
+    shares: 300,
+    musicTitle: 'Original Sound - @petlovers',
+    profilePic: 'https://randomuser.me/api/portraits/men/80.jpg',
+    videoThumbnail:
+      'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    category: ['new', 'pets'],
+  },
+  {
+    id: '19',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    username: '@fitnesspro',
+    caption: 'High-intensity interval training workout 🏋️‍♀️ #Fitness',
+    likes: 19800,
+    comments: 320,
+    shares: 670,
+    musicTitle: 'Original Sound - @fitnesspro',
+    profilePic: 'https://randomuser.me/api/portraits/women/95.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['trending', 'fitness', 'new'],
+  },
+  {
+    id: '20',
+    videoSource:
+      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    username: '@lifestyleguru',
+    caption: 'Morning routines for a balanced life 🌟 #Lifestyle',
+    likes: 14500,
+    comments: 240,
+    shares: 530,
+    musicTitle: 'Original Sound - @lifestyleguru',
+    profilePic: 'https://randomuser.me/api/portraits/men/100.jpg',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    category: ['lifestyle', 'new'],
+  },
+];
+export const exploreCategoriesData = [
+  {category: 'trending', title: 'Trending', icon: 'trending-up-outline'},
+  {category: 'fitness', title: 'Fitness', icon: 'barbell-outline'},
+  {category: 'new', title: 'New', icon: 'sparkles-outline'},
+  {category: 'food', title: 'Food', icon: 'fast-food-outline'},
+  {category: 'travel', title: 'Travel', icon: 'airplane-outline'},
+  {category: 'tech', title: 'Tech', icon: 'laptop-outline'},
+  {category: 'animation', title: 'Animation', icon: 'film-outline'},
+  {category: 'sci-fi', title: 'Sci-Fi', icon: 'rocket-outline'},
+  {category: 'clothes', title: 'Clothes', icon: 'shirt-outline'},
+  {category: 'fashion', title: 'Fashion', icon: 'color-palette-outline'},
+  {category: 'adventure', title: 'Adventure', icon: 'compass-outline'},
+  {category: 'music', title: 'Music', icon: 'musical-notes-outline'},
+  {category: 'art', title: 'Art', icon: 'brush-outline'},
+  {category: 'nature', title: 'Nature', icon: 'leaf-outline'},
+  {category: 'urban', title: 'Urban', icon: 'aperture-outline'},
+  {category: 'dance', title: 'Dance', icon: 'walk-outline'},
+  {category: 'comedy', title: 'Comedy', icon: 'happy-outline'},
+  {category: 'pets', title: 'Pets', icon: 'paw-outline'},
+  {category: 'lifestyle', title: 'Lifestyle', icon: 'sunny-outline'},
+];

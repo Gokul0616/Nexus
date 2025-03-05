@@ -233,7 +233,6 @@ const MessagesOutside = () => {
             headerTitle="Chats"
           />
 
-          <View></View>
           <View>{renderMessageContacts(messageDummyData)}</View>
         </>
       )}

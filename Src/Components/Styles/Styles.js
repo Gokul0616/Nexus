@@ -623,10 +623,90 @@ const ClipItemStyles = StyleSheet.create({
   },
 });
 
+const NotificationScreenStyles = StyleSheet.create({
+  container: {flex: 1, backgroundColor: '#fff'},
+  dotNotification: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#ff0000',
+    alignSelf: 'flex-end',
+  },
+  notificationList: {
+    paddingVertical: 10,
+  },
+  notificationItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+  },
+  notificationImage: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+  },
+  notificationTextContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  notificationMessage: {
+    fontSize: 15,
+    color: '#000',
+  },
+  notificationTimestamp: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 4,
+  },
+  rightIconContainer: {
+    marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  followButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#1DA1F2',
+  },
+  followButtonText: {
+    color: '#1DA1F2',
+    fontSize: 14,
+  },
+  videoThumbnail: {
+    width: 45,
+    height: 45,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  usernameText: {
+    fontWeight: 'bold',
+  },
+  activityHeaderContainer: {
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // borderBottomWidth: StyleSheet.hairlineWidth,
+    // borderBottomColor: '#ccc',
+    marginTop: 10,
+  },
+  activityHeaderText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000',
+    letterSpacing: 1,
+  },
+});
+
 export {
   HomeScreenStyles,
   MessagesOutsideStyles,
   ProfileScreenstyles,
   ClipItemStyles,
   ChatscreenStyles,
+  NotificationScreenStyles,
 };

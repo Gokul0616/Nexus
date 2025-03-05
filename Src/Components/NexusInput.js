@@ -14,6 +14,7 @@ const NexusInput = ({
   containerStyle,
   label,
   cursorColor = '#0887ff',
+  autofocus,
   error,
   ...rest
 }) => {
@@ -27,6 +28,7 @@ const NexusInput = ({
         secureTextEntry={secureTextEntry}
         ref={ref}
         keyboardType={keyboardType}
+        autoFocus={autofocus}
         cursorColor={cursorColor}
         autoCapitalize={autoCapitalize}
         autoCorrect={autoCorrect}
