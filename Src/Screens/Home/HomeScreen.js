@@ -25,7 +25,7 @@ import {
 } from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {AppName} from '../../Components/CommonData';
+import {AppName, PrimaryColor} from '../../Components/CommonData';
 import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
 import CustomVideoPlayer from '../../Components/CustomVideoPlayer';
 import {posts, stories} from '../../Components/DummyData';
@@ -290,7 +290,7 @@ const HomeScreen = () => {
                       ],
                     },
                   ]}>
-                  <Icon name="heart" size={100} color="#ed4956" />
+                  <Icon name="heart" size={100} color={PrimaryColor} />
                 </Animated.View>
               )}
             </>
@@ -335,7 +335,7 @@ const HomeScreen = () => {
                     ],
                   },
                 ]}>
-                <Icon name="heart" size={100} color="#ed4956" />
+                <Icon name="heart" size={100} color={PrimaryColor} />
               </Animated.View>
             )}
           </Pressable>
@@ -407,7 +407,7 @@ const HomeScreen = () => {
                     ],
                   },
                 ]}>
-                <Icon name="heart" size={100} color="#ed4956" />
+                <Icon name="heart" size={100} color={PrimaryColor} />
               </Animated.View>
             )}
           </View>
@@ -445,7 +445,7 @@ const HomeScreen = () => {
                     ],
                   },
                 ]}>
-                <Icon name="heart" size={100} color="#ed4956" />
+                <Icon name="heart" size={100} color={PrimaryColor} />
               </Animated.View>
             )}
           </Pressable>
@@ -457,7 +457,7 @@ const HomeScreen = () => {
               <Icon
                 name={likedPosts[item.id] ? 'heart' : 'heart-outline'}
                 size={26}
-                color={likedPosts[item.id] ? '#ed4956' : '#000'}
+                color={likedPosts[item.id] ? PrimaryColor : '#000'}
               />
             </TouchableOpacity>
             <TouchableOpacity

@@ -35,34 +35,7 @@ const Profile = () => {
   const [mediaKey, setMediaKey] = useState(0);
   const spinAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
-  const clearStackAndNavigate = () => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [
-          {
-            name: 'TopTabs',
-          },
-        ],
-      }),
-    );
-  };
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        clearStackAndNavigate();
-
-        return true;
-      };
-
-      const subscription = BackHandler.addEventListener(
-        'hardwareBackPress',
-        onBackPress,
-      );
-      return () => subscription.remove();
-    }, []),
-  );
   useEffect(() => {
     Animated.loop(
       Animated.timing(spinAnim, {
@@ -144,7 +117,8 @@ const Profile = () => {
         style={styles.container}
         StickyHeaderComponent={
           <View style={styles.tabsContainer}>
-            {['posts', 'videos', 'reels'].map(tab => (
+            {/* {['posts', 'videos', 'reels'].map(tab => ( */}
+            {['videos'].map(tab => (
               <TouchableOpacity
                 key={tab}
                 style={[styles.tab, selectedTab === tab && styles.activeTab]}
@@ -214,7 +188,10 @@ const Profile = () => {
           <Text style={styles.name}>{profile.name}</Text>
           <Text style={styles.username}>@{profile.username}</Text>
           <Text style={styles.bio}>{profile.bio}</Text>
-          <TouchableOpacity onPress={() => Linking.openURL(profile.website)}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('WebScreen', {url: profile.website})
+            }>
             <Text style={styles.website}>{profile.website}</Text>
           </TouchableOpacity>
           <View style={styles.locationContainer}>
@@ -225,7 +202,8 @@ const Profile = () => {
 
         {/* Navigation Tabs */}
         <View style={styles.tabsContainer}>
-          {['posts', 'videos', 'reels'].map(tab => (
+          {/* {['posts', 'videos', 'reels'].map(tab => ( */}
+          {['videos'].map(tab => (
             <TouchableOpacity
               key={tab}
               style={[styles.tab, selectedTab === tab && styles.activeTab]}
@@ -357,6 +335,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: '#eee',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
     marginBottom: 2,
   },
   tab: {

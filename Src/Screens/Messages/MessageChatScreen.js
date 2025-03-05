@@ -1,24 +1,33 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
+  Animated,
+  FlatList,
+  Image,
+  Linking,
+  Text,
   TextInput,
   TouchableOpacity,
-  View,
-  Animated,
   Vibration,
+  View,
 } from 'react-native';
-import {FlatList, Text} from 'react-native-gesture-handler';
-import {TouchableRipple} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/Ionicons';
-import DynamicImage from '../../Components/DynamicImage';
-import {ChatscreenStyles as styles} from '../../Components/Styles/Styles';
-import {getLinkPreview, getPreviewFromContent} from 'link-preview-js';
-import {conversationData} from '../../Components/DummyData';
+
+import Clipboard from '@react-native-clipboard/clipboard';
 import NetInfo from '@react-native-community/netinfo';
 import {useNavigation} from '@react-navigation/native';
-import {getPreview, getRelativeTime} from '../../Components/CommonData';
+import {getLinkPreview} from 'link-preview-js';
 import {PanGestureHandler, State} from 'react-native-gesture-handler';
+import {TouchableRipple} from 'react-native-paper';
+import Toast from 'react-native-simple-toast';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {fetchLinkPreview, getRelativeTime} from '../../Components/CommonData';
+import {conversationData} from '../../Components/DummyData';
+import DynamicImage from '../../Components/DynamicImage';
+import {ChatscreenStyles as styles} from '../../Components/Styles/Styles';
+import {useChatInput} from '../../Services/Hooks/useChatInput';
+import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
 
-const DRAG_THRESHOLD = 80;
+const DRAG_PERCENTAGE = 0.15;
+const REPLY_TRIGGER_PERCENTAGE = 0.1;
 
 const DraggableChatBubble = ({
   item,
@@ -28,6 +37,7 @@ const DraggableChatBubble = ({
   style,
 }) => {
   const translateX = useRef(new Animated.Value(0)).current;
+  const containerWidth = useRef(0);
 
   const onGestureEvent = Animated.event(
     [{nativeEvent: {translationX: translateX}}],
@@ -37,33 +47,39 @@ const DraggableChatBubble = ({
   const onHandlerStateChange = event => {
     if (event.nativeEvent.state === State.END) {
       const dragX = -event.nativeEvent.translationX;
-      if (dragX > DRAG_THRESHOLD) {
+      const maxDrag = containerWidth.current * DRAG_PERCENTAGE;
+      const triggerReply = containerWidth.current * REPLY_TRIGGER_PERCENTAGE;
+
+      if (dragX > triggerReply) {
         onSwipeReply(item);
         Vibration.vibrate(100);
-        translateX.setValue(0);
-      } else {
-        Animated.spring(translateX, {
-          toValue: 0,
-          useNativeDriver: true,
-        }).start();
       }
+
+      Animated.spring(translateX, {
+        toValue: 0,
+        useNativeDriver: true,
+      }).start();
     }
   };
 
   return (
-    <PanGestureHandler
-      onGestureEvent={onGestureEvent}
-      onHandlerStateChange={onHandlerStateChange}
-      simultaneousHandlers={flatListRef}
-      activeOffsetX={[-10, 1000]}
-      failOffsetX={[-1000, 0]}>
-      <Animated.View style={[style, {transform: [{translateX}]}]}>
-        {children}
-      </Animated.View>
-    </PanGestureHandler>
+    <View
+      onLayout={event => {
+        containerWidth.current = event.nativeEvent.layout.width;
+      }}>
+      <PanGestureHandler
+        onGestureEvent={onGestureEvent}
+        onHandlerStateChange={onHandlerStateChange}
+        simultaneousHandlers={flatListRef}
+        activeOffsetX={[-10, 500]}
+        failOffsetX={[-500, 0]}>
+        <Animated.View style={[style, {transform: [{translateX}]}]}>
+          {children}
+        </Animated.View>
+      </PanGestureHandler>
+    </View>
   );
 };
-
 const MessageChatScreen = ({route}) => {
   const {receiverDetails} = route.params;
   const [isConnected, setIsConnected] = useState(true);
@@ -72,11 +88,7 @@ const MessageChatScreen = ({route}) => {
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const navigation = useNavigation();
   const flatListRef = useRef(null);
-
   useEffect(() => {
-    if (flatListRef.current && messages.length > 0) {
-      flatListRef.current.scrollToOffset({offset: 0, animated: true});
-    }
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
     });
@@ -106,6 +118,7 @@ const MessageChatScreen = ({route}) => {
     return (
       <View style={styles.headerContainer}>
         <TouchableRipple
+          borderless={true}
           style={styles.iconContainer}
           rippleColor="rgba(0, 0, 0, .15)"
           onPress={() => {
@@ -128,6 +141,7 @@ const MessageChatScreen = ({route}) => {
           </Text>
         </View>
         <TouchableRipple
+          borderless={true}
           style={styles.iconContainer}
           rippleColor="rgba(0, 0, 0, .15)"
           onPress={() => {}}>
@@ -138,16 +152,29 @@ const MessageChatScreen = ({route}) => {
   };
 
   const ChatInput = ({replyMessage, setReplyMessage}) => {
-    const [inputValue, setInputValue] = useState('');
+    const {inputValue, setInputValue} = useChatInput();
+    const inputRef = useRef(null);
 
-    const handleSend = async () => {
+    useEffect(() => {
+      if (replyMessage) {
+        inputRef.current?.focus();
+      }
+    }, [replyMessage]);
+
+    const handleSend = () => {
       if (inputValue.trim() === '') return;
+
+      const messageText = inputValue;
+
+      const urlRegex = /https?:\/\/[^\s]+/;
+      const urlMatch = messageText.match(urlRegex);
+      const url = urlMatch ? urlMatch[0] : null;
+
       const newMessage = {
         id: Date.now().toString(),
-        text: inputValue,
+        text: messageText,
         isSender: true,
         timestamp: Date.now(),
-
         hasReply: replyMessage
           ? {
               id: replyMessage.id,
@@ -155,11 +182,40 @@ const MessageChatScreen = ({route}) => {
               timestamp: replyMessage.timestamp,
             }
           : null,
+        isLink: !!url,
+        linkPreview: null,
       };
 
-      setMessages(prevMessages => [...prevMessages, newMessage]);
+      // Immediately update the messages.
+      setMessages(prevMessages => [newMessage, ...prevMessages]);
+
+      // Clear the input field and reply state.
       setInputValue('');
       setReplyMessage(null);
+
+      // If a URL was found, fetch its preview.
+      if (url) {
+        fetchLinkPreview(url).then(linkPreview => {
+          if (linkPreview) {
+            setMessages(prevMessages =>
+              prevMessages.map(msg =>
+                msg.id === newMessage.id
+                  ? {
+                      ...msg,
+                      linkPreview: {
+                        title: linkPreview.title,
+                        description: linkPreview.description,
+                        image: linkPreview.images?.[0],
+                        url: linkPreview.url,
+                      },
+                      isLink: true,
+                    }
+                  : msg,
+              ),
+            );
+          }
+        });
+      }
     };
 
     return (
@@ -182,8 +238,8 @@ const MessageChatScreen = ({route}) => {
         )}
         <View style={styles.textInputContainer}>
           <TextInput
+            ref={inputRef}
             style={styles.textInput}
-            autoFocus={replyMessage ? true : false}
             cursorColor="#0887ff"
             multiline
             placeholder="Type a message..."
@@ -200,16 +256,41 @@ const MessageChatScreen = ({route}) => {
       </>
     );
   };
+
+  const handleLongPress = text => {
+    Clipboard.setString(text);
+    Vibration.vibrate(100);
+    Toast.show('Link Copied to Clipboard', Toast.SHORT);
+  };
+  const renderMessageContent = message => {
+    const urlRegex = /((?:https?:\/\/)?[\w-]+\.[\w.-]+[^\s]*)/g;
+    const parts = message.split(urlRegex);
+    return parts.map((part, index) => {
+      if (/^((?:https?:\/\/)?[\w-]+\.[\w.-]+[^\s]*)$/.test(part)) {
+        return (
+          <Text
+            key={index}
+            onPress={() => navigation.navigate('WebScreen', {url: part})}
+            onLongPress={() => handleLongPress(part)}
+            style={{textDecorationLine: 'underline', color: '#fff'}}>
+            {part}
+          </Text>
+        );
+      } else {
+        return <Text key={index}>{part}</Text>;
+      }
+    });
+  };
+
   const renderBubbles = item => {
     return (
       <DraggableChatBubble
         item={item}
-        onSwipeReply={item => {
-          setReplyMessage(item);
-        }}
+        onSwipeReply={() => setReplyMessage(item)}
         flatListRef={flatListRef}>
         {item?.hasReply && (
           <TouchableRipple
+            borderless={true}
             onPress={() => handleReplyPress(item?.hasReply?.id)}
             rippleColor={'rgba(0, 0, 0, .15)'}
             style={[
@@ -224,10 +305,55 @@ const MessageChatScreen = ({route}) => {
             </Text>
           </TouchableRipple>
         )}
+
+        {item.isLink &&
+          (item.linkPreview ? (
+            <TouchableRipple
+              borderless={true}
+              rippleColor={'rgba(0, 0, 0, .15)'}
+              onPress={() =>
+                navigation.navigate('WebScreen', {url: item.linkPreview.url})
+              }
+              style={[
+                styles.linkPreviewContainer,
+                item.isSender
+                  ? {alignSelf: 'flex-end'}
+                  : {alignSelf: 'flex-start'},
+              ]}>
+              <>
+                {item.linkPreview.image && (
+                  <View style={{height: '70%'}}>
+                    <Image
+                      source={{uri: item.linkPreview.image}}
+                      style={styles.previewImage}
+                    />
+                  </View>
+                )}
+                <View style={styles.previewTextContainer}>
+                  <Text
+                    style={styles.previewTitle}
+                    numberOfLines={2}
+                    ellipsizeMode="tail">
+                    {item.linkPreview.title}
+                  </Text>
+                  <Text
+                    style={styles.previewLink}
+                    numberOfLines={2}
+                    ellipsizeMode="tail">
+                    {item.linkPreview.url}
+                  </Text>
+                </View>
+              </>
+            </TouchableRipple>
+          ) : item.text.match(/https?:\/\/[^\s]+/) ? (
+            <CustomLoadingIndicator />
+          ) : null)}
+
         <View
           style={[
             styles.chatBubble,
-            item.hasReply && {marginVertical: 0},
+            // {backgroundColor: item.isSender ? '#0887ff' : 'red'},
+            (item.hasReply || item.linkPreview) && {marginVertical: 0},
             item.isSender ? styles.senderBubble : styles.receiverBubble,
             item.id === highlightedMessageId && {
               borderWidth: 2,
@@ -239,7 +365,7 @@ const MessageChatScreen = ({route}) => {
               styles.chatText,
               item.isSender ? {color: '#fff'} : {color: '#000'},
             ]}>
-            {item.text}
+            {item.linkPreview ? renderMessageContent(item.text) : item.text}
           </Text>
           <Text
             style={[styles.timestamp, item.isSender ? {color: '#fff'} : null]}>
@@ -255,7 +381,7 @@ const MessageChatScreen = ({route}) => {
       <Header />
       <FlatList
         ref={flatListRef}
-        inverted={false}
+        inverted={true}
         data={messages}
         showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id}

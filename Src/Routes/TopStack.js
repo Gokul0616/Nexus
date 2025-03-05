@@ -1,13 +1,13 @@
-import React, {useState, useRef, useEffect, useContext} from 'react';
-import {ScrollView, Dimensions, View, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import AddStories from '../Screens/AddStories/AddStories';
-import BottomStack from './BottomStack';
 import {NavigationContext} from '../Services/Hooks/NavigationProvider';
-import MessagesOutside from '../Screens/Messages/MessagesOutside';
+import BottomStack from './BottomStack';
 
 const {width: screenWidth} = Dimensions.get('window');
-
 const TopStack = ({route}) => {
+  const navigation = useNavigation();
   // Set default index to 1 (BottomStack screen)
   const [currentIndexs, setCurrentIndexs] = useState(1);
   const {currentIndex, setTopStackIndex} = useContext(NavigationContext);
@@ -22,7 +22,6 @@ const TopStack = ({route}) => {
     setTopStackIndex(currentIndexs);
   }, [currentIndexs]);
   useEffect(() => {
-    // If route.params?.index is provided, use it; otherwise, default to 1.
     const index = route.params?.index ?? 1;
     goToIndex(index);
   }, [route.params]);

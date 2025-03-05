@@ -15,14 +15,6 @@ const RenderStories = ({
       <FlatList
         horizontal
         scrollEnabled={true}
-        // onResponderGrant={() => {
-        //   console.log('onResponderGrant');
-        //   navigation.setParams({swipeEnabled: false});
-        // }}
-        // onResponderRelease={() => {
-        //   console.log('onResponderRel');
-        //   navigation.setParams({swipeEnabled: true});
-        // }}
         showsHorizontalScrollIndicator={false}
         nestedScrollEnabled
         onScroll={() => {

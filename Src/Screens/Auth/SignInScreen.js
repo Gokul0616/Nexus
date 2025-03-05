@@ -1,96 +1,105 @@
 import {CommonActions, useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   TextInput,
+  Image,
+  TouchableOpacity,
   StyleSheet,
   Dimensions,
+  ScrollView,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import {AppName} from '../../Components/CommonData';
+import {TouchableRipple} from 'react-native-paper';
+import {AppName, PrimaryColor} from '../../Components/CommonData';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const {width, height} = Dimensions.get('window');
 
 const SignInScreen = () => {
   const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const clearStackAndNavigate = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
         routes: [
           {
-            name: 'Tabs',
+            name: 'Signup',
           },
         ],
       }),
     );
   };
-
   return (
-    <View style={styles.container}>
-      {/* Gradient header */}
-      <LinearGradient
-        colors={['#6B63FF', '#A8A4FF']}
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 0}}
-        style={styles.header}>
-        {/* Top bar: "Don’t have an account?" / "Get Started" */}
-        <View style={styles.topBar}>
-          <Text style={styles.topBarText}>Don’t have an account?</Text>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Signup');
-            }}>
-            <Text style={styles.topBarLink}>Get Started</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Logo */}
+    <ScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="always">
+      <View style={styles.header}>
         <View style={styles.logoContainer}>
+          <Image
+            source={require('../../../assets/images/logo.png')}
+            style={styles.logoImage}
+          />
           <Text style={styles.logoText}>{AppName}</Text>
         </View>
-      </LinearGradient>
+      </View>
 
-      {/* White card with form */}
-      <View style={styles.formCard}>
-        <Text style={styles.formTitle}>Welcome Back</Text>
-        <Text style={styles.formSubtitle}>Enter your details below</Text>
+      <View style={styles.content}>
+        <Text style={styles.title}>Welcome Back!</Text>
+        <Text style={styles.subText}>Sign in to continue using Nexus.</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="nicholas@gremlin.ai"
+          placeholder="Email"
           placeholderTextColor="#999"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="••••••••"
-          placeholderTextColor="#999"
-          secureTextEntry
-        />
-
-        <TouchableOpacity style={styles.signInButton}>
-          <Text style={styles.signInButtonText}>Sign In</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.forgotPassword}>
-          <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-        </TouchableOpacity>
-
-        <View style={styles.socialContainer}>
-          <Text style={styles.socialText}>Or sign in with</Text>
-        </View>
-        <View style={styles.socialButtons}>
-          <TouchableOpacity style={styles.socialButton}>
-            <Text style={styles.socialButtonText}>Google</Text>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            placeholderTextColor="#999"
+            secureTextEntry={!passwordVisible}
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity
+            onPress={() => setPasswordVisible(!passwordVisible)}>
+            <Icon
+              name={passwordVisible ? 'eye-off' : 'eye'}
+              size={24}
+              color="#999"
+            />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
-            <Text style={styles.socialButtonText}>Facebook</Text>
+        </View>
+
+        <TouchableOpacity onPress={() => {}}>
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+        </TouchableOpacity>
+
+        <TouchableRipple
+          borderless={true}
+          rippleColor={'rgba(0,0,0,0.2)'}
+          style={styles.signInButton}
+          onPress={() => {
+            console.log('Signing in...');
+          }}>
+          <Text style={styles.signInButtonText}>Sign In</Text>
+        </TouchableRipple>
+
+        <View style={styles.footerTextContainer}>
+          <Text style={styles.footerText}>Don't have an account?</Text>
+          <TouchableOpacity onPress={() => clearStackAndNavigate()}>
+            <Text style={styles.footerLink}> Sign Up</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -98,113 +107,102 @@ export default SignInScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#fff',
+    justifyContent: 'space-between',
+    flexGrow: 1,
   },
   header: {
     height: height * 0.3,
-    paddingTop: 50,
-    paddingHorizontal: 20,
-    // borderBottomLeftRadius: 40,
-    // borderBottomRightRadius: 40,
-  },
-  topBar: {
-    flexDirection: 'row',
-    marginBottom: 10,
     alignItems: 'center',
-  },
-  topBarText: {
-    fontSize: 14,
-    color: '#fff',
-    marginRight: 5,
-  },
-  topBarLink: {
-    fontSize: 14,
-    color: '#fff',
-    textDecorationLine: 'underline',
+    justifyContent: 'center',
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: 20,
+  },
+  logoImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    resizeMode: 'contain',
+    marginBottom: 10,
   },
   logoText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: PrimaryColor,
   },
-  formCard: {
+  content: {
     flex: 1,
-    backgroundColor: '#fff',
-    marginTop: -30, // overlaps the gradient
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 40,
   },
-  formTitle: {
+  title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#2f2cc9',
-    marginBottom: 8,
+    color: PrimaryColor,
+    marginBottom: 10,
   },
-  formSubtitle: {
+  subText: {
     fontSize: 16,
     color: '#666',
-    marginBottom: 24,
-  },
-  input: {
-    backgroundColor: '#F2F2F2',
-    borderRadius: 10,
-    marginBottom: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#333',
-  },
-  signInButton: {
-    backgroundColor: '#6B63FF',
-    borderRadius: 10,
-    paddingVertical: 15,
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  signInButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  forgotPassword: {
-    alignSelf: 'center',
+    textAlign: 'center',
     marginBottom: 20,
   },
-  forgotPasswordText: {
-    color: '#2f2cc9',
-    fontSize: 14,
-    textDecorationLine: 'underline',
-  },
-  socialContainer: {
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  socialText: {
-    fontSize: 14,
-    color: '#999',
-  },
-  socialButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-  },
-  socialButton: {
+  input: {
+    width: '100%',
+    height: 50,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-  },
-  socialButtonText: {
-    color: '#000',
+    paddingHorizontal: 15,
     fontSize: 16,
-    fontWeight: '500',
+    marginBottom: 15,
+    backgroundColor: '#f9f9f9',
   },
+  forgotPasswordText: {
+    color: PrimaryColor,
+    fontSize: 14,
+    marginVertical: 20,
+    textAlign: 'right',
+    alignSelf: 'flex-end',
+  },
+  signInButton: {
+    backgroundColor: PrimaryColor,
+    borderRadius: 10,
+    paddingVertical: 15,
+    width: '100%',
+    alignItems: 'center',
+
+    marginBottom: 20,
+  },
+  signInButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  footerTextContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  footerText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  footerLink: {
+    fontSize: 14,
+    color: PrimaryColor,
+    fontWeight: '600',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    backgroundColor: '#f9f9f9',
+    width: '100%',
+  },
+  passwordInput: {flex: 1, height: 50, fontSize: 16},
 });

@@ -1,4 +1,5 @@
 import {StyleSheet, Dimensions} from 'react-native';
+import {PrimaryColor} from '../CommonData';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -53,7 +54,6 @@ const HomeScreenStyles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: 0.5,
     borderBottomColor: '#ddd',
-    marginTop: 55,
   },
   storiesContent: {
     paddingHorizontal: 15,
@@ -333,6 +333,37 @@ const ChatscreenStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  linkPreviewContainer: {
+    flexDirection: 'column',
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: '#f0f0f0',
+    marginTop: 8,
+    maxWidth: '50%',
+    maxHeight: 250,
+    alignItems: 'flex-start',
+  },
+  previewImage: {
+    minWidth: '100%',
+    minHeight: '70%',
+  },
+  previewTextContainer: {
+    flex: 1,
+    paddingHorizontal: 8,
+    backgroundColor: '#ggg',
+    minWidth: '100%',
+    paddingVertical: 5,
+  },
+  previewTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  previewLink: {
+    fontSize: 12,
+    color: '#666',
+    textDecorationLine: 'underline',
+  },
   messageContactsAvatar: {
     height: 45,
     width: 45,
@@ -353,7 +384,7 @@ const ChatscreenStyles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     width: 12,
-    backgroundColor: '#40c040',
+    backgroundColor: PrimaryColor,
   },
   headerTitleContainer: {
     flexDirection: 'row',
@@ -409,12 +440,16 @@ const ChatscreenStyles = StyleSheet.create({
   },
   senderBubble: {
     backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+    borderWidth: 2,
     alignSelf: 'flex-end',
     borderTopRightRadius: 0,
   },
   receiverBubble: {
     backgroundColor: '#E5E5EA',
+    borderColor: '#E5E5EA',
     alignSelf: 'flex-start',
+    borderWidth: 2,
     borderTopLeftRadius: 0,
   },
   chatText: {
@@ -463,9 +498,135 @@ const ChatscreenStyles = StyleSheet.create({
   },
 });
 
+const ClipItemStyles = StyleSheet.create({
+  container: {
+    backgroundColor: '#000',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  likeAnimation: {
+    position: 'absolute',
+    alignSelf: 'center',
+    top: '40%',
+    zIndex: 999,
+  },
+  volumeButtonContainer: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 10,
+  },
+  volumeButton: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    padding: 8,
+    borderRadius: 25,
+  },
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    paddingHorizontal: 10,
+    paddingBottom: 20,
+    justifyContent: 'space-between',
+  },
+  bottomLeft: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  username: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  caption: {
+    color: '#fff',
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  musicRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  musicTitle: {
+    color: '#fff',
+    fontSize: 14,
+    marginLeft: 4,
+  },
+  bottomRight: {
+    width: 60,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  profileContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  profileImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  followIcon: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#ff004f',
+    borderRadius: 10,
+    padding: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconWrapper: {
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  iconText: {
+    color: '#fff',
+    fontSize: 12,
+    marginTop: 2,
+  },
+  musicDisk: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 5,
+    borderColor: 'rgba(255,255,255,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  diskImage: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+  },
+  overlayLayer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 24,
+  },
+  musicIconOverlay: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{translateX: -9}, {translateY: -9}],
+  },
+});
+
 export {
   HomeScreenStyles,
   MessagesOutsideStyles,
   ProfileScreenstyles,
+  ClipItemStyles,
   ChatscreenStyles,
 };

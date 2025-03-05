@@ -9,7 +9,8 @@ import {
   Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {AppName} from '../../Components/CommonData';
+import {AppName, PrimaryColor} from '../../Components/CommonData';
+import {TouchableRipple} from 'react-native-paper';
 
 const {width, height} = Dimensions.get('window');
 
@@ -17,56 +18,44 @@ const LandingScreen = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      {/* Gradient Header */}
-      <LinearGradient
-        colors={['#6B63FF', '#A8A4FF']}
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 0}}
-        style={styles.header}>
-        {/* Top Bar: "Already have an account?" / "Sign in" */}
-        <View style={styles.topBar}>
-          <Text style={styles.topBarText}>Already have an account?</Text>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Signin');
-            }}>
-            <Text style={styles.topBarLink}>Sign in</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Logo */}
+      <View style={styles.header}>
         <View style={styles.logoContainer}>
+          <Image
+            source={require('../../../assets/images/logo.png')}
+            style={styles.logoImage}
+          />
           <Text style={styles.logoText}>{AppName}</Text>
         </View>
-      </LinearGradient>
+      </View>
 
-      {/* Middle content (illustration + text) */}
       <View style={styles.content}>
-        {/* Illustration placeholder (replace with your own image) */}
         <View style={styles.illustrationContainer}>
-          {/* <Image
-            source={require('../assets/jobsly-docs.png')} // Example image
+          <Image
+            source={{
+              uri: 'https://img.freepik.com/premium-vector/real-life-family-moments-vector-illustration-concepts_1253202-66693.jpg',
+            }}
             style={styles.illustration}
             resizeMode="contain"
-          /> */}
+          />
         </View>
 
-        {/* "Jobsly enterprise" + Subtext */}
-        <Text style={styles.enterpriseText}>Jobsly enterprise</Text>
+        <Text style={styles.enterpriseText}>Simple Moments, Forever Bonds</Text>
         <Text style={styles.subText}>
-          Transformative collaboration for larger teams
+          Capture Memories, Share Joy, and Stay Connected with the Ones Who
+          Matter Most.
         </Text>
       </View>
 
-      {/* "Get Started" Button */}
-      <TouchableOpacity
+      <TouchableRipple
+        borderless={true}
+        rippleColor={'rgb(0,0,0,0.5)'}
         style={styles.getStartedButton}
         onPress={() => {
-          // navigation.navigate('Signup');
-          navigation.navigate('TopTabs');
+          navigation.navigate('Signup');
+          // navigation.navigate('TopTabs');
         }}>
         <Text style={styles.getStartedButtonText}>Get Started</Text>
-      </TouchableOpacity>
+      </TouchableRipple>
     </View>
   );
 };
@@ -77,6 +66,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    justifyContent: 'space-between',
   },
   header: {
     height: height * 0.32,
@@ -106,7 +96,7 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: PrimaryColor,
   },
   content: {
     flex: 1,
@@ -117,6 +107,10 @@ const styles = StyleSheet.create({
   illustrationContainer: {
     width: 220,
     height: 220,
+    borderWidth: 5,
+    borderColor: '#ccc',
+    borderRadius: 110,
+    overflow: 'hidden',
     marginBottom: 10,
   },
   illustration: {
@@ -126,7 +120,7 @@ const styles = StyleSheet.create({
   enterpriseText: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#2F2CC9',
+    color: PrimaryColor,
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -137,7 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   getStartedButton: {
-    backgroundColor: '#6B63FF',
+    backgroundColor: PrimaryColor,
     borderRadius: 10,
     paddingVertical: 15,
     marginHorizontal: 20,
@@ -148,5 +142,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  logoImage: {
+    width: 50,
+    borderRadius: 25,
+    height: 50,
+    resizeMode: 'contain',
+    marginBottom: 10,
   },
 });

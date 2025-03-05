@@ -1,191 +1,208 @@
-import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import {CommonActions, useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   TextInput,
+  TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Image,
+  ScrollView,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import {AppName} from '../../Components/CommonData';
-
+import {AppName, PrimaryColor} from '../../Components/CommonData';
+import {TouchableRipple} from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const {width, height} = Dimensions.get('window');
 
-const SignUpScreen = () => {
+const SignupScreen = () => {
   const navigation = useNavigation();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [password, setPassword] = useState('');
+  const clearStackAndNavigate = () => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'Signin',
+          },
+        ],
+      }),
+    );
+  };
   return (
-    <View style={styles.container}>
-      <LinearGradient
-        colors={['#6B63FF', '#A8A4FF']}
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 0}}
-        style={styles.header}>
-        {/* Top bar: "Already have an account?" / "Sign In" */}
-        <View style={styles.topBar}>
-          <Text style={styles.topBarText}>Already have an account?</Text>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Signin');
-            }}>
-            <Text style={styles.topBarLink}>Sign In</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Logo */}
+    <ScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="always">
+      <View style={styles.header}>
         <View style={styles.logoContainer}>
+          <Image
+            source={require('../../../assets/images/logo.png')}
+            style={styles.logoImage}
+          />
           <Text style={styles.logoText}>{AppName}</Text>
         </View>
-      </LinearGradient>
+      </View>
 
-      <View style={styles.formCard}>
-        <Text style={styles.formTitle}>Get started free.</Text>
-        <Text style={styles.formSubtitle}>No credit card needed</Text>
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>Welcome To Nexus</Text>
+        <Text style={styles.subText}>Create Account and Create Memories</Text>
 
-        {/* Name */}
         <TextInput
           style={styles.input}
-          placeholder="Nicholas"
-          placeholderTextColor="#999"
+          placeholder="Full Name"
+          placeholderTextColor="#888"
+          value={name}
+          cursorColor={PrimaryColor}
+          onChangeText={setName}
         />
-        {/* Email */}
         <TextInput
           style={styles.input}
-          placeholder="nicholas@gremlin.ai"
-          placeholderTextColor="#999"
+          placeholder="Email Address"
+          placeholderTextColor="#888"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+          cursorColor={PrimaryColor}
         />
-        {/* Password */}
-        <TextInput
-          style={styles.input}
-          placeholder="••••••••"
-          placeholderTextColor="#999"
-          secureTextEntry
-        />
-
-        <TouchableOpacity style={styles.signUpButton}>
-          <Text style={styles.signUpButtonText}>Sign Up</Text>
-        </TouchableOpacity>
-
-        <View style={styles.socialContainer}>
-          <Text style={styles.socialText}>Or sign up with</Text>
-        </View>
-        <View style={styles.socialButtons}>
-          <TouchableOpacity style={styles.socialButton}>
-            <Text style={styles.socialButtonText}>Google</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
-            <Text style={styles.socialButtonText}>Facebook</Text>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            placeholderTextColor="#999"
+            secureTextEntry={!passwordVisible}
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity
+            onPress={() => setPasswordVisible(!passwordVisible)}>
+            <Icon
+              name={passwordVisible ? 'eye-off' : 'eye'}
+              size={24}
+              color="#999"
+            />
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+      <View style={styles.buttonContainer}>
+        <TouchableRipple
+          borderless={true}
+          rippleColor={'rgb(0,0,0,0.5)'}
+          style={styles.signupButton}
+          onPress={() => {
+            navigation.navigate('BottomTabs');
+          }}>
+          <Text style={styles.signupButtonText}>Sign Up</Text>
+        </TouchableRipple>
+
+        <TouchableOpacity onPress={() => clearStackAndNavigate()}>
+          <Text style={styles.loginText}>
+            Already have an account?{' '}
+            <Text style={styles.loginLink}>Log In</Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
-export default SignUpScreen;
+export default SignupScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#fff',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
   header: {
-    height: height * 0.3,
-    paddingTop: 50,
-    paddingHorizontal: 20,
-    // borderBottomLeftRadius: 40,
-    // borderBottomRightRadius: 40,
-  },
-  topBar: {
-    flexDirection: 'row',
-    marginBottom: 10,
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    marginBottom: 30,
   },
-  topBarText: {
-    fontSize: 14,
-    color: '#fff',
-    marginRight: 5,
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: PrimaryColor,
+    marginBottom: 10,
   },
-  topBarLink: {
-    fontSize: 14,
-    color: '#fff',
-    textDecorationLine: 'underline',
+  subText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 5,
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: 15,
+  },
+  logoImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    resizeMode: 'contain',
+    marginBottom: 10,
+  },
+  formContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#f9f9f9',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 15,
+  },
+  signupButton: {
+    backgroundColor: PrimaryColor,
+    borderRadius: 10,
+    paddingVertical: 15,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 20,
   },
   logoText: {
     fontSize: 28,
     fontWeight: 'bold',
+    color: PrimaryColor,
+  },
+  signupButtonText: {
     color: '#fff',
-  },
-  formCard: {
-    flex: 1,
-    backgroundColor: '#fff',
-    marginTop: -30,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    paddingHorizontal: 20,
-    paddingTop: 40,
-  },
-  formTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#2f2cc9',
-    marginBottom: 8,
-  },
-  formSubtitle: {
     fontSize: 16,
-    color: '#666',
-    marginBottom: 24,
-  },
-  input: {
-    backgroundColor: '#F2F2F2',
-    borderRadius: 10,
-    marginBottom: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#333',
-  },
-  signUpButton: {
-    backgroundColor: '#6B63FF',
-    borderRadius: 10,
-    paddingVertical: 15,
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  signUpButtonText: {
-    color: '#fff',
-    fontSize: 18,
     fontWeight: '600',
   },
-  socialContainer: {
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  socialText: {
+  loginText: {
     fontSize: 14,
-    color: '#999',
+    color: '#666',
   },
-  socialButtons: {
+  loginLink: {
+    color: PrimaryColor,
+    fontWeight: 'bold',
+  },
+  passwordContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-  },
-  socialButton: {
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
+    paddingHorizontal: 15,
+    width: '100%',
   },
-  socialButtonText: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: '500',
-  },
+  passwordInput: {flex: 1, height: 50, fontSize: 16},
+  buttonContainer: {width: '100%', alignItems: 'center'},
 });

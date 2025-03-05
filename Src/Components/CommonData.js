@@ -26,3 +26,15 @@ export const getRelativeTime = timestamp => {
     });
   }
 };
+// linkPreviewHelper.js
+import {getLinkPreview} from 'link-preview-js';
+
+export const fetchLinkPreview = async url => {
+  try {
+    const previewData = await getLinkPreview(url);
+    return previewData;
+  } catch (error) {
+    console.error('Error fetching link preview:', error.message);
+    return null;
+  }
+};

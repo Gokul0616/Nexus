@@ -286,6 +286,7 @@ const Comment = ({modalVisible, setModalVisible, isConnected}) => {
                   setReplyReference({comment: '', parentUsername: ''})
                 }>
                 <TouchableRipple
+                  borderless={true}
                   style={{position: 'absolute', bottom: 10, right: 10}}>
                   <Feather name="x" size={24} color="black" />
                 </TouchableRipple>

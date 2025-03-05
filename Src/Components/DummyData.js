@@ -1085,59 +1085,69 @@ export const profileDummyData = [
     ],
   },
 ];
-
-export const reelData = [
+export const videoData = [
   {
-    id: 1,
-    username: '@fitnessjunkie',
-    description: 'Morning workout routine 💪 #FitnessMotivation',
-    likesCount: 15400,
-    commentsCount: 320,
-    shares: 580,
-    videoUrl:
+    id: '1',
+    videoSource:
       'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
+    username: '@fitnessjunkie',
+    caption: 'Morning workout routine 💪 #FitnessMotivation',
+    likes: 15400,
+    comments: 320,
+    shares: 580,
+    musicTitle: 'Original Sound - @fitnessjunkie',
+    profilePic: 'https://randomuser.me/api/portraits/men/32.jpg',
   },
   {
-    id: 2,
-    username: '@foodieadventures',
-    description: 'Homemade pizza from scratch 🍕 #CookingTutorial',
-    likesCount: 8900,
-    commentsCount: 185,
-    shares: 300,
-    videoUrl:
+    id: '2',
+    videoSource:
       'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    username: '@foodieadventures',
+    caption: 'Homemade pizza from scratch 🍕 #CookingTutorial',
+    likes: 8900,
+    comments: 185,
+    shares: 300,
+    musicTitle: 'Original Sound - @foodieadventures',
+    profilePic: 'https://randomuser.me/api/portraits/women/44.jpg',
   },
   {
-    id: 3,
-    username: '@travelbug',
-    description: 'Sunset views in Santorini 🌅 #Wanderlust',
-    likesCount: 23100,
-    commentsCount: 410,
-    shares: 1200,
-    videoUrl:
+    id: '3',
+    videoSource:
       'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    username: '@travelbug',
+    caption: 'Sunset views in Santorini 🌅 #Wanderlust',
+    likes: 23100,
+    comments: 410,
+    shares: 1200,
+    musicTitle: 'Original Sound - @travelbug',
+    profilePic: 'https://randomuser.me/api/portraits/men/55.jpg',
   },
   {
-    id: 4,
-    username: '@techguru',
-    description: 'Unboxing the new iPhone 20 📱 #TechReview',
-    likesCount: 6750,
-    commentsCount: 95,
-    shares: 200,
-    videoUrl:
+    id: '4',
+    videoSource:
       'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    username: '@techguru',
+    caption: 'Unboxing the new iPhone 20 📱 #TechReview',
+    likes: 6750,
+    comments: 95,
+    shares: 200,
+    musicTitle: 'Original Sound - @techguru',
+    profilePic: 'https://randomuser.me/api/portraits/women/66.jpg',
   },
   {
-    id: 5,
-    username: '@comedycentral',
-    description: 'When you forget your coffee ☕ #FunnyMoments',
-    likesCount: 34200,
-    commentsCount: 780,
-    shares: 1500,
-    videoUrl:
+    id: '5',
+    videoSource:
       'https://firebasestorage.googleapis.com/v0/b/tieoda.appspot.com/o/post%2F9QwvEOpJXXM5bn8BjUIP1D6UL6A2%2F344741e3-5fe7-4a98-a1ce-7bb0ac96ab9f%2Fvideo?alt=media&token=e8ac526c-edd0-4118-a813-56781d5fc7f8',
+    username: '@comedycentral',
+    caption: 'When you forget your coffee ☕ #FunnyMoments',
+    likes: 34200,
+    comments: 780,
+    shares: 1500,
+    musicTitle: 'Original Sound - @comedycentral',
+    profilePic: 'https://randomuser.me/api/portraits/men/77.jpg',
   },
 ];
+
 export const commentData = [
   {
     id: 'c1',
@@ -1349,107 +1359,48 @@ export const commentData = [
     ],
   },
 ];
-
 export const conversationData = [
   {
-    id: '1',
-    text: "Hey, how's it going?",
-    isSender: false,
-    timestamp: '2025-03-03T10:00:00Z',
-    hasReply: {id: '1', text: "Hey, how's it going?"},
-  },
-  {
-    id: '2',
-    text: 'Pretty good, thanks! What about you?',
+    id: '20',
+    text: 'Yes, I reviewed it. We should discuss it over coffee.',
     isSender: true,
-    timestamp: '2025-03-03T10:00:05Z',
-    hasReply: {id: '1', text: "Hey, how's it going?"},
+    timestamp: '2025-03-03T10:09:10Z',
+    hasReply: {id: '19', text: 'By the way, did you get the report I sent?'},
   },
   {
-    id: '3',
-    text: "I'm doing well. Did you see the game last night?",
+    id: '19',
+    text: 'By the way, did you get the report I sent?',
     isSender: false,
-    timestamp: '2025-03-03T10:01:00Z',
-    hasReply: null,
+    timestamp: '2025-03-03T10:09:00Z',
+    hasReply: {id: '18', text: "Will do! I'm excited to see it."},
   },
   {
-    id: '4',
-    text: 'Yeah, it was amazing! That final goal was incredible.',
+    id: '18',
+    text: "Will do! I'm excited to see it.",
     isSender: true,
-    timestamp: '2025-03-03T10:01:10Z',
-    hasReply: {
-      id: '3',
-      text: "I'm doing well. Did you see the game last night?",
-    },
+    timestamp: '2025-03-03T10:08:05Z',
+    hasReply: {id: '17', text: 'Let me know what you think once you watch it.'},
   },
   {
-    id: '5',
-    text: 'Absolutely. Who was your favorite player?',
+    id: '17',
+    text: 'Let me know what you think once you watch it.',
     isSender: false,
-    timestamp: '2025-03-03T10:02:00Z',
-    hasReply: null,
+    timestamp: '2025-03-03T10:08:00Z',
+    hasReply: {id: '16', text: 'Yeah, the reviews are all positive.'},
   },
   {
-    id: '6',
-    text: 'I think it was the striker – he really pulled it off.',
+    id: '16',
+    text: 'Yeah, the reviews are all positive.',
     isSender: true,
-    timestamp: '2025-03-03T10:02:15Z',
-    hasReply: {id: '5', text: 'Absolutely. Who was your favorite player?'},
+    timestamp: '2025-03-03T10:07:10Z',
+    hasReply: {id: '15', text: "I've heard it's really good."},
   },
   {
-    id: '7',
-    text: 'I agree. By the way, are you free for a coffee later?',
+    id: '15',
+    text: "I've heard it's really good.",
     isSender: false,
-    timestamp: '2025-03-03T10:03:00Z',
-    hasReply: null,
-  },
-  {
-    id: '8',
-    text: 'Sure, that sounds great!',
-    isSender: true,
-    timestamp: '2025-03-03T10:03:10Z',
-    hasReply: {
-      id: '7',
-      text: 'I agree. By the way, are you free for a coffee later?',
-    },
-  },
-  {
-    id: '9',
-    text: "Awesome. Let's meet at our usual spot at 2 PM.",
-    isSender: false,
-    timestamp: '2025-03-03T10:04:00Z',
-    hasReply: null,
-  },
-  {
-    id: '10',
-    text: 'Perfect, see you then.',
-    isSender: true,
-    timestamp: '2025-03-03T10:04:05Z',
-    hasReply: {id: '9', text: "Awesome. Let's meet at our usual spot at 2 PM."},
-  },
-  {
-    id: '11',
-    text: 'Do you need a ride or are you taking public transport?',
-    isSender: false,
-    timestamp: '2025-03-03T10:05:00Z',
-    hasReply: null,
-  },
-  {
-    id: '12',
-    text: "I'm taking the bus, thanks for asking.",
-    isSender: true,
-    timestamp: '2025-03-03T10:05:10Z',
-    hasReply: {
-      id: '11',
-      text: 'Do you need a ride or are you taking public transport?',
-    },
-  },
-  {
-    id: '13',
-    text: 'Cool, did you check out that new movie trailer?',
-    isSender: false,
-    timestamp: '2025-03-03T10:06:00Z',
-    hasReply: null,
+    timestamp: '2025-03-03T10:07:00Z',
+    hasReply: {id: '14', text: 'Not yet, but I plan to watch it soon.'},
   },
   {
     id: '14',
@@ -1462,45 +1413,355 @@ export const conversationData = [
     },
   },
   {
-    id: '15',
-    text: "I've heard it's really good.",
+    id: '13',
+    text: 'Cool, did you check out that new movie trailer?',
     isSender: false,
-    timestamp: '2025-03-03T10:07:00Z',
-    hasReply: null,
+    timestamp: '2025-03-03T10:06:00Z',
+    hasReply: {id: '12', text: "I'm taking the bus, thanks for asking."},
+  },
+  {
+    id: '12',
+    text: "I'm taking the bus, thanks for asking.",
+    isSender: true,
+    timestamp: '2025-03-03T10:05:10Z',
+    hasReply: {
+      id: '11',
+      text: 'Do you need a ride or are you taking public transport?',
+    },
+  },
+  {
+    id: '11',
+    text: 'Do you need a ride or are you taking public transport?',
+    isSender: false,
+    timestamp: '2025-03-03T10:05:00Z',
+    hasReply: {id: '10', text: 'Perfect, see you then.'},
+  },
+  {
+    id: '10',
+    text: 'Perfect, see you then.',
+    isSender: true,
+    timestamp: '2025-03-03T10:04:05Z',
+    hasReply: {id: '9', text: "Awesome. Let's meet at our usual spot at 2 PM."},
+  },
+  {
+    id: '9',
+    text: "Awesome. Let's meet at our usual spot at 2 PM.",
+    isSender: false,
+    timestamp: '2025-03-03T10:04:00Z',
+    hasReply: {id: '8', text: 'Sure, that sounds great!'},
+  },
+  {
+    id: '8',
+    text: 'Sure, that sounds great!',
+    isSender: true,
+    timestamp: '2025-03-03T10:03:10Z',
+    hasReply: {
+      id: '7',
+      text: 'I agree. By the way, are you free for a coffee later?',
+    },
+  },
+  {
+    id: '7',
+    text: 'I agree. By the way, are you free for a coffee later?',
+    isSender: false,
+    timestamp: '2025-03-03T10:03:00Z',
+    hasReply: {
+      id: '6',
+      text: 'I think it was the striker – he really pulled it off.',
+    },
+  },
+  {
+    id: '6',
+    text: 'I think it was the striker – he really pulled it off.',
+    isSender: true,
+    timestamp: '2025-03-03T10:02:15Z',
+    hasReply: {id: '5', text: 'Absolutely. Who was your favorite player?'},
+  },
+  {
+    id: '5',
+    text: 'Absolutely. Who was your favorite player?',
+    isSender: false,
+    timestamp: '2025-03-03T10:02:00Z',
+    hasReply: {
+      id: '4',
+      text: 'Yeah, it was amazing! That final goal was incredible.',
+    },
+  },
+  {
+    id: '4',
+    text: 'Yeah, it was amazing! That final goal was incredible.',
+    isSender: true,
+    timestamp: '2025-03-03T10:01:10Z',
+    hasReply: {
+      id: '3',
+      text: "I'm doing well. Did you see the game last night?",
+    },
+  },
+  {
+    id: '3',
+    text: "I'm doing well. Did you see the game last night?",
+    isSender: false,
+    timestamp: '2025-03-03T10:01:00Z',
+    hasReply: {id: '2', text: 'Pretty good, thanks! What about you?'},
+  },
+  {
+    id: '2',
+    text: 'Pretty good, thanks! What about you?',
+    isSender: true,
+    timestamp: '2025-03-03T10:00:05Z',
+    hasReply: {id: '1', text: "Hey, how's it going?"},
+  },
+  {
+    id: '1',
+    text: "Hey, how's it going?",
+    isSender: false,
+    timestamp: '2025-03-03T10:00:00Z',
+    hasReply: {
+      id: '20',
+      text: 'Yes, I reviewed it. We should discuss it over coffee.',
+    },
+  },
+];
+export const notificationsData = [
+  {
+    id: '1',
+    type: 'like',
+    username: 'john_doe',
+    activity: 'liked your video.',
+    profilePic:
+      'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
+    timestamp: '2025-03-05T12:00:00Z',
+    videoThumbnail:
+      'https://images.pexels.com/photos/139303/pexels-photo-139303.jpeg?cs=srgb&dl=pexels-joshsorenson-139303.jpg&fm=jpg',
+  },
+  {
+    id: '2',
+    type: 'follow',
+    username: 'jane_smith',
+    activity: 'started following you.',
+    profilePic:
+      'https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg',
+    timestamp: '2025-03-05T11:45:00Z',
+  },
+  {
+    id: '3',
+    type: 'comment',
+    username: 'cool_kid',
+    activity: 'commented: "Awesome video!"',
+    profilePic:
+      'https://cdn.pixabay.com/photo/2015/04/23/22/00/new-year-background-736885_1280.jpg',
+    timestamp: '2025-03-05T11:30:00Z',
+  },
+  {
+    id: '4',
+    type: 'mention',
+    username: 'fitnessjunkie',
+    activity: 'mentioned you in a comment.',
+    profilePic:
+      'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?cs=srgb&dl=pexels-souvenirpixels-414612.jpg&fm=jpg',
+    timestamp: '2025-03-05T11:15:00Z',
+  },
+  {
+    id: '5',
+    type: 'share',
+    username: 'foodieadventures',
+    activity: 'shared your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D',
+    timestamp: '2025-03-05T11:00:00Z',
+  },
+  {
+    id: '6',
+    type: 'like',
+    username: 'alex_99',
+    activity: 'liked your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&w=500&q=60',
+    videoThumbnail:
+      'https://media.istockphoto.com/id/1367851585/photo/crowds-of-people-walking-across-a-busy-crosswalk-at-the-intersection-of-23rd-street-and-5th.jpg?s=612x612&w=0&k=20&c=BJuYzQe2vI-tKfGNa3yrTjp8-AHCqowkRLdZyH4J6fs=',
+    timestamp: '2025-03-05T10:45:00Z',
+  },
+  {
+    id: '7',
+    type: 'like',
+    username: 'samuel_k',
+    activity: 'liked your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=60',
+    videoThumbnail:
+      'https://media.istockphoto.com/id/183412466/photo/eastern-bluebirds-male-and-female.jpg?s=612x612&w=0&k=20&c=6_EQHnGedwdjM9QTUF2c1ce7cC3XtlxvMPpU5HAouhc=',
+    timestamp: '2025-03-05T10:30:00Z',
+  },
+  {
+    id: '8',
+    type: 'follow',
+    username: 'linda_new',
+    activity: 'started following you.',
+    profilePic:
+      'https://images.unsplash.com/photo-1502767089025-6572583495b4?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T10:15:00Z',
+  },
+  {
+    id: '9',
+    type: 'comment',
+    username: 'mike23',
+    activity: 'commented: "Amazing content!"',
+    profilePic:
+      'https://images.unsplash.com/photo-1502764613149-7f1d229e2302?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T10:00:00Z',
+  },
+  {
+    id: '10',
+    type: 'mention',
+    username: 'emma_rose',
+    activity: 'mentioned you in a comment.',
+    profilePic:
+      'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T09:45:00Z',
+  },
+  {
+    id: '11',
+    type: 'share',
+    username: 'robert_shares',
+    activity: 'shared your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T09:30:00Z',
+  },
+  {
+    id: '12',
+    type: 'like',
+    username: 'chris_liked',
+    activity: 'liked your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=500&q=60',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T09:15:00Z',
+  },
+  {
+    id: '13',
+    type: 'follow',
+    username: 'sophia_started',
+    activity: 'started following you.',
+    profilePic:
+      'https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T09:00:00Z',
+  },
+  {
+    id: '14',
+    type: 'comment',
+    username: 'daniel_c',
+    activity: 'left a comment: "Great video!"',
+    profilePic:
+      'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T08:45:00Z',
+  },
+  {
+    id: '15',
+    type: 'mention',
+    username: 'olivia_m',
+    activity: 'mentioned you in a comment.',
+    profilePic:
+      'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T08:30:00Z',
   },
   {
     id: '16',
-    text: 'Yeah, the reviews are all positive.',
-    isSender: true,
-    timestamp: '2025-03-03T10:07:10Z',
-    hasReply: {id: '15', text: "I've heard it's really good."},
+    type: 'share',
+    username: 'noah_shared',
+    activity: 'shared your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1552058544-f2b08422138a?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T08:15:00Z',
   },
   {
     id: '17',
-    text: 'Let me know what you think once you watch it.',
-    isSender: false,
-    timestamp: '2025-03-03T10:08:00Z',
-    hasReply: null,
+    type: 'like',
+    username: 'mia_fan',
+    activity: 'liked your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=60',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T08:00:00Z',
   },
   {
     id: '18',
-    text: "Will do! I'm excited to see it.",
-    isSender: true,
-    timestamp: '2025-03-03T10:08:05Z',
-    hasReply: {id: '17', text: 'Let me know what you think once you watch it.'},
+    type: 'like',
+    username: 'liam_k',
+    activity: 'liked your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=60',
+    videoThumbnail:
+      'https://media.istockphoto.com/id/825447880/photo/two-birds-talking.jpg?s=612x612&w=0&k=20&c=rSPYgB71dbaX9XKkiAQRDpLlnhcjrJqE3Ct0DwhDDek=',
+    timestamp: '2025-03-05T07:45:00Z',
   },
   {
     id: '19',
-    text: 'By the way, did you get the report I sent?',
-    isSender: false,
-    timestamp: '2025-03-03T10:09:00Z',
-    hasReply: null,
+    type: 'follow',
+    username: 'ava_new',
+    activity: 'started following you.',
+    profilePic:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T07:30:00Z',
   },
   {
     id: '20',
-    text: 'Yes, I reviewed it. We should discuss it over coffee.',
-    isSender: true,
-    timestamp: '2025-03-03T10:09:10Z',
-    hasReply: {id: '19', text: 'By the way, did you get the report I sent?'},
+    type: 'comment',
+    username: 'elijah',
+    activity: 'commented: "Loved it!"',
+    profilePic:
+      'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T07:15:00Z',
+  },
+  {
+    id: '21',
+    type: 'mention',
+    username: 'isabella',
+    activity: 'mentioned you in a comment.',
+    profilePic:
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T07:00:00Z',
+  },
+  {
+    id: '22',
+    type: 'share',
+    username: 'logan',
+    activity: 'shared your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T06:45:00Z',
+  },
+  {
+    id: '23',
+    type: 'like',
+    username: 'zoe_likes',
+    activity: 'liked your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=60',
+    videoThumbnail:
+      'https://plus.unsplash.com/premium_photo-1675714692342-01dfd2e6b6b5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YmlyZHxlbnwwfHwwfHx8MA%3D%3D',
+    timestamp: '2025-03-05T06:30:00Z',
+  },
+  {
+    id: '24',
+    type: 'like',
+    username: 'jackson99',
+    activity: 'liked your video.',
+    profilePic:
+      'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=500&q=60',
+    videoThumbnail:
+      'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T06:15:00Z',
+  },
+  {
+    id: '25',
+    type: 'follow',
+    username: 'amelia_new',
+    activity: 'started following you.',
+    profilePic:
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=60',
+    timestamp: '2025-03-05T06:00:00Z',
   },
 ];

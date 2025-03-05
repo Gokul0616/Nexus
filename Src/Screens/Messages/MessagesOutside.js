@@ -5,7 +5,14 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {BackHandler, FlatList, Pressable, Text, View} from 'react-native';
+import {
+  BackHandler,
+  FlatList,
+  Modal,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
 import {TouchableRipple} from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
 import CustomHeader from '../../Components/CustomHeader';
@@ -18,6 +25,8 @@ import DynamicImage from '../../Components/DynamicImage';
 import NexusInput from '../../Components/NexusInput';
 import Notes from '../../Components/Notes';
 import {MessagesOutsideStyles as styles} from '../../Components/Styles/Styles';
+import {useChatInput} from '../../Services/Hooks/useChatInput';
+import CustomBottomSheet from '../../Components/CustomBottomSheet';
 
 const MessagesOutside = () => {
   const navigation = useNavigation();
@@ -26,7 +35,8 @@ const MessagesOutside = () => {
   const [searchActive, setSearchActive] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
   const [mediaKey, setMediaKey] = useState(0);
-
+  const [noteVisible, setNoteVisible] = useState(false);
+  const [selectedNote, setSelectedNote] = useState(null);
   const [searchResults, setSearchResults] = useState(initialDummySearchResults);
   useEffect(() => {
     navigation.setParams({swipeEnabled: !searchActive});
@@ -63,8 +73,10 @@ const MessagesOutside = () => {
     return () => unsubscribe();
   }, []);
   const handleNotePress = note => {
-    console.log('Note pressed:', note);
+    setSelectedNote(note);
+    setNoteVisible(true);
   };
+  const {clearInputValue} = useChatInput();
 
   const filteredResults = searchResults.filter(item =>
     item.name.toLowerCase().includes(searchVal.toLowerCase()),
@@ -85,10 +97,12 @@ const MessagesOutside = () => {
   const renderMessage = item => {
     return (
       <TouchableRipple
+        borderless={true}
         style={styles.messageContactsContainer}
-        onPress={() =>
-          navigation.navigate('ChatScreen', {receiverDetails: item})
-        }
+        onPress={() => {
+          clearInputValue();
+          navigation.navigate('ChatScreen', {receiverDetails: item});
+        }}
         rippleColor="rgba(0, 0, 0, .15)">
         <>
           <DynamicImage
@@ -120,6 +134,7 @@ const MessagesOutside = () => {
         keyExtractor={item => item.id}
         initialNumToRender={10}
         maxToRenderPerBatch={10}
+        showsVerticalScrollIndicator={false}
         windowSize={5}
         updateCellsBatchingPeriod={50}
         contentContainerStyle={{paddingBottom: 60}}
@@ -222,6 +237,21 @@ const MessagesOutside = () => {
           <View>{renderMessageContacts(messageDummyData)}</View>
         </>
       )}
+      <CustomBottomSheet
+        modalVisible={noteVisible}
+        setModalVisible={setNoteVisible}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.noteTitle}>{selectedNote?.title}</Text>
+            <Text style={styles.noteContent}>{selectedNote?.content}</Text>
+            <Pressable
+              onPress={() => setNoteVisible(false)}
+              style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </CustomBottomSheet>
     </View>
   );
 };

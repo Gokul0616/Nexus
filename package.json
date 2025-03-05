@@ -1,5 +1,5 @@
 {
-  "name": "Notification",
+  "name": "nexus",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -10,6 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@bam.tech/react-native-make": "^3.0.3",
+    "@react-native-clipboard/clipboard": "^1.16.2",
     "@react-native-community/netinfo": "^11.4.1",
     "@react-native-firebase/app": "^21.8.0",
     "@react-native-firebase/messaging": "^21.8.0",
@@ -23,15 +25,19 @@
     "react": "18.3.1",
     "react-native": "0.77.0",
     "react-native-gesture-handler": "^2.24.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-make": "^1.0.1",
     "react-native-pager-view": "^6.7.0",
     "react-native-paper": "^5.13.1",
-    "react-native-reanimated": "^3.17.0",
+    "react-native-reanimated": "^3.17.1",
     "react-native-safe-area-context": "^5.2.0",
     "react-native-screens": "^4.9.0",
+    "react-native-simple-toast": "^3.3.2",
     "react-native-snap-carousel": "^3.9.1",
     "react-native-vector-icons": "^10.2.0",
-    "react-native-video": "^6.10.1"
+    "react-native-video": "^6.10.1",
+    "react-native-webview": "^13.13.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

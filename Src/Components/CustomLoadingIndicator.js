@@ -33,10 +33,12 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
+    pointerEvents: 'none',
   },
   loader: {
     width: 50,
     height: 50,
+    pointerEvents: 'none',
     borderWidth: 4,
     borderColor: '#f3f3f3',
     borderTopColor: '#3498db',

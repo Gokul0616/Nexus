@@ -67,7 +67,10 @@ const EditProfile = () => {
             placeholder="Where are you based?"
           />
         </View>
-        <TouchableRipple style={styles.saveButton} onPress={handleSave}>
+        <TouchableRipple
+          borderless={true}
+          style={styles.saveButton}
+          onPress={handleSave}>
           <Text style={styles.saveButtonText}>Save Changes</Text>
         </TouchableRipple>
       </ScrollView>

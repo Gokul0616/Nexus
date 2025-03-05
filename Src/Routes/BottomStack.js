@@ -9,9 +9,9 @@ import HomeScreen from '../Screens/Home/HomeScreen';
 import Profile from '../Screens/Home/Profile';
 import {NavigationContext} from '../Services/Hooks/NavigationProvider';
 import {PrimaryColor} from '../Components/CommonData';
+import NotificationScreen from '../Screens/Home/NotificationScreen';
 
 const Tab = createBottomTabNavigator();
-
 const CustomAddPostButton = ({onPress}) => (
   <TouchableOpacity
     style={{
@@ -29,12 +29,12 @@ const CustomAddPostButton = ({onPress}) => (
 );
 
 export default function BottomStack() {
-  const {setCurrentIndex} = useContext(NavigationContext);
+  const {setCurrentIndex, currentIndex} = useContext(NavigationContext);
 
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={({route}) => ({
+      screenOptions={({route, focused}) => ({
         tabBarIcon: ({focused, color, size}) => {
           let iconName;
           if (route.name === 'Home') {
@@ -57,16 +57,17 @@ export default function BottomStack() {
           );
         },
         headerShown: false,
-        tabBarActiveTintColor: '#000',
+        tabBarActiveTintColor: PrimaryColor,
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: {
           height: 60,
           paddingBottom: 5,
+          backgroundColor: currentIndex === 0 ? '#151515' : '#fff',
         },
       })}>
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={ClipVideo}
         listeners={{
           focus: () => setCurrentIndex(0),
         }}
@@ -96,8 +97,8 @@ export default function BottomStack() {
         }}
       />
       <Tab.Screen
-        name="Clips"
-        component={ClipVideo}
+        name="Notification"
+        component={NotificationScreen}
         listeners={{
           focus: () => setCurrentIndex(3),
         }}

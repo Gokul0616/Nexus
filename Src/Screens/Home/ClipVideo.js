@@ -1,129 +1,38 @@
-import React, {useCallback, useRef, useState, useEffect, memo} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  useWindowDimensions,
-  BackHandler,
-  TouchableWithoutFeedback,
-  Animated,
-} from 'react-native';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {
   CommonActions,
   useFocusEffect,
-  useNavigation,
   useIsFocused,
+  useNavigation,
 } from '@react-navigation/native';
-import Video from 'react-native-video';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {
+  Animated,
+  BackHandler,
+  FlatList,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+  Text,
+} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {reelData} from '../../Components/DummyData';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
-
-const ReelItem = memo(
-  ({
-    item,
-    isPlaying,
-    isMuted,
-    onVideoPress,
-    handleLoadStart,
-    handleLoad,
-    loadingStates,
-    width,
-    height,
-    setIsMuted,
-    videoRefs,
-    handleDoubleTap,
-    likeAnimations,
-  }) => {
-    return (
-      <View style={[styles.reelContainer, {width, height}]}>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            handleDoubleTap(item.id);
-            onVideoPress(item.id);
-          }}>
-          <Video
-            ref={ref => videoRefs.current.set(item.id, ref)}
-            source={{uri: item.videoUrl}}
-            style={StyleSheet.absoluteFill}
-            resizeMode="contain"
-            paused={!isPlaying}
-            repeat
-            muted={isMuted}
-            onLoadStart={() => handleLoadStart(item.id)}
-            onLoad={() => handleLoad(item.id)}
-            ignoreSilentSwitch="obey"
-          />
-        </TouchableWithoutFeedback>
-
-        {loadingStates[item.id] && (
-          <View style={styles.loadingContainer}>
-            <CustomLoadingIndicator />
-          </View>
-        )}
-
-        {likeAnimations.current[item.id] && (
-          <Animated.View
-            pointerEvents="none"
-            style={[
-              styles.likeAnimation,
-              {
-                opacity: likeAnimations.current[item.id],
-                transform: [
-                  {
-                    scale: likeAnimations.current[item.id].interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.5, 1.2],
-                    }),
-                  },
-                ],
-              },
-            ]}>
-            <Icon name="heart" size={100} color="#ed4956" />
-          </Animated.View>
-        )}
-
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback onPress={() => setIsMuted(!isMuted)}>
-            <Icon
-              name={isMuted ? 'volume-mute' : 'volume-high'}
-              size={28}
-              color="#fff"
-              style={styles.muteButton}
-              onPress={() => {}}
-            />
-          </TouchableWithoutFeedback>
-
-          <View style={styles.infoContainer}>
-            <Text style={styles.username}>{item.username}</Text>
-            <Text style={styles.description}>{item.description}</Text>
-          </View>
-          <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Icon name="heart" size={24} color="#fff" />
-              <Text style={styles.statText}>{item.likesCount}</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Icon name="chatbubble" size={24} color="#fff" />
-              <Text style={styles.statText}>{item.commentsCount}</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Icon name="share-social" size={24} color="#fff" />
-              <Text style={styles.statText}>{item.shares}</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    );
-  },
-);
+import ClipItem from '../../Components/ClipItem';
+import {videoData} from '../../Components/DummyData';
+import {NavigationContext} from '../../Services/Hooks/NavigationProvider';
+import Comment from '../../Components/Comment';
 
 export default function ClipVideo() {
+  const {isConnected} = useContext(NavigationContext);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  const [commentVisible, setCommentVisible] = useState(false);
+
   const insets = useSafeAreaInsets();
   const {width, height: windowHeight} = useWindowDimensions();
   const tabBarHeight = useBottomTabBarHeight();
@@ -219,14 +128,14 @@ export default function ClipVideo() {
         onBackPress,
       );
       return () => subscription.remove();
-    }, []),
+    }, [navigation]),
   );
 
   const renderItem = useCallback(
     ({item}) => {
       const isPlaying = item.id === currentVideoId && isFocused;
       return (
-        <ReelItem
+        <ClipItem
           item={item}
           isPlaying={isPlaying}
           isMuted={isMuted}
@@ -239,7 +148,10 @@ export default function ClipVideo() {
           height={availableHeight - tabBarHeight}
           videoRefs={videoRefs}
           handleDoubleTap={handleDoubleTap}
+          isConnected={isConnected}
           likeAnimations={likeAnimations}
+          commentVisible={commentVisible}
+          setCommentVisible={setCommentVisible}
         />
       );
     },
@@ -255,95 +167,64 @@ export default function ClipVideo() {
   );
 
   return (
-    <FlatList
-      ref={flatListRef}
-      data={reelData}
-      renderItem={renderItem}
-      keyExtractor={item => item.id.toString()}
-      pagingEnabled
-      showsVerticalScrollIndicator={false}
-      decelerationRate="normal"
-      disableIntervalMomentum={true}
-      viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-      snapToInterval={availableHeight - tabBarHeight}
-      snapToAlignment="start"
-      initialNumToRender={3}
-      maxToRenderPerBatch={3}
-      windowSize={5}
-      removeClippedSubviews={false}
-    />
+    <View style={styles.container}>
+      {/* Header similar to TikTok's "For You" / "Following" */}
+      <View style={[styles.headerContainer, {top: insets.top + 10}]}>
+        <Text style={[styles.headerText, styles.activeHeader]}>For You</Text>
+        <Text style={[styles.headerText, styles.inactiveHeader]}>
+          Following
+        </Text>
+      </View>
+      <FlatList
+        ref={flatListRef}
+        data={videoData}
+        renderItem={renderItem}
+        scrollEventThrottle={16}
+        keyExtractor={item => item.id.toString()}
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        decelerationRate="normal"
+        disableIntervalMomentum={true}
+        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+        snapToInterval={availableHeight - tabBarHeight}
+        snapToAlignment="start"
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+        removeClippedSubviews={false}
+      />
+      <Comment
+        modalVisible={commentVisible}
+        setModalVisible={setCommentVisible}
+        isConnected={isConnected}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  reelContainer: {
-    backgroundColor: '#000',
-    position: 'relative',
-  },
-  overlay: {
-    position: 'absolute',
-    bottom: 40,
-    left: 15,
-    right: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  muteButton: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: 8,
-    borderRadius: 25,
-    zIndex: 10,
-  },
-  infoContainer: {
+  container: {
     flex: 1,
-    paddingRight: 20,
+    backgroundColor: '#000',
   },
-  username: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: {width: 1, height: 1},
-    textShadowRadius: 4,
-  },
-  description: {
-    color: '#fff',
-    fontSize: 16,
-    lineHeight: 22,
-    textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: {width: 1, height: 1},
-    textShadowRadius: 4,
-  },
-  statsContainer: {
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  statItem: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  statText: {
-    color: '#fff',
-    fontSize: 14,
-    marginTop: 4,
-    textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: {width: 1, height: 1},
-    textShadowRadius: 4,
-  },
-  loadingContainer: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.2)',
-  },
-  likeAnimation: {
+  headerContainer: {
     position: 'absolute',
-    alignSelf: 'center',
-    top: '40%',
-    zIndex: 999,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    zIndex: 100,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginHorizontal: 15,
+  },
+  activeHeader: {
+    // borderBottomWidth: 2,
+    // borderBottomColor: '#fff',
+  },
+  inactiveHeader: {
+    opacity: 0.6,
   },
 });

@@ -32,6 +32,7 @@ const CustomHeader = ({
     <View style={[styles.headerContainer, style]}>
       {isLeftIcon ? (
         <TouchableRipple
+          borderless={true}
           style={styles.leftIconContainer}
           onPress={() => handlePress('left')}>
           {leftIcon ? (
@@ -46,6 +47,7 @@ const CustomHeader = ({
       <Text style={styles.headerTitle}>{headerTitle}</Text>
       {rightIcon ? (
         <TouchableRipple
+          borderless={true}
           style={styles.rightIconContainer}
           onPress={() => handlePress('right')}>
           {rightIcon}
@@ -68,7 +70,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderBottomWidth: 0.2,
     backgroundColor: '#fff',
-    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: {width: 0, height: 4},
+    shadowRadius: 8,
+    elevation: 5,
     borderBottomColor: '#ddd',
   },
   leftIconContainer: {
