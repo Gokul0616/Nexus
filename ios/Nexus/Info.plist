@@ -18,6 +18,14 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>NSCameraUsageDescription</key>
+<string>We need access to your camera to record videos.</string>
+<key>NSCameraUsageDescription</key>
+<string>$(PRODUCT_NAME) needs access to your Camera.</string>
+
+<!-- optionally, if you want to record audio: -->
+<key>NSMicrophoneUsageDescription</key>
+<string>$(PRODUCT_NAME) needs access to your Microphone.</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>

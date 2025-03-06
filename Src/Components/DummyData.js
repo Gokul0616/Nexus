@@ -1780,7 +1780,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/men/32.jpg',
     videoThumbnail:
       'https://images.pexels.com/photos/1552249/pexels-photo-1552249.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-    category: ['trending', 'fitness'],
+    category: ['for-you', 'trending', 'fitness'],
   },
   {
     id: '2',
@@ -1795,7 +1795,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/women/44.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1601924582972-5b7dce16f232?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D',
-    category: ['new', 'food'],
+    category: ['for-you', 'new', 'food'],
   },
   {
     id: '3',
@@ -1810,7 +1810,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/men/55.jpg',
     videoThumbnail:
       'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-    category: ['trending', 'travel'],
+    category: ['for-you', 'trending', 'travel'],
   },
   {
     id: '4',
@@ -1825,12 +1825,13 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/women/66.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['new', 'tech'],
+    category: ['for-you', 'new', 'tech'],
   },
   {
     id: '5',
     videoSource:
-      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+      'https://firebasestorage.googleapis.com/v0/b/tieoda.appspot.com/o/post%2F9QwvEOpJXXM5bn8BjUIP1D6UL6A2%2F344741e3-5fe7-4a98-a1ce-7bb0ac96ab9f%2Fvideo?alt=media&token=e8ac526c-edd0-4118-a813-56781d5fc7f8',
+
     username: '@cinemalover',
     caption: 'A glimpse of modern animation 🎬 #Sintel',
     likes: 12000,
@@ -1840,7 +1841,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/men/45.jpg',
     videoThumbnail:
       'https://images.pexels.com/photos/355948/pexels-photo-355948.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-    category: ['trending', 'animation'],
+    category: ['for-you', 'trending', 'animation'],
   },
   {
     id: '6',
@@ -1855,7 +1856,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/women/23.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1562072541-2b8ed0e48c05?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['trending', 'sci-fi', 'new'],
+    category: ['for-you', 'trending', 'sci-fi', 'new'],
   },
   {
     id: '7',
@@ -1870,7 +1871,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/women/12.jpg',
     videoThumbnail:
       'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-    category: ['clothes', 'fashion'],
+    category: ['for-you', 'clothes', 'fashion'],
   },
   {
     id: '8',
@@ -1885,7 +1886,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/men/10.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1525755662778-989d0524087e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['food', 'new'],
+    category: ['for-you', 'food', 'new'],
   },
   {
     id: '9',
@@ -1899,8 +1900,8 @@ export const exploreData = [
     musicTitle: 'Original Sound - @adventureseeker',
     profilePic: 'https://randomuser.me/api/portraits/men/77.jpg',
     videoThumbnail:
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['trending', 'adventure'],
+      'https://images.pexels.com/photos/1512917/pexels-photo-1512917.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    category: ['for-you', 'trending', 'adventure'],
   },
   {
     id: '10',
@@ -1915,7 +1916,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/women/31.jpg',
     videoThumbnail:
       'https://images.pexels.com/photos/36753/amazing-animal-beautiful-beautifull.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-    category: ['trending', 'music'],
+    category: ['for-you', 'trending', 'music'],
   },
   {
     id: '11',
@@ -1930,7 +1931,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/men/50.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1481349518771-20055b2a7b24?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['new', 'art'],
+    category: ['for-you', 'new', 'art'],
   },
   {
     id: '12',
@@ -1945,7 +1946,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/women/60.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['trending', 'nature'],
+    category: ['for-you', 'trending', 'nature'],
   },
   {
     id: '13',
@@ -1960,7 +1961,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/men/65.jpg',
     videoThumbnail:
       'https://images.pexels.com/photos/1300400/pexels-photo-1300400.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-    category: ['clothes', 'trending', 'urban'],
+    category: ['for-you', 'clothes', 'trending', 'urban'],
   },
   {
     id: '14',
@@ -1975,7 +1976,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/women/70.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['new', 'tech'],
+    category: ['for-you', 'new', 'tech'],
   },
   {
     id: '15',
@@ -1990,7 +1991,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/men/90.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1530639837122-18a1f74b4578?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['trending', 'travel', 'new'],
+    category: ['for-you', 'trending', 'travel', 'new'],
   },
   {
     id: '16',
@@ -2005,7 +2006,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/women/85.jpg',
     videoThumbnail:
       'https://images.pexels.com/photos/210186/pexels-photo-210186.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-    category: ['trending', 'dance'],
+    category: ['for-you', 'trending', 'dance'],
   },
   {
     id: '17',
@@ -2020,7 +2021,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/men/77.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['trending', 'comedy'],
+    category: ['for-you', 'trending', 'comedy'],
   },
   {
     id: '18',
@@ -2035,7 +2036,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/men/80.jpg',
     videoThumbnail:
       'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-    category: ['new', 'pets'],
+    category: ['for-you', 'new', 'pets'],
   },
   {
     id: '19',
@@ -2050,7 +2051,7 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/women/95.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['trending', 'fitness', 'new'],
+    category: ['for-you', 'trending', 'fitness', 'new'],
   },
   {
     id: '20',
@@ -2065,10 +2066,12 @@ export const exploreData = [
     profilePic: 'https://randomuser.me/api/portraits/men/100.jpg',
     videoThumbnail:
       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
-    category: ['lifestyle', 'new'],
+    category: ['for-you', 'lifestyle', 'new'],
   },
 ];
+
 export const exploreCategoriesData = [
+  {category: 'for-you', title: 'For You', icon: 'home-outline'},
   {category: 'trending', title: 'Trending', icon: 'trending-up-outline'},
   {category: 'fitness', title: 'Fitness', icon: 'barbell-outline'},
   {category: 'new', title: 'New', icon: 'sparkles-outline'},

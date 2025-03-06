@@ -1,15 +1,16 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React, {useContext} from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import React, {useContext, useEffect} from 'react';
+import {StatusBar, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AddPost from '../Screens/Home/AddPost';
 import ClipVideo from '../Screens/Home/ClipVideo';
-import Explore from '../Screens/Home/Explore';
+import Explore from '../Screens/Explore/Explore';
 import HomeScreen from '../Screens/Home/HomeScreen';
 import Profile from '../Screens/Home/Profile';
 import {NavigationContext} from '../Services/Hooks/NavigationProvider';
 import {PrimaryColor} from '../Components/CommonData';
 import NotificationScreen from '../Screens/Home/NotificationScreen';
+import {ExploreLayout} from '../Screens/Explore/ExploreLayout';
 
 const Tab = createBottomTabNavigator();
 const CustomAddPostButton = ({onPress}) => (
@@ -30,7 +31,16 @@ const CustomAddPostButton = ({onPress}) => (
 
 export default function BottomStack() {
   const {setCurrentIndex, currentIndex} = useContext(NavigationContext);
-
+  useEffect(() => {
+    StatusBar.setBackgroundColor(
+      currentIndex === 0 || currentIndex === 2 ? '#151515' : '#fff',
+    );
+    StatusBar.setBarStyle(
+      currentIndex === 0 || currentIndex === 2
+        ? 'light-content'
+        : 'dark-content',
+    );
+  }, [currentIndex]);
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -74,20 +84,24 @@ export default function BottomStack() {
       />
       <Tab.Screen
         name="Explore"
-        component={Explore}
+        component={ExploreLayout}
         listeners={{
           focus: () => setCurrentIndex(1),
         }}
       />
       <Tab.Screen
         name="AddPost"
-        component={AddPost}
+        component={() => {}}
         options={({navigation}) => ({
           tabBarIcon: () => null,
+          tabBarLabel: () => null,
           tabBarButton: props => (
             <View style={{alignItems: 'center', justifyContent: 'center'}}>
               <CustomAddPostButton
-                onPress={() => navigation.navigate('AddPost')}
+                onPress={() => {
+                  navigation.navigate('AddPosts');
+                  setCurrentIndex(2);
+                }}
               />
             </View>
           ),

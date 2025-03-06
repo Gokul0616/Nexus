@@ -1,6 +1,7 @@
 import {StyleSheet, Dimensions} from 'react-native';
 import {PrimaryColor} from '../CommonData';
-
+const CARD_WIDTH = Dimensions.get('window').width * 0.5;
+const CARD_HEIGHT = 300;
 const {width: screenWidth} = Dimensions.get('window');
 
 const HomeScreenStyles = StyleSheet.create({
@@ -702,9 +703,149 @@ const NotificationScreenStyles = StyleSheet.create({
   },
 });
 
+const MainExploreScreenStyle = StyleSheet.create({
+  container: {flex: 1, backgroundColor: '#fff'},
+  searchInput: {
+    margin: 16,
+  },
+  content: {
+    paddingTop: 90,
+    paddingBottom: 20,
+  },
+  searchContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2,
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    backgroundColor: '#fff',
+  },
+  searchMessagesContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchInputView: {
+    height: 40,
+    paddingHorizontal: 10,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    width: '100%',
+    justifyContent: 'center',
+    borderRadius: 4,
+    backgroundColor: '#f8f8f8',
+  },
+  searchText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  categorySection: {
+    marginBottom: 24,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  categoryIcon: {
+    marginRight: 8,
+  },
+  categoryTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  viewAllContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  viewAll: {
+    color: '#666',
+    fontWeight: '500',
+    marginRight: 4,
+  },
+  carousel: {
+    paddingLeft: 16,
+  },
+  videoCard: {
+    width: CARD_WIDTH,
+    marginRight: 16,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#f0f0f0',
+  },
+  profilePic: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    zIndex: 1,
+  },
+  thumbnailContainer: {
+    position: 'relative',
+  },
+  videoThumbnail: {
+    width: '100%',
+    height: CARD_HEIGHT,
+    maxHeight: 800,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.8)',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+  },
+  videoInfo: {
+    padding: 12,
+    position: 'absolute',
+    bottom: 0,
+    zIndex: 2,
+  },
+  username: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#fff',
+  },
+  caption: {
+    color: '#fff',
+    marginBottom: 8,
+  },
+  metrics: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  metric: {
+    fontSize: 12,
+    color: '#fff',
+  },
+});
 export {
   HomeScreenStyles,
   MessagesOutsideStyles,
+  MainExploreScreenStyle,
   ProfileScreenstyles,
   ClipItemStyles,
   ChatscreenStyles,
