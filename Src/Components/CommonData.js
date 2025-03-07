@@ -1,4 +1,5 @@
 export const AppName = 'Nexus';
+import axios from 'axios';
 export const PrimaryColor = '#0887ff'; // utils/relativeTime.js
 export const getRelativeTime = timestamp => {
   // Simulated current time to match the test data
@@ -49,4 +50,18 @@ export const formatNumber = num => {
     return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
   }
   return num.toString();
+};
+
+export const fetchCityData = async city => {
+  await axios
+    .get(`https://nominatim.openstreetmap.org/search?q=${city}&format=json`)
+    .then(response => {
+      if (response.data.length > 0) {
+        return response.data[0];
+      }
+    })
+    .catch(error => {
+      console.log('Error fetching city data:', error.message);
+      return null;
+    });
 };

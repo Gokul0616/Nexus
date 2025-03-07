@@ -56,16 +56,16 @@ const AddPost = () => {
       setIsRecording(true);
       await cameraRef.current.startRecording({
         onRecordingFinished: video => {
-          console.log('Video path:', video.path);
           setIsRecording(false);
+          navigation.navigate('UploadScreen', {path: video.path});
         },
         onRecordingError: error => {
-          console.error('Recording error:', error);
+          console.warn('Recording error:', error);
           setIsRecording(false);
         },
       });
     } catch (e) {
-      console.error(e);
+      console.warn(e);
       setIsRecording(false);
     }
   };
@@ -76,7 +76,7 @@ const AddPost = () => {
       setIsRecording(false);
       await cameraRef.current.stopRecording();
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
   };
 
