@@ -1,22 +1,24 @@
-import React, {useState, useEffect, useRef} from 'react';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import React, {useEffect, useRef, useState} from 'react';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {
+  Image,
+  PermissionsAndroid,
+  Platform,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  Dimensions,
-  ActivityIndicator,
-  Animated,
+  Vibration,
+  View,
 } from 'react-native';
-import {Camera, useCameraDevices} from 'react-native-vision-camera';
+import {TouchableRipple} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import DurationSelector from '../../Components/DurationSelector';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {Camera, useCameraDevices} from 'react-native-vision-camera';
 import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
-import ZoomSlider from '../../Components/ZoomLevelIndicator';
-
-const {width: SCREEN_WIDTH} = Dimensions.get('window');
+import DurationSelector from '../../Components/DurationSelector';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
+import {AddPostScreenStyles as styles} from '../../Components/Styles/Styles';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
 const AddPost = () => {
   const [hasPermission, setHasPermission] = useState(false);
@@ -24,16 +26,20 @@ const AddPost = () => {
   const [cameraPosition, setCameraPosition] = useState('back');
   const [isRecording, setIsRecording] = useState(false);
   const [isLongPressRecording, setIsLongPressRecording] = useState(false);
-  const [selectedDuration, setSelectedDuration] = useState('15s');
-  // zoom is a normalized value from 0 to 1
+  const [selectedDuration, setSelectedDuration] = useState('3m');
   const [zoom, setZoom] = useState(0);
   const cameraRef = useRef(null);
   const isFocused = useIsFocused();
   const devices = useCameraDevices();
   const backDevice = devices.find(d => d.position === 'back');
+  const [torch, setTorch] = useState(false);
   const frontDevice = devices.find(d => d.position === 'front');
   const device = cameraPosition === 'back' ? backDevice : frontDevice;
 
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const intervalRef = useRef(null);
+  const [videoUri, setVideoUri] = useState(null);
+  const [cameraPer, setCamerPer] = useState(false);
   useEffect(() => {
     (async () => {
       const cameraPermission = await Camera.requestCameraPermission();
@@ -43,42 +49,158 @@ const AddPost = () => {
           (microphonePermission === 'authorized' ||
             microphonePermission === 'granted'),
       );
+      setCamerPer(true);
     })();
   }, []);
+  const requestStoragePermission = async () => {
+    if (Platform.OS === 'android') {
+      const permissionType =
+        Platform.Version >= 33
+          ? PERMISSIONS.ANDROID.READ_MEDIA_VIDEO
+          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+      let result = await check(permissionType);
+      console.log('Permission check result:', result);
 
+      if (result === RESULTS.GRANTED) {
+        return true;
+      }
+      result = await request(permissionType);
+
+      if (result === RESULTS.GRANTED) {
+        return true;
+      } else if (result === RESULTS.BLOCKED || result === RESULTS.UNAVAILABLE) {
+        // Alert.alert(
+        //   'Permission Required',
+        //   'Please enable storage permission in settings to load videos.',
+        // );
+        console.log(
+          'Permission Required Please enable storage permission in settings to load videos.',
+        );
+      }
+      return false;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    const fetchLatestVideo = async () => {
+      try {
+        if (Platform.OS === 'android') {
+          const permissionGranted = await requestStoragePermission();
+          if (!permissionGranted) {
+            return;
+          }
+        }
+
+        const params = {
+          first: 10,
+          assetType: 'Videos',
+        };
+        const {edges} = await CameraRoll.getPhotos(params);
+
+        if (edges.length > 0) {
+          const latestVideo = edges
+            .map(edge => edge.node)
+            .sort((a, b) => b.timestamp - a.timestamp)[0];
+          const uri =
+            latestVideo.image.uri ||
+            (latestVideo.video && latestVideo.video.uri);
+          setVideoUri(uri);
+        }
+      } catch (error) {
+        console.error('Error fetching video:', error);
+      }
+    };
+    if (cameraPer) {
+      fetchLatestVideo();
+    }
+  }, [cameraPer]);
+  console.log(videoUri);
   const handleFlipCamera = () => {
     setCameraPosition(prev => (prev === 'back' ? 'front' : 'back'));
+  };
+
+  const parseDurationToMs = duration => {
+    const num = parseInt(duration, 10);
+    return duration.includes('m') ? num * 60 * 1000 : num * 1000;
+  };
+
+  const formatTime = timeInSeconds => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
   };
 
   const startRecording = async () => {
     try {
       if (cameraRef.current == null) return;
+
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
       setIsRecording(true);
+      setElapsedTime(0);
+
+      const maxDuration = parseDurationToMs(selectedDuration);
+      Vibration.vibrate(100);
+      intervalRef.current = setInterval(() => {
+        setElapsedTime(prev => {
+          const nextTime = prev + 1;
+          if (nextTime * 1000 >= maxDuration) {
+            clearInterval(intervalRef.current);
+            stopRecording();
+          }
+          return nextTime;
+        });
+      }, 1000);
+
       await cameraRef.current.startRecording({
         onRecordingFinished: video => {
           setIsRecording(false);
+          clearInterval(intervalRef.current);
+          setElapsedTime(0);
           navigation.navigate('UploadScreen', {path: video.path});
         },
         onRecordingError: error => {
           console.warn('Recording error:', error);
           setIsRecording(false);
+          clearInterval(intervalRef.current);
+          setElapsedTime(0);
         },
+        maxDuration: maxDuration,
       });
     } catch (e) {
       console.warn(e);
       setIsRecording(false);
+      clearInterval(intervalRef.current);
+      setElapsedTime(0);
     }
   };
 
   const stopRecording = async () => {
     try {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
       if (cameraRef.current == null) return;
       setIsRecording(false);
+      setElapsedTime(0);
       await cameraRef.current.stopRecording();
     } catch (e) {
       console.warn(e);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   const handleRecordPress = () => {
     if (isRecording) {
@@ -88,6 +210,25 @@ const AddPost = () => {
     }
   };
 
+  const handleGallery = async () => {
+    const options = {
+      mediaType: 'video',
+      selectionLimit: 1,
+      durationLimit: 180,
+    };
+
+    launchImageLibrary(options, res => {
+      if (res.didCancel) {
+        console.log('User cancelled');
+      } else if (res.errorCode) {
+        console.log('ImagePickerError: ', res.errorMessage);
+      } else {
+        // setPickerResponse(res);
+        // console.log(res.assets[0].uri, res.assets[0].type);
+        navigation.navigate('UploadScreen', {path: res.assets[0].uri});
+      }
+    });
+  };
   if (!hasPermission) {
     return (
       <View style={styles.permissionContainer}>
@@ -105,24 +246,32 @@ const AddPost = () => {
     );
   }
 
+  const maxDurationSec = parseDurationToMs(selectedDuration) / 1000;
+
   return (
     <View style={styles.container}>
       <Camera
         ref={cameraRef}
         style={StyleSheet.absoluteFill}
         device={device}
-        // isActive={false}
         isActive={isFocused}
         video={true}
+        torch={torch ? 'on' : 'off'}
         audio={true}
-        zoom={zoom} // set camera zoom from state
       />
 
-      <View style={styles.topBar}>
+      {/* <View style={styles.topBar}>
         <TouchableOpacity style={styles.addSoundBtn}>
           <Text style={styles.addSoundText}>Add sound</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
+      {isRecording && (
+        <View style={styles.timerContainer}>
+          <Text style={styles.timerText}>
+            {formatTime(elapsedTime)} / {formatTime(maxDurationSec)}
+          </Text>
+        </View>
+      )}
       <TouchableOpacity
         style={styles.closeButton}
         onPress={() => {
@@ -132,48 +281,33 @@ const AddPost = () => {
       </TouchableOpacity>
 
       <View style={styles.rightSidebar}>
-        <TouchableOpacity style={styles.iconButton} onPress={handleFlipCamera}>
-          <Ionicons name="camera-reverse-outline" size={24} color="#fff" />
-          <Text style={styles.iconLabel}>Flip</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="speedometer-outline" size={24} color="#fff" />
-          <Text style={styles.iconLabel}>Speed</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="color-filter-outline" size={24} color="#fff" />
-          <Text style={styles.iconLabel}>Filters</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <MaterialCommunityIcons
-            name="face-woman-outline"
-            size={24}
-            color="#fff"
-          />
-          <Text style={styles.iconLabel}>Beauty</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="timer-outline" size={24} color="#fff" />
-          <Text style={styles.iconLabel}>Timer</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="chatbubble-outline" size={24} color="#fff" />
-          <Text style={styles.iconLabel}>Reply</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="flash-outline" size={24} color="#fff" />
-          <Text style={styles.iconLabel}>Flash</Text>
-        </TouchableOpacity>
+        <TouchableRipple
+          rippleColor={'rgba(0, 0, 0, .15)'}
+          style={styles.iconButton}
+          onPress={handleFlipCamera}>
+          <>
+            <Ionicons name="camera-reverse-outline" size={24} color="#fff" />
+            <Text style={styles.iconLabel}>Flip</Text>
+          </>
+        </TouchableRipple>
+        <TouchableRipple
+          rippleColor={'rgba(0, 0, 0, .15)'}
+          style={styles.iconButton}
+          onPress={() => {
+            if (cameraPosition === 'back') {
+              setTorch(!torch);
+            }
+          }}>
+          <>
+            {torch ? (
+              <Ionicons name="flash-off-outline" size={24} color="#fff" />
+            ) : (
+              <Ionicons name="flash-outline" size={24} color="#fff" />
+            )}
+            <Text style={styles.iconLabel}>Flash</Text>
+          </>
+        </TouchableRipple>
       </View>
-
-      {/* Zoom Slider placed above the DurationSelector */}
-      {/* <View style={styles.zoomSliderWrapper}>
-        <ZoomSlider
-          zoom={zoom}
-          onZoomChange={setZoom}
-          maxZoom={device.maxZoom || 10}
-        />
-      </View> */}
 
       <View style={styles.durationWrapper}>
         <DurationSelector
@@ -184,7 +318,10 @@ const AddPost = () => {
 
       <View style={styles.bottomBar}>
         <TouchableOpacity
-          style={styles.recordButton}
+          style={[
+            styles.recordButton,
+            isRecording && {backgroundColor: '#a9d3fb'},
+          ]}
           onPress={handleRecordPress}
           onLongPress={() => {
             setIsLongPressRecording(true);
@@ -196,15 +333,34 @@ const AddPost = () => {
               stopRecording();
             }
           }}>
-          <View style={styles.innerRecordButton}>
+          <View
+            style={[
+              styles.innerRecordButton,
+              !isRecording && {backgroundColor: 'grey'},
+            ]}>
             <Text style={styles.recordButtonText}>
               {isRecording ? 'Stop' : 'Rec'}
             </Text>
           </View>
         </TouchableOpacity>
         <View style={styles.extraOptions}>
-          <Text style={styles.extraOption}>Effects</Text>
-          <Text style={styles.extraOption}>Upload</Text>
+          <Text style={styles.extraOption}></Text>
+          <TouchableOpacity
+            onPress={() => handleGallery()}
+            style={{
+              height: 50,
+              width: 50,
+              borderWidth: 1,
+              borderColor: '#fff',
+              borderRadius: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Image
+              source={{uri: videoUri}}
+              style={{height: 47, width: 47, borderRadius: 9.4}}
+            />
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -212,112 +368,3 @@ const AddPost = () => {
 };
 
 export default AddPost;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
-  permissionContainer: {
-    flex: 1,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  permissionText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  topBar: {
-    position: 'absolute',
-    top: 0,
-    width: '100%',
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addSoundBtn: {
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  addSoundText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  rightSidebar: {
-    position: 'absolute',
-    top: 100,
-    right: 10,
-    alignItems: 'center',
-  },
-  iconButton: {
-    marginBottom: 25,
-    alignItems: 'center',
-  },
-  iconLabel: {
-    color: '#fff',
-    fontSize: 11,
-    marginTop: 4,
-  },
-  zoomSliderWrapper: {
-    position: 'absolute',
-    bottom: 200,
-    width: '100%',
-  },
-  durationWrapper: {
-    position: 'absolute',
-    bottom: 150,
-    width: SCREEN_WIDTH,
-  },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 20,
-    width: '100%',
-    alignItems: 'center',
-  },
-  recordButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(255,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  innerRecordButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  recordButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  extraOptions: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 30,
-  },
-  extraOption: {
-    color: '#fff',
-    fontSize: 14,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-  },
-});

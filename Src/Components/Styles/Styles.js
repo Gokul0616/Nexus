@@ -842,6 +842,127 @@ const MainExploreScreenStyle = StyleSheet.create({
     color: '#fff',
   },
 });
+
+const AddPostScreenStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  permissionContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  permissionText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  topBar: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addSoundBtn: {
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  addSoundText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  timerText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  timerContainer: {
+    position: 'absolute',
+    top: 50,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rightSidebar: {
+    position: 'absolute',
+    top: 100,
+    right: 10,
+    alignItems: 'center',
+  },
+  iconButton: {
+    marginBottom: 25,
+    alignItems: 'center',
+  },
+  iconLabel: {
+    color: '#fff',
+    fontSize: 11,
+    marginTop: 4,
+  },
+  durationWrapper: {
+    position: 'absolute',
+    bottom: 150,
+    width: screenWidth,
+  },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 20,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recordButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+    zIndex: 2,
+  },
+  innerRecordButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: PrimaryColor,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  recordButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  extraOptions: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 30,
+    position: 'absolute',
+    zIndex: 1,
+  },
+  extraOption: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+  },
+});
+
 export {
   HomeScreenStyles,
   MessagesOutsideStyles,
@@ -850,4 +971,5 @@ export {
   ClipItemStyles,
   ChatscreenStyles,
   NotificationScreenStyles,
+  AddPostScreenStyles,
 };

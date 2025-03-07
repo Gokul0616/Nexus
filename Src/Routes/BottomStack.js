@@ -91,7 +91,7 @@ export default function BottomStack() {
       />
       <Tab.Screen
         name="AddPost"
-        component={() => {}}
+        component={AddPost}
         options={({navigation}) => ({
           tabBarIcon: () => null,
           tabBarLabel: () => null,

@@ -96,7 +96,7 @@ const UploadPost = ({route, navigation}) => {
           </TouchableOpacity>
         </View>
 
-        <TouchableRipple rippleColor={'rgb(0,0,0,0.5)'} style={styles.menuItem}>
+        {/* <TouchableRipple rippleColor={'rgb(0,0,0,0.5)'} style={styles.menuItem}>
           <>
             <View style={styles.menuRow}>
               <Octicons name="person" size={22} color="#333" />
@@ -104,7 +104,7 @@ const UploadPost = ({route, navigation}) => {
             </View>
             <Ionicons name="chevron-forward-outline" size={22} color="#333" />
           </>
-        </TouchableRipple>
+        </TouchableRipple> */}
         <TouchableRipple rippleColor={'rgb(0,0,0,0.5)'} style={styles.menuItem}>
           <>
             <View style={styles.menuRow}>
