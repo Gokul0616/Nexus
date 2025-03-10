@@ -53,7 +53,7 @@ const SignInScreen = () => {
 
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder="Email or Username"
           placeholderTextColor="#999"
           keyboardType="email-address"
           value={email}

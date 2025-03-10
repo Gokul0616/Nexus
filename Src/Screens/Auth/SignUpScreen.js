@@ -18,6 +18,7 @@ const {width, height} = Dimensions.get('window');
 const SignupScreen = () => {
   const navigation = useNavigation();
   const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [password, setPassword] = useState('');
@@ -58,6 +59,14 @@ const SignupScreen = () => {
           value={name}
           cursorColor={PrimaryColor}
           onChangeText={setName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          placeholderTextColor="#888"
+          value={username}
+          cursorColor={PrimaryColor}
+          onChangeText={setUsername}
         />
         <TextInput
           style={styles.input}

@@ -15,6 +15,7 @@ import MessagesOutside from '../Screens/Messages/MessagesOutside';
 import BottomStack from './BottomStack';
 import AddPost from '../Screens/Home/AddPost';
 import UploadScreen from '../Components/UploadScreen';
+import Profile from '../Screens/Home/Profile';
 const Stack = createStackNavigator();
 
 export const MainStack = () => {
@@ -49,6 +50,7 @@ export const MainStack = () => {
         <Stack.Screen name="MyTabs" component={BottomStack} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="ProfileMenu" component={ProfileMenu} />
+        <Stack.Screen name="OtherProfileScreen" component={Profile} />
         <Stack.Screen name="ChatScreen" component={MessageChatScreen} />
         <Stack.Screen name="WebScreen" component={WebScreen} />
         <Stack.Screen name="AddPosts" component={AddPost} />

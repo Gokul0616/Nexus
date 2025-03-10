@@ -238,6 +238,7 @@ const MessageChatScreen = ({route}) => {
         )}
         <View style={styles.textInputContainer}>
           <TextInput
+            autoFocus={replyMessage ? true : false}
             ref={inputRef}
             style={styles.textInput}
             cursorColor="#0887ff"
@@ -288,24 +289,6 @@ const MessageChatScreen = ({route}) => {
         item={item}
         onSwipeReply={() => setReplyMessage(item)}
         flatListRef={flatListRef}>
-        {item?.hasReply && (
-          <TouchableRipple
-            borderless={true}
-            onPress={() => handleReplyPress(item?.hasReply?.id)}
-            rippleColor={'rgba(0, 0, 0, .15)'}
-            style={[
-              styles.replymessageContainer,
-              item.isSender
-                ? {alignSelf: 'flex-end'}
-                : {alignSelf: 'flex-start'},
-            ]}>
-            <Text style={styles.replyMessageText}>
-              {item?.hasReply?.text.slice(0, 30)}
-              {item?.hasReply?.text.length > 30 ? '...' : ''}
-            </Text>
-          </TouchableRipple>
-        )}
-
         {item.isLink &&
           (item.linkPreview ? (
             <TouchableRipple
@@ -348,7 +331,23 @@ const MessageChatScreen = ({route}) => {
           ) : item.text.match(/https?:\/\/[^\s]+/) ? (
             <CustomLoadingIndicator />
           ) : null)}
-
+        {item?.hasReply && (
+          <TouchableRipple
+            borderless={true}
+            onPress={() => handleReplyPress(item?.hasReply?.id)}
+            rippleColor={'rgba(0, 0, 0, .15)'}
+            style={[
+              styles.replymessageContainer,
+              item.isSender
+                ? {alignSelf: 'flex-end'}
+                : {alignSelf: 'flex-start'},
+            ]}>
+            <Text style={styles.replyMessageText}>
+              {item?.hasReply?.text.slice(0, 30)}
+              {item?.hasReply?.text.length > 30 ? '...' : ''}
+            </Text>
+          </TouchableRipple>
+        )}
         <View
           style={[
             styles.chatBubble,

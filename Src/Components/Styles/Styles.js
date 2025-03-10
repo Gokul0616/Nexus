@@ -3,6 +3,7 @@ import {PrimaryColor} from '../CommonData';
 const CARD_WIDTH = Dimensions.get('window').width * 0.5;
 const CARD_HEIGHT = 300;
 const {width: screenWidth} = Dimensions.get('window');
+const width = Dimensions.get('window').width;
 
 const HomeScreenStyles = StyleSheet.create({
   container: {
@@ -281,44 +282,134 @@ const MessagesOutsideStyles = StyleSheet.create({
   },
 });
 const ProfileScreenstyles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#fff'},
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
   header: {
-    alignItems: 'center',
-    paddingVertical: 20,
-    borderBottomColor: '#ddd',
-    borderBottomWidth: 1,
-    marginBottom: 10,
-  },
-  avatar: {width: 100, height: 100, borderRadius: 50},
-  name: {fontSize: 22, fontWeight: 'bold', marginTop: 10},
-  username: {fontSize: 16, color: '#666'},
-  bio: {
-    marginTop: 10,
-    fontSize: 14,
-    textAlign: 'center',
-    paddingHorizontal: 20,
-  },
-  statsContainer: {flexDirection: 'row', marginTop: 15},
-  stat: {alignItems: 'center', marginHorizontal: 15},
-  statNumber: {fontSize: 18, fontWeight: 'bold'},
-  statLabel: {fontSize: 14, color: '#666'},
-  tabBar: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    padding: 15,
+    alignItems: 'center',
   },
-  tabButton: {paddingVertical: 10},
-  activeTab: {borderBottomWidth: 2, borderBottomColor: '#000'},
-  tabText: {fontSize: 16, color: '#000'},
-  contentSection: {padding: 10},
-  sectionHeader: {fontSize: 18, fontWeight: 'bold', marginBottom: 10},
-  grid: {justifyContent: 'space-between'},
-  gridItem: {flex: 1, margin: 5, alignItems: 'center'},
-  gridImage: {width: 110, height: 110, borderRadius: 8},
-  gridCaption: {marginTop: 5, fontSize: 12, color: '#333', textAlign: 'center'},
-  horizontalList: {paddingVertical: 10},
+  avatarContainer: {
+    position: 'relative',
+    marginRight: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  streakBorder: {
+    position: 'absolute',
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    borderWidth: 2,
+    borderColor: '#ff2478',
+    borderStyle: 'dashed',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  statLabel: {
+    color: 'gray',
+    fontSize: 12,
+  },
+  streakCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#ffeef4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  streakPercentage: {
+    fontWeight: 'bold',
+    color: '#ff2478',
+  },
+  streakProgress: {
+    position: 'absolute',
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    borderWidth: 2,
+    borderColor: '#ff2478',
+    borderLeftColor: 'transparent',
+  },
+  infoContainer: {
+    paddingHorizontal: 15,
+    marginBottom: 7,
+  },
+  name: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  username: {
+    color: 'gray',
+    marginBottom: 5,
+  },
+  bio: {
+    marginBottom: 5,
+  },
+  website: {
+    color: '#0095f6',
+    marginBottom: 5,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  location: {
+    color: 'gray',
+    marginLeft: 5,
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    backgroundColor: 'white',
+  },
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'transparent',
+  },
+  activeTab: {},
+  gridItem: {
+    width: width / 3,
+    height: width / 3,
+    borderWidth: 0.5,
+    borderColor: 'white',
+  },
+  gridImage: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  playButton: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{translateX: -12}, {translateY: -12}],
+  },
 });
+
 const ChatscreenStyles = StyleSheet.create({
   container: {
     flex: 1,
