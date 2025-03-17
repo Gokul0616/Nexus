@@ -9,10 +9,14 @@ import {
   StyleSheet,
   Dimensions,
   ScrollView,
+  Vibration,
 } from 'react-native';
 import {TouchableRipple} from 'react-native-paper';
-import {AppName, PrimaryColor} from '../../Components/CommonData';
+import {AppName, PrimaryColor, storage} from '../../Components/CommonData';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AlertBox from '../../Components/AlertMessage';
+import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
+import apiClient from '../../Services/api/apiInterceptor';
 
 const {width, height} = Dimensions.get('window');
 
@@ -21,6 +25,22 @@ const SignInScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [isMessage, setIsMessage] = useState({
+    message: '',
+    heading: '',
+    isRight: false,
+    rightButtonText: 'OK',
+    triggerFunction: () => {},
+    setShowAlert: () => {},
+    showAlert: false,
+    leftTriggerFunction: () => {},
+  });
+  const closeAlert = () => {
+    setIsMessage(prev => ({...prev, showAlert: false}));
+  };
   const clearStackAndNavigate = () => {
     navigation.dispatch(
       CommonActions.reset({
@@ -33,10 +53,120 @@ const SignInScreen = () => {
       }),
     );
   };
+
+  const validateEmail = email => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = password => {
+    return password.length >= 8;
+  };
+  const navigateHome = token => {
+    storage.set('token', token);
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'BottomTabs'}],
+      }),
+    );
+  };
+
+  const handleSignin = async () => {
+    let valid = true;
+
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address.');
+      valid = false;
+    } else {
+      setEmailError('');
+    }
+
+    if (!validatePassword(password)) {
+      setPasswordError(`Password must be at least 8 characters long.`);
+      valid = false;
+    } else {
+      setPasswordError('');
+    }
+    if (!valid) {
+      Vibration.vibrate(100);
+      return;
+    }
+    if (valid) {
+      try {
+        setIsLoading(true);
+        const response = await apiClient.post('/user/auth/signin', {
+          email: email.toLowerCase(),
+          password: password,
+        });
+        if (response.status === 200) {
+          setIsMessage({
+            message: response.data.message || 'Signed In!!',
+            heading: 'Success',
+            isRight: true,
+            leftTriggerFunction: () => {
+              navigateHome(response.data.jwt);
+            },
+            rightButtonText: 'OK',
+            triggerFunction: () => {
+              closeAlert();
+              navigateHome(response.data.jwt);
+            },
+            setShowAlert: () => {
+              isMessage.setShowAlert(false);
+            },
+            showAlert: true,
+          });
+        } else {
+          setIsMessage({
+            message: response.data,
+            heading: 'Alert',
+            isRight: false,
+            rightButtonText: 'OK',
+            triggerFunction: () => {},
+            setShowAlert: () => {
+              isMessage.setShowAlert(false);
+            },
+            showAlert: true,
+          });
+        }
+      } catch (error) {
+        setIsMessage({
+          message: error?.response?.data?.message || 'Something went wrong',
+          heading: 'Alert',
+          isRight: false,
+          rightButtonText: 'OK',
+          triggerFunction: () => {},
+          setShowAlert: () => {
+            isMessage.setShowAlert(false);
+          },
+          showAlert: true,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="always">
+      {isLoading && (
+        <View style={styles.loadingIndicator}>
+          <CustomLoadingIndicator />
+        </View>
+      )}
+      <AlertBox
+        heading={isMessage.heading}
+        message={isMessage.message}
+        setShowAlert={closeAlert}
+        showAlert={isMessage.showAlert}
+        triggerFunction={isMessage.triggerFunction}
+        isRight={isMessage.isRight}
+        leftTriggerFunction={isMessage.leftTriggerFunction}
+        rightButtonText={isMessage.rightButtonText}
+      />
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image
@@ -52,14 +182,21 @@ const SignInScreen = () => {
         <Text style={styles.subText}>Sign in to continue using Nexus.</Text>
 
         <TextInput
-          style={styles.input}
-          placeholder="Email or Username"
+          style={[styles.input, emailError ? styles.errorInput : null]}
+          placeholder="Email Address"
+          // placeholder="Email or Username"
           placeholderTextColor="#999"
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
         />
-        <View style={styles.passwordContainer}>
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+
+        <View
+          style={[
+            styles.passwordContainer,
+            passwordError ? styles.errorInput : null,
+          ]}>
           <TextInput
             style={styles.passwordInput}
             placeholder="Password"
@@ -77,6 +214,9 @@ const SignInScreen = () => {
             />
           </TouchableOpacity>
         </View>
+        {passwordError ? (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        ) : null}
 
         <TouchableOpacity onPress={() => {}}>
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
@@ -86,15 +226,13 @@ const SignInScreen = () => {
           borderless={true}
           rippleColor={'rgba(0,0,0,0.2)'}
           style={styles.signInButton}
-          onPress={() => {
-            console.log('Signing in...');
-          }}>
+          onPress={handleSignin}>
           <Text style={styles.signInButtonText}>Sign In</Text>
         </TouchableRipple>
 
         <View style={styles.footerTextContainer}>
           <Text style={styles.footerText}>Don't have an account?</Text>
-          <TouchableOpacity onPress={() => clearStackAndNavigate()}>
+          <TouchableOpacity onPress={clearStackAndNavigate}>
             <Text style={styles.footerLink}> Sign Up</Text>
           </TouchableOpacity>
         </View>
@@ -104,7 +242,6 @@ const SignInScreen = () => {
 };
 
 export default SignInScreen;
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -156,8 +293,8 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 10,
     paddingHorizontal: 15,
+    marginBottom: 10,
     fontSize: 16,
-    marginBottom: 15,
     backgroundColor: '#f9f9f9',
   },
   forgotPasswordText: {
@@ -203,6 +340,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     backgroundColor: '#f9f9f9',
     width: '100%',
+    marginBlock: 15,
   },
   passwordInput: {flex: 1, height: 50, fontSize: 16},
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    alignSelf: 'flex-start',
+    marginBottom: 10,
+  },
+  errorInput: {
+    borderColor: 'red',
+    marginBottom: 0,
+  },
+  loadingIndicator: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    position: 'absolute',
+    zIndex: 100,
+    height: height,
+    width: width,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

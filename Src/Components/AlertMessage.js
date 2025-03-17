@@ -13,6 +13,7 @@ const AlertBox = ({
   message,
   triggerFunction,
   showAlert,
+  leftTriggerFunction,
   setShowAlert,
   isRight = false,
   rightButtonText = 'OK',
@@ -46,7 +47,12 @@ const AlertBox = ({
             )}
             {isLeft && (
               <TouchableOpacity
-                onPress={() => setShowAlert(false)}
+                onPress={() => {
+                  setShowAlert(false);
+                  if (leftTriggerFunction) {
+                    leftTriggerFunction();
+                  }
+                }}
                 style={styles.button}>
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
@@ -124,7 +130,7 @@ const styles = StyleSheet.create({
 export default AlertBox;
 
 //usage mandatory props
-//  const [isMessage, setisMessage] = useState({
+//  const [isMessage, setIsMessage] = useState({
 //    message: '',
 //    heading: '',
 //    isRight: false,
@@ -134,12 +140,12 @@ export default AlertBox;
 //    showAlert: false,
 //  });
 //  const closeAlert = () => {
-//    setisMessage(prev => ({...prev, showAlert: false}));
+//    setIsMessage(prev => ({...prev, showAlert: false}));
 //  };
 
 // set values like this
 //  setIsMessage({
-//    message:","
+//    message:"",
 //    heading: 'Alert',
 //    isRight: false,
 //    rightButtonText: 'OK',
@@ -149,3 +155,12 @@ export default AlertBox;
 //    },
 //    showAlert: true,
 //  });
+// <AlertBox
+//   heading={isMessage.heading}
+//   message={isMessage.message}
+//   setShowAlert={closeAlert}
+//   showAlert={isMessage.showAlert}
+//   triggerFunction={isMessage.triggerFunction}
+//   isRight={isMessage.isRight}
+//   rightButtonText={isMessage.rightButtonText}
+// />

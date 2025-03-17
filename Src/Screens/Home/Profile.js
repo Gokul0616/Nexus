@@ -5,6 +5,8 @@ import {
   Animated,
   FlatList,
   Image,
+  Linking,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -21,14 +23,17 @@ import CustomHeader from '../../Components/CustomHeader';
 import {profileDummyData} from '../../Components/DummyData';
 import DynamicImage from '../../Components/DynamicImage';
 import {ProfileScreenstyles as styles} from '../../Components/Styles/Styles';
+import apiClient from '../../Services/api/apiInterceptor';
+import AlertBox from '../../Components/AlertMessage';
+import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
+import {RefreshControl} from 'react-native-gesture-handler';
 
 const ReelItem = ({item}) => {
   const [thumbnail, setThumbnail] = useState(null);
-
   useEffect(() => {
-    if (item.sources && item.sources.length > 0) {
+    if (item?.videoUrl) {
       createThumbnail({
-        url: item.sources[0],
+        url: item.videoUrl,
         time: 1000,
       })
         .then(response => {
@@ -38,15 +43,18 @@ const ReelItem = ({item}) => {
           console.error('Error generating thumbnail:', err);
         });
     }
-  }, [item.sources]);
-
+  }, [item]);
   return (
     <TouchableOpacity style={styles.gridItem}>
-      {thumbnail ? (
-        <Image source={{uri: thumbnail}} style={styles.gridImage} />
-      ) : (
-        <View style={[styles.gridImage, {backgroundColor: 'grey'}]} />
+      {item.thumbnail && (
+        <Image source={{uri: item.thumbnail}} style={styles.gridImage} />
       )}
+      {item.thumbnail === null &&
+        (thumbnail ? (
+          <Image source={{uri: thumbnail}} style={styles.gridImage} />
+        ) : (
+          <View style={[styles.gridImage, {backgroundColor: 'grey'}]} />
+        ))}
       <View style={styles.playButton}>
         <FontAwesome name="play" size={24} color="white" />
       </View>
@@ -56,12 +64,24 @@ const ReelItem = ({item}) => {
 
 const Profile = () => {
   const [selectedTab, setSelectedTab] = useState('reels');
-  const profile = profileDummyData[0];
+  const [profile, setProfileData] = useState(null);
   const [isConnected, setIsConnected] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const spinAnim = useState(new Animated.Value(0))[0];
   const [mediaKey, setMediaKey] = useState(0);
   const navigation = useNavigation();
-
+  const [isMessage, setIsMessage] = useState({
+    message: '',
+    heading: '',
+    isRight: false,
+    rightButtonText: 'OK',
+    triggerFunction: () => {},
+    setShowAlert: () => {},
+    showAlert: false,
+  });
+  const closeAlert = () => {
+    setIsMessage(prev => ({...prev, showAlert: false}));
+  };
   useEffect(() => {
     Animated.loop(
       Animated.timing(spinAnim, {
@@ -79,12 +99,37 @@ const Profile = () => {
 
   const renderContent = () => {
     if (selectedTab === 'reels') {
-      return profile.reels;
+      return profile?.videos;
     }
 
     return [];
   };
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await apiClient.get('user/profile');
+        if (response.status === 200) {
+          setProfileData(response.data);
+        }
+      } catch (err) {
+        setIsMessage({
+          message: err?.message || 'Unable to fetch profile data',
+          heading: 'Error',
+          isRight: false,
+          rightButtonText: 'OK',
+          triggerFunction: () => {},
+          setShowAlert: () => {
+            isMessage.setShowAlert(false);
+          },
+          showAlert: true,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [mediaKey]);
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
@@ -96,34 +141,61 @@ const Profile = () => {
   const renderItem = ({item}) => {
     return <ReelItem item={item} />;
   };
-
   return (
     <>
+      {isLoading && (
+        <View style={styles.loadingIndicator}>
+          <CustomLoadingIndicator />
+        </View>
+      )}
+      <AlertBox
+        heading={isMessage.heading}
+        message={isMessage.message}
+        setShowAlert={closeAlert}
+        showAlert={isMessage.showAlert}
+        triggerFunction={isMessage.triggerFunction}
+        isRight={isMessage.isRight}
+        rightButtonText={isMessage.rightButtonText}
+      />
       <CustomHeader
         isLeftIcon={true}
         leftIcon={<FontAwesome5 name="user-edit" size={20} color="black" />}
         leftIconFunction={() => {
-          navigation.navigate('EditProfile');
+          navigation.navigate('EditProfile', {profileData: profile});
         }}
         rightIcon={<Ionicons name="menu" size={25} color="black" />}
         rightIconFunction={() => {
           navigation.navigate('ProfileMenu');
         }}
-        headerTitle={profile.username}
+        headerTitle={profile?.username}
         style={{borderBottomWidth: 1, borderBottomColor: '#ddd', height: 50}}
       />
       <ScrollView
         style={styles.container}
-        stickyHeaderIndices={[2]}
-        showsVerticalScrollIndicator={false}>
+        stickyHeaderIndices={[1]}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={() => {
+              setMediaKey(prev => prev + 1);
+            }}
+          />
+        }>
         <View>
           <View style={styles.header}>
             <View style={styles.avatarContainer}>
-              <DynamicImage
-                uri={profile.avatar}
-                isConnected={isConnected}
-                style={styles.avatar}
-              />
+              {profile?.profilePic ? (
+                <Image
+                  source={{uri: profile?.profilePic}}
+                  style={styles.avatar}
+                />
+              ) : (
+                <Image
+                  source={require('../../../assets/images/emptyAvatar.png')}
+                  style={[styles.avatar, {backgroundColor: '#ddd'}]}
+                />
+              )}
               <Animated.View
                 style={[styles.streakBorder, {transform: [{rotate: spin}]}]}
               />
@@ -131,26 +203,30 @@ const Profile = () => {
             <View style={styles.statsContainer}>
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>
-                  {formatNumber(profile.postsCount)}
+                  {formatNumber(profile?.postCount ? profile?.postCount : 0)}
                 </Text>
                 <Text style={styles.statLabel}>Posts</Text>
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>
-                  {formatNumber(profile.followersCount)}
+                  {formatNumber(
+                    profile?.followerCount ? profile?.followerCount : 0,
+                  )}
                 </Text>
                 <Text style={styles.statLabel}>Followers</Text>
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>
-                  {formatNumber(profile.followingCount)}
+                  {formatNumber(
+                    profile?.followingCount ? profile?.followingCount : 0,
+                  )}
                 </Text>
                 <Text style={styles.statLabel}>Following</Text>
               </View>
               <View style={styles.statItem}>
                 <View style={styles.streakCircle}>
                   <Text style={styles.streakPercentage}>
-                    {profile.streakPercentsge}%
+                    {profile?.streakPercentage}%
                   </Text>
                   <Animated.View
                     style={[
@@ -165,63 +241,66 @@ const Profile = () => {
           </View>
 
           <View style={styles.infoContainer}>
-            <Text style={styles.name}>{profile.name}</Text>
-            <Text style={styles.username}>@{profile.username}</Text>
-            <Text style={styles.bio}>{profile.bio}</Text>
-            <TouchableOpacity
+            <Text style={styles.name}>{profile?.fullName}</Text>
+            <Text style={styles.username}>@{profile?.username}</Text>
+
+            <Text
+              onPress={() => {
+                if (profile?.bio === null) {
+                  navigation.navigate('EditProfile', {profileData: profile});
+                }
+              }}
+              style={styles.bio}>
+              {profile?.bio ? profile.bio : 'Add Bio'}
+            </Text>
+            {/* <TouchableOpacity
               onPress={() =>
                 navigation.navigate('WebScreen', {url: profile.website})
               }>
               <Text style={styles.website}>{profile.website}</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <View style={styles.locationContainer}>
               <MaterialIcons name="location-on" size={16} color="gray" />
-              <Text style={styles.location}>{profile.location}</Text>
+              <Text
+                style={styles.location}
+                onPress={() => {
+                  if (profile?.location === null) {
+                    navigation.navigate('EditProfile', {profileData: profile});
+                  } else {
+                    // Encode the bio text to safely include it in a URL
+                    const query = encodeURIComponent(profile.bio);
+                    let url = '';
+                    // Use appropriate URL scheme for iOS and Android
+                    if (Platform.OS === 'ios') {
+                      url = `http://maps.apple.com/?q=${profile?.location}`;
+                    } else {
+                      url = `geo:0,0?q=${profile.location}`;
+                    }
+                    Linking.openURL(url).catch(err => {
+                      console.error('An error occurred', err);
+                      setIsMessage({
+                        message: err?.message || 'Unexpected error occurred',
+                        heading: 'Error',
+                        isRight: false,
+                        rightButtonText: 'OK',
+                        triggerFunction: () => {},
+                        setShowAlert: () => {
+                          isMessage.setShowAlert(false);
+                        },
+                        showAlert: true,
+                      });
+                    });
+                  }
+                }}>
+                {profile?.location
+                  ? profile?.location.slice(0, 45)
+                  : 'Add Location'}
+                {profile?.location?.length >= 45 && '...'}
+              </Text>
             </View>
           </View>
         </View>
-        <View
-          style={{
-            height: 50,
-            alignItems: 'center',
-            flexDirection: 'row',
-            gap: 5,
-            justifyContent: 'center',
-            marginBottom: 8,
-          }}>
-          <TouchableRipple
-            rippleColor={'#ddd'}
-            style={{
-              height: 40,
-              width: 150,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'white',
-              borderRadius: 5,
-              borderWidth: 1,
-              borderColor: '#ddd',
-            }}
-            borderless={true}
-            onPress={() => {}}>
-            <Text>Follow</Text>
-          </TouchableRipple>
-          <TouchableRipple
-            rippleColor={'#ddd'}
-            style={{
-              height: 40,
-              width: 150,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: PrimaryColor,
-              borderRadius: 5,
-              borderWidth: 1,
-              borderColor: '#ddd',
-            }}
-            borderless={true}
-            onPress={() => {}}>
-            <Text style={{color: '#fff'}}>Message</Text>
-          </TouchableRipple>
-        </View>
+
         <View style={styles.tabsContainer}>
           {['reels'].map(tab => (
             <TouchableOpacity
@@ -251,134 +330,4 @@ const Profile = () => {
     </>
   );
 };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: 'white',
-//   },
-//   header: {
-//     flexDirection: 'row',
-//     padding: 15,
-//     alignItems: 'center',
-//   },
-//   avatarContainer: {
-//     position: 'relative',
-//     marginRight: 20,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   avatar: {
-//     width: 80,
-//     height: 80,
-//     borderRadius: 40,
-//   },
-//   streakBorder: {
-//     position: 'absolute',
-//     width: 88,
-//     height: 88,
-//     borderRadius: 44,
-//     borderWidth: 2,
-//     borderColor: '#ff2478',
-//     borderStyle: 'dashed',
-//   },
-//   statsContainer: {
-//     flexDirection: 'row',
-//     flex: 1,
-//     justifyContent: 'space-between',
-//   },
-//   statItem: {
-//     alignItems: 'center',
-//   },
-//   statNumber: {
-//     fontWeight: 'bold',
-//     fontSize: 18,
-//   },
-//   statLabel: {
-//     color: 'gray',
-//     fontSize: 12,
-//   },
-//   streakCircle: {
-//     width: 50,
-//     height: 50,
-//     borderRadius: 25,
-//     backgroundColor: '#ffeef4',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     position: 'relative',
-//   },
-//   streakPercentage: {
-//     fontWeight: 'bold',
-//     color: '#ff2478',
-//   },
-//   streakProgress: {
-//     position: 'absolute',
-//     width: 54,
-//     height: 54,
-//     borderRadius: 27,
-//     borderWidth: 2,
-//     borderColor: '#ff2478',
-//     borderLeftColor: 'transparent',
-//   },
-//   infoContainer: {
-//     paddingHorizontal: 15,
-//     marginBottom: 7,
-//   },
-//   name: {
-//     fontWeight: 'bold',
-//     fontSize: 18,
-//   },
-//   username: {
-//     color: 'gray',
-//     marginBottom: 5,
-//   },
-//   bio: {
-//     marginBottom: 5,
-//   },
-//   website: {
-//     color: '#0095f6',
-//     marginBottom: 5,
-//   },
-//   locationContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   location: {
-//     color: 'gray',
-//     marginLeft: 5,
-//   },
-//   tabsContainer: {
-//     flexDirection: 'row',
-//     borderTopWidth: 1,
-//     borderTopColor: '#eee',
-//     borderBottomWidth: 1,
-//     borderBottomColor: '#eee',
-//     backgroundColor: 'white',
-//   },
-//   tab: {
-//     flex: 1,
-//     alignItems: 'center',
-//     padding: 15,
-//     borderBottomWidth: 1,
-//     borderBottomColor: 'transparent',
-//   },
-//   activeTab: {},
-//   gridItem: {
-//     width: width / 3,
-//     height: width / 3,
-//     borderWidth: 0.5,
-//     borderColor: 'white',
-//   },
-//   gridImage: {
-//     flex: 1,
-//     resizeMode: 'cover',
-//   },
-//   playButton: {
-//     position: 'absolute',
-//     top: '50%',
-//     left: '50%',
-//     transform: [{translateX: -12}, {translateY: -12}],
-//   },
-// });
-
 export default Profile;

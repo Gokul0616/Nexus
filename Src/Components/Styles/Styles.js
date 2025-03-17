@@ -4,6 +4,7 @@ const CARD_WIDTH = Dimensions.get('window').width * 0.5;
 const CARD_HEIGHT = 300;
 const {width: screenWidth} = Dimensions.get('window');
 const width = Dimensions.get('window').width;
+const height = Dimensions.get('window').height;
 
 const HomeScreenStyles = StyleSheet.create({
   container: {
@@ -285,6 +286,16 @@ const ProfileScreenstyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  loadingIndicator: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    position: 'absolute',
+    zIndex: 100,
+    height: height,
+    width: width,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -938,6 +949,17 @@ const AddPostScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  fullScreenOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 200,
   },
   permissionContainer: {
     flex: 1,

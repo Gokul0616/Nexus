@@ -1,68 +1,108 @@
-import React from 'react';
+import {CommonActions} from '@react-navigation/native';
+import React, {useState} from 'react';
 import {StyleSheet, Text, View, FlatList, TouchableOpacity} from 'react-native';
 import {TouchableRipple} from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-
-const menuItems = [
-  {
-    id: '1',
-    title: 'Account Settings',
-    icon: 'user-cog',
-    onPress: () => {
-      console.log('Account Settings');
-    },
-  },
-  {
-    id: '2',
-    title: 'Privacy Settings',
-    icon: 'lock',
-    onPress: () => {
-      console.log(' Privacy Settings');
-    },
-  },
-  {
-    id: '3',
-    title: 'Language',
-    icon: 'globe',
-    onPress: () => {
-      console.log('Language');
-    },
-  },
-  {
-    id: '4',
-    title: 'Share Profile',
-    icon: 'share-alt',
-    onPress: () => {
-      console.log('Share Profile');
-    },
-  },
-  {
-    id: '5',
-    title: 'My QR Code',
-    icon: 'qrcode',
-    onPress: () => {
-      console.log(' My QR Code');
-    },
-  },
-  {
-    id: '6',
-    title: 'Help Center',
-    icon: 'question-circle',
-    onPress: () => {
-      console.log(' Help Center');
-    },
-  },
-  {
-    id: '7',
-    title: 'Logout',
-    icon: 'sign-out-alt',
-    onPress: () => {
-      console.log('Logout');
-    },
-  },
-];
+import {storage} from './CommonData';
+import AlertBox from './AlertMessage';
 
 const ProfileMenu = ({navigation}) => {
+  const menuItems = [
+    {
+      id: '1',
+      title: 'Account Settings',
+      icon: 'user-cog',
+      onPress: () => {
+        console.log('Account Settings');
+      },
+    },
+    {
+      id: '2',
+      title: 'Privacy Settings',
+      icon: 'lock',
+      onPress: () => {
+        console.log(' Privacy Settings');
+      },
+    },
+    {
+      id: '3',
+      title: 'Language',
+      icon: 'globe',
+      onPress: () => {
+        console.log('Language');
+      },
+    },
+    {
+      id: '4',
+      title: 'Share Profile',
+      icon: 'share-alt',
+      onPress: () => {
+        console.log('Share Profile');
+      },
+    },
+    {
+      id: '5',
+      title: 'My QR Code',
+      icon: 'qrcode',
+      onPress: () => {
+        console.log(' My QR Code');
+      },
+    },
+    {
+      id: '6',
+      title: 'Help Center',
+      icon: 'question-circle',
+      onPress: () => {
+        console.log(' Help Center');
+      },
+    },
+    {
+      id: '7',
+      title: 'Logout',
+      icon: 'sign-out-alt',
+      onPress: () => {
+        setIsMessage({
+          message: 'Are you sure, Do you want to logout?',
+          heading: 'Alert',
+          isRight: true,
+          rightButtonText: 'Yes',
+          triggerFunction: () => {
+            handleLogout();
+          },
+          setShowAlert: () => {
+            isMessage.setShowAlert(false);
+          },
+          showAlert: true,
+        });
+      },
+    },
+  ];
+  const [isMessage, setIsMessage] = useState({
+    message: '',
+    heading: '',
+    isRight: false,
+    rightButtonText: 'OK',
+    triggerFunction: () => {},
+    setShowAlert: () => {},
+    showAlert: false,
+  });
+  const closeAlert = () => {
+    setIsMessage(prev => ({...prev, showAlert: false}));
+  };
+
+  const handleLogout = () => {
+    storage.delete('token');
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'LandingHome',
+          },
+        ],
+      }),
+    );
+  };
   const renderItem = ({item}) => (
     <TouchableRipple
       style={styles.menuItem}
@@ -84,6 +124,15 @@ const ProfileMenu = ({navigation}) => {
 
   return (
     <View style={styles.container}>
+      <AlertBox
+        heading={isMessage.heading}
+        message={isMessage.message}
+        setShowAlert={closeAlert}
+        showAlert={isMessage.showAlert}
+        triggerFunction={isMessage.triggerFunction}
+        isRight={isMessage.isRight}
+        rightButtonText={isMessage.rightButtonText}
+      />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Menu</Text>
         <TouchableRipple

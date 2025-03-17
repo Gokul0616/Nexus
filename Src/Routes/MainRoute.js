@@ -16,13 +16,15 @@ import BottomStack from './BottomStack';
 import AddPost from '../Screens/Home/AddPost';
 import UploadScreen from '../Components/UploadScreen';
 import Profile from '../Screens/Home/Profile';
+import LandingHome from '../Screens/Auth/LandingHome';
+import OtherProfileScreen from '../Components/OtherProfile';
 const Stack = createStackNavigator();
 
 export const MainStack = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Landing"
+        initialRouteName="LandingHome"
         screenOptions={{
           gestureEnabled: false,
           headerShown: false,
@@ -41,6 +43,7 @@ export const MainStack = () => {
             };
           },
         }}>
+        <Stack.Screen name="LandingHome" component={LandingHome} />
         <Stack.Screen name="Landing" component={LandingScreen} />
         <Stack.Screen name="Signin" component={SignInScreen} />
         <Stack.Screen name="Signup" component={SignUpScreen} />
@@ -50,7 +53,10 @@ export const MainStack = () => {
         <Stack.Screen name="MyTabs" component={BottomStack} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="ProfileMenu" component={ProfileMenu} />
-        <Stack.Screen name="OtherProfileScreen" component={Profile} />
+        <Stack.Screen
+          name="OtherProfileScreen"
+          component={OtherProfileScreen}
+        />
         <Stack.Screen name="ChatScreen" component={MessageChatScreen} />
         <Stack.Screen name="WebScreen" component={WebScreen} />
         <Stack.Screen name="AddPosts" component={AddPost} />

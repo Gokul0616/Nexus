@@ -1,18 +1,24 @@
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
+  Alert,
   Dimensions,
   Image,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Vibration,
+  View,
 } from 'react-native';
-import {AppName, PrimaryColor} from '../../Components/CommonData';
 import {TouchableRipple} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {AppName, PrimaryColor, storage} from '../../Components/CommonData';
+import apiClient from '../../Services/api/apiInterceptor';
+import AlertBox from '../../Components/AlertMessage';
+import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
+
 const {width, height} = Dimensions.get('window');
 
 const SignupScreen = () => {
@@ -20,24 +26,169 @@ const SignupScreen = () => {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
   const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Error state variables for each field
+  const [nameError, setNameError] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
   const clearStackAndNavigate = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [
-          {
-            name: 'Signin',
-          },
-        ],
+        routes: [{name: 'Signin'}],
       }),
     );
   };
+  const [isMessage, setIsMessage] = useState({
+    message: '',
+    heading: '',
+    isRight: false,
+    rightButtonText: 'OK',
+    triggerFunction: () => {},
+    setShowAlert: () => {},
+    showAlert: false,
+    leftTriggerFunction: () => {},
+  });
+  const closeAlert = () => {
+    setIsMessage(prev => ({...prev, showAlert: false}));
+  };
+  const validateFields = () => {
+    let valid = true;
+    setNameError('');
+    setUsernameError('');
+    setEmailError('');
+    setPasswordError('');
+
+    if (!name.trim()) {
+      setNameError('Full Name is required');
+      valid = false;
+    } else if (name.trim().length < 2) {
+      setNameError('Full Name is too short');
+      valid = false;
+    }
+
+    if (!username.trim()) {
+      setUsernameError('Username is required');
+      valid = false;
+    } else if (username.trim().length < 2) {
+      setUsernameError('Username is too short');
+      valid = false;
+    }
+
+    if (!email.trim()) {
+      setEmailError('Email is required');
+      valid = false;
+    } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setEmailError('Email is invalid');
+      valid = false;
+    }
+
+    if (!password) {
+      setPasswordError('Password is required');
+      valid = false;
+    } else if (password.length < 8) {
+      setPasswordError('Password must be at least 8 characters');
+      valid = false;
+    }
+    return valid;
+  };
+  const navigateHome = token => {
+    storage.set('token', token);
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'BottomTabs'}],
+      }),
+    );
+  };
+  const handleSubmit = async () => {
+    if (!validateFields()) {
+      // storage.delete('token');
+      // console.log(storage.getString('token'));
+      Vibration.vibrate(100);
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const response = await apiClient.post('/user/auth/signup', {
+        fullName: name,
+        username: username,
+        email: email.toLowerCase(),
+        password: password,
+      });
+      console.log(response);
+      if (response.status === 200) {
+        setIsMessage({
+          message: response.data.message || 'SignUp Successfull!!!',
+          heading: 'Success',
+          isRight: true,
+          leftTriggerFunction: () => {
+            navigateHome(response.data.jwt);
+          },
+          rightButtonText: 'OK',
+          triggerFunction: () => {
+            closeAlert();
+            navigateHome(response.data.jwt);
+          },
+          setShowAlert: () => {
+            isMessage.setShowAlert(false);
+          },
+          showAlert: true,
+        });
+      } else {
+        setIsMessage({
+          message: response.data.message,
+          heading: 'Alert',
+          isRight: false,
+          rightButtonText: 'OK',
+          triggerFunction: () => {},
+          setShowAlert: () => {
+            isMessage.setShowAlert(false);
+          },
+          showAlert: true,
+        });
+      }
+    } catch (error) {
+      setIsMessage({
+        message: error.response.data,
+        heading: 'Alert',
+        isRight: false,
+        rightButtonText: 'OK',
+        triggerFunction: () => {},
+        setShowAlert: () => {
+          isMessage.setShowAlert(false);
+        },
+        showAlert: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="always">
+      {isLoading && (
+        <View style={styles.loadingIndicator}>
+          <CustomLoadingIndicator />
+        </View>
+      )}
+      <AlertBox
+        heading={isMessage.heading}
+        message={isMessage.message}
+        setShowAlert={closeAlert}
+        showAlert={isMessage.showAlert}
+        triggerFunction={isMessage.triggerFunction}
+        isRight={isMessage.isRight}
+        leftTriggerFunction={isMessage.leftTriggerFunction}
+        rightButtonText={isMessage.rightButtonText}
+      />
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image
@@ -53,23 +204,29 @@ const SignupScreen = () => {
         <Text style={styles.subText}>Create Account and Create Memories</Text>
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, nameError ? styles.errorInput : null]}
           placeholder="Full Name"
           placeholderTextColor="#888"
           value={name}
           cursorColor={PrimaryColor}
           onChangeText={setName}
         />
+        {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
+
         <TextInput
-          style={styles.input}
+          style={[styles.input, usernameError ? styles.errorInput : null]}
           placeholder="Username"
           placeholderTextColor="#888"
           value={username}
           cursorColor={PrimaryColor}
           onChangeText={setUsername}
         />
+        {usernameError ? (
+          <Text style={styles.errorText}>{usernameError}</Text>
+        ) : null}
+
         <TextInput
-          style={styles.input}
+          style={[styles.input, emailError ? styles.errorInput : null]}
           placeholder="Email Address"
           placeholderTextColor="#888"
           keyboardType="email-address"
@@ -77,9 +234,15 @@ const SignupScreen = () => {
           onChangeText={setEmail}
           cursorColor={PrimaryColor}
         />
-        <View style={styles.passwordContainer}>
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+
+        <View
+          style={[
+            styles.passwordContainer,
+            passwordError ? styles.errorInput : null,
+          ]}>
           <TextInput
-            style={styles.passwordInput}
+            style={[styles.passwordInput]}
             placeholder="Password"
             placeholderTextColor="#999"
             secureTextEntry={!passwordVisible}
@@ -95,19 +258,21 @@ const SignupScreen = () => {
             />
           </TouchableOpacity>
         </View>
+        {passwordError ? (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        ) : null}
       </View>
+
       <View style={styles.buttonContainer}>
         <TouchableRipple
           borderless={true}
-          rippleColor={'rgb(0,0,0,0.5)'}
+          rippleColor={'rgba(0,0,0,0.5)'}
           style={styles.signupButton}
-          onPress={() => {
-            navigation.navigate('BottomTabs');
-          }}>
+          onPress={handleSubmit}>
           <Text style={styles.signupButtonText}>Sign Up</Text>
         </TouchableRipple>
 
-        <TouchableOpacity onPress={() => clearStackAndNavigate()}>
+        <TouchableOpacity onPress={clearStackAndNavigate}>
           <Text style={styles.loginText}>
             Already have an account?{' '}
             <Text style={styles.loginLink}>Log In</Text>
@@ -144,11 +309,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 5,
-  },
   logoContainer: {
     alignItems: 'center',
   },
@@ -158,6 +318,11 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     resizeMode: 'contain',
     marginBottom: 10,
+  },
+  logoText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: PrimaryColor,
   },
   formContainer: {
     width: '100%',
@@ -176,6 +341,12 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 15,
   },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    alignSelf: 'flex-start',
+    marginBottom: 10,
+  },
   signupButton: {
     backgroundColor: PrimaryColor,
     borderRadius: 10,
@@ -183,11 +354,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginBottom: 20,
-  },
-  logoText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: PrimaryColor,
   },
   signupButtonText: {
     color: '#fff',
@@ -211,7 +377,29 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 15,
     width: '100%',
+    marginBottom: 15,
   },
-  passwordInput: {flex: 1, height: 50, fontSize: 16},
-  buttonContainer: {width: '100%', alignItems: 'center'},
+  passwordInput: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+  },
+  buttonContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  errorInput: {
+    borderColor: 'red',
+    marginBottom: 0,
+  },
+  loadingIndicator: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    position: 'absolute',
+    zIndex: 100,
+    height: height,
+    width: width,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

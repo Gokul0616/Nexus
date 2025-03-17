@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from 'react';
 import {Animated, Easing, StyleSheet, View} from 'react-native';
 
-const CustomLoadingIndicator = () => {
+const CustomLoadingIndicator = ({style}) => {
   const rotation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -23,7 +23,11 @@ const CustomLoadingIndicator = () => {
   return (
     <View style={styles.container}>
       <Animated.View
-        style={[styles.loader, {transform: [{rotate: rotateInterpolate}]}]}
+        style={[
+          styles.loader,
+          {transform: [{rotate: rotateInterpolate}]},
+          style,
+        ]}
       />
     </View>
   );

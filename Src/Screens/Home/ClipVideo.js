@@ -1,10 +1,3 @@
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {
-  CommonActions,
-  useFocusEffect,
-  useIsFocused,
-  useNavigation,
-} from '@react-navigation/native';
 import React, {
   useCallback,
   useContext,
@@ -21,7 +14,16 @@ import {
   View,
   Text,
 } from 'react-native';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {
+  CommonActions,
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import NetInfo from '@react-native-community/netinfo';
+
 import ClipItem from '../../Components/ClipItem';
 import {videoData} from '../../Components/DummyData';
 import {NavigationContext} from '../../Services/Hooks/NavigationProvider';
@@ -32,7 +34,6 @@ export default function ClipVideo() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [commentVisible, setCommentVisible] = useState(false);
-
   const insets = useSafeAreaInsets();
   const {width, height: windowHeight} = useWindowDimensions();
   const tabBarHeight = useBottomTabBarHeight();
@@ -42,9 +43,28 @@ export default function ClipVideo() {
   const [currentVideoId, setCurrentVideoId] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
   const [loadingStates, setLoadingStates] = useState({});
+  const [autoplayEnabled, setAutoplayEnabled] = useState(true);
+
   const viewabilityConfig = useRef({viewAreaCoveragePercentThreshold: 50});
   const lastTapTimes = useRef({});
   const likeAnimations = useRef({});
+
+  // Check network conditions to conditionally disable autoplay
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      // Disable autoplay on slow cellular networks (2G or 3G)
+      if (
+        state.type === 'cellular' &&
+        (state.details.cellularGeneration === '2g' ||
+          state.details.cellularGeneration === '3g')
+      ) {
+        setAutoplayEnabled(false);
+      } else {
+        setAutoplayEnabled(true);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const onViewableItemsChanged = useCallback(({viewableItems}) => {
     if (viewableItems.length > 0) {
@@ -112,28 +132,10 @@ export default function ClipVideo() {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: 'TopTabs'}],
-          }),
-        );
-        return true;
-      };
-      const subscription = BackHandler.addEventListener(
-        'hardwareBackPress',
-        onBackPress,
-      );
-      return () => subscription.remove();
-    }, [navigation]),
-  );
-
   const renderItem = useCallback(
     ({item}) => {
-      const isPlaying = item.id === currentVideoId && isFocused;
+      const isPlaying =
+        item.id === currentVideoId && isFocused && autoplayEnabled;
       return (
         <ClipItem
           item={item}
@@ -163,12 +165,12 @@ export default function ClipVideo() {
       availableHeight,
       tabBarHeight,
       isFocused,
+      autoplayEnabled,
     ],
   );
 
   return (
     <View style={styles.container}>
-      {/* Header similar to TikTok's "For You" / "Following" */}
       <View style={[styles.headerContainer, {top: insets.top + 10}]}>
         <Text style={[styles.headerText, styles.activeHeader]}>For You</Text>
         <Text style={[styles.headerText, styles.inactiveHeader]}>
@@ -178,9 +180,10 @@ export default function ClipVideo() {
       <FlatList
         ref={flatListRef}
         data={videoData}
+        key={item => item.id.toString() + item.videoSource}
         renderItem={renderItem}
         scrollEventThrottle={16}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item.id.toString() + item.videoSource}
         pagingEnabled
         showsVerticalScrollIndicator={false}
         decelerationRate="normal"
@@ -221,8 +224,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
   },
   activeHeader: {
-    // borderBottomWidth: 2,
-    // borderBottomColor: '#fff',
+    // styling for active header
   },
   inactiveHeader: {
     opacity: 0.6,

@@ -53,18 +53,26 @@ export const formatNumber = num => {
 };
 
 export const fetchCityData = async city => {
-  await axios
-    .get(`https://nominatim.openstreetmap.org/search?q=${city}&format=json`)
-    .then(response => {
-      if (response.data.length > 0) {
-        return response.data[0];
-      }
-    })
-    .catch(error => {
-      console.log('Error fetching city data:', error.message);
-      return null;
-    });
+  try {
+    const response = await axios.get(
+      `https://nominatim.openstreetmap.org/search?q=${city}&format=json`,
+      {
+        headers: {
+          'User-Agent': 'MyAppName/1.0 (contact@myapp.com)',
+          Referer: 'https://yourdomain.com',
+        },
+      },
+    );
+    if (response.data.length > 0) {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching city data:', error.message);
+    return null;
+  }
 };
+
 export const formatTime = ms => {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -74,3 +82,7 @@ export const formatTime = ms => {
     '0',
   )}`;
 };
+
+import {MMKV} from 'react-native-mmkv';
+
+export const storage = new MMKV();

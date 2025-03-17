@@ -2,6 +2,7 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import React, {useEffect, useRef, useState} from 'react';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {
+  Alert,
   Image,
   PermissionsAndroid,
   Platform,
@@ -35,7 +36,7 @@ const AddPost = () => {
   const [torch, setTorch] = useState(false);
   const frontDevice = devices.find(d => d.position === 'front');
   const device = cameraPosition === 'back' ? backDevice : frontDevice;
-
+  const [loading, setLoading] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const intervalRef = useRef(null);
   const [videoUri, setVideoUri] = useState(null);
@@ -95,6 +96,7 @@ const AddPost = () => {
         const params = {
           first: 10,
           assetType: 'Videos',
+          maxDurationSec: 180,
         };
         const {edges} = await CameraRoll.getPhotos(params);
 
@@ -115,7 +117,6 @@ const AddPost = () => {
       fetchLatestVideo();
     }
   }, [cameraPer]);
-  console.log(videoUri);
   const handleFlipCamera = () => {
     setCameraPosition(prev => (prev === 'back' ? 'front' : 'back'));
   };
@@ -211,10 +212,12 @@ const AddPost = () => {
   };
 
   const handleGallery = async () => {
+    setLoading(true);
     const options = {
       mediaType: 'video',
       selectionLimit: 1,
       durationLimit: 180,
+      maxDurationSec: 180,
     };
 
     launchImageLibrary(options, res => {
@@ -223,10 +226,16 @@ const AddPost = () => {
       } else if (res.errorCode) {
         console.log('ImagePickerError: ', res.errorMessage);
       } else {
-        // setPickerResponse(res);
-        // console.log(res.assets[0].uri, res.assets[0].type);
-        navigation.navigate('UploadScreen', {path: res.assets[0].uri});
+        console.log('loading');
+        const videoAsset = res.assets[0];
+        if (videoAsset.duration && videoAsset.duration > 180) {
+          Alert.alert('Please select a video that is 3 minutes or shorter');
+          return;
+        }
+        navigation.navigate('UploadScreen', {path: videoAsset.uri});
       }
+    }).finally(() => {
+      setLoading(false);
     });
   };
   if (!hasPermission) {
@@ -250,6 +259,11 @@ const AddPost = () => {
 
   return (
     <View style={styles.container}>
+      {loading && (
+        <View style={styles.fullScreenOverlay}>
+          <CustomLoadingIndicator />
+        </View>
+      )}
       <Camera
         ref={cameraRef}
         style={StyleSheet.absoluteFill}

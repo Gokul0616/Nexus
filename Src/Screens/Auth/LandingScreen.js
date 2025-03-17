@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import {CommonActions, useNavigation} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,15 +9,24 @@ import {
   Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {AppName, PrimaryColor} from '../../Components/CommonData';
+import {AppName, PrimaryColor, storage} from '../../Components/CommonData';
 import {TouchableRipple} from 'react-native-paper';
+import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
+import apiClient from '../../Services/api/apiInterceptor';
 
 const {width, height} = Dimensions.get('window');
 
 const LandingScreen = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
+      {isLoading && (
+        <View style={styles.loadingIndicator}>
+          <CustomLoadingIndicator />
+        </View>
+      )}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image
@@ -149,5 +158,15 @@ const styles = StyleSheet.create({
     height: 50,
     resizeMode: 'contain',
     marginBottom: 10,
+  },
+  loadingIndicator: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    position: 'absolute',
+    zIndex: 100,
+    height: height,
+    width: width,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

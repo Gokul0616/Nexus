@@ -5,7 +5,6 @@ import {
   View,
   Pressable,
   Animated,
-  Image,
   Easing,
 } from 'react-native';
 import Video from 'react-native-video';
@@ -15,6 +14,7 @@ import CustomLoadingIndicator from './CustomLoadingIndicator';
 import DynamicImage from './DynamicImage';
 import {ClipItemStyles as styles} from './Styles/Styles';
 import {TouchableRipple} from 'react-native-paper';
+import RNFS from 'react-native-fs';
 
 const ClipItem = memo(
   ({
@@ -38,7 +38,39 @@ const ClipItem = memo(
   }) => {
     const [pausedLocally, setPausedLocally] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(true);
+    const [cachedUri, setCachedUri] = useState(null);
     const spinValue = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+      const cacheVideo = async () => {
+        const cacheDir = RNFS.CachesDirectoryPath;
+
+        const fileName = item.videoSource.split('/').pop();
+        const filePath = `${cacheDir}/${fileName}`;
+        try {
+          const exists = await RNFS.exists(filePath);
+          if (exists) {
+            setCachedUri(`file://${filePath}`);
+          } else {
+            const downloadOptions = {
+              fromUrl: item.videoSource,
+              toFile: filePath,
+            };
+            const result = await RNFS.downloadFile(downloadOptions).promise;
+            if (result && result.statusCode === 200) {
+              setCachedUri(`file://${filePath}`);
+            } else {
+              setCachedUri(item.videoSource);
+            }
+          }
+        } catch (error) {
+          console.error('Error caching video:', error);
+          setCachedUri(item.videoSource);
+        }
+      };
+
+      cacheVideo();
+    }, [item.videoSource]);
 
     useEffect(() => {
       Animated.loop(
@@ -85,7 +117,7 @@ const ClipItem = memo(
           <Video
             key={`video-${item.id}-${isConnected}`}
             ref={ref => videoRefs.current.set(item.id, ref)}
-            source={{uri: item.videoSource}}
+            source={{uri: cachedUri || item.videoSource}}
             style={StyleSheet.absoluteFill}
             resizeMode="contain"
             paused={!isPlaying || pausedLocally}
@@ -93,6 +125,13 @@ const ClipItem = memo(
             muted={isMuted}
             onLoadStart={() => handleLoadStart(item.id)}
             onLoad={() => handleLoad(item.id)}
+            onBuffer={buffer => {}}
+            bufferConfig={{
+              minBufferMs: 15000,
+              maxBufferMs: 50000,
+              bufferForPlaybackMs: 2500,
+              bufferForPlaybackAfterRebufferMs: 5000,
+            }}
             ignoreSilentSwitch="obey"
           />
         </Pressable>
@@ -150,7 +189,7 @@ const ClipItem = memo(
             </View>
             <View style={styles.bottomRight}>
               <TouchableRipple
-                rippleColor={'rgb(0,0,0,0.5)'}
+                rippleColor={'rgba(0,0,0,0.5)'}
                 borderless={true}
                 style={styles.profileContainer}>
                 <>
@@ -165,7 +204,7 @@ const ClipItem = memo(
                 </>
               </TouchableRipple>
               <TouchableRipple
-                rippleColor={'rgb(0,0,0,0.5)'}
+                rippleColor={'rgba(0,0,0,0.5)'}
                 borderless={true}
                 style={styles.iconWrapper}>
                 <>
@@ -174,7 +213,7 @@ const ClipItem = memo(
                 </>
               </TouchableRipple>
               <TouchableRipple
-                rippleColor={'rgb(0,0,0,0.5)'}
+                rippleColor={'rgba(0,0,0,0.5)'}
                 borderless={true}
                 onPress={() => setCommentVisible(true)}
                 style={styles.iconWrapper}>
@@ -184,7 +223,7 @@ const ClipItem = memo(
                 </>
               </TouchableRipple>
               <TouchableRipple
-                rippleColor={'rgb(0,0,0,0.5)'}
+                rippleColor={'rgba(0,0,0,0.5)'}
                 borderless={true}
                 style={styles.iconWrapper}>
                 <>
