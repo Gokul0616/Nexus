@@ -1,14 +1,30 @@
 import React from 'react';
-import {StyleSheet, Text, View, FlatList, Dimensions} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  useWindowDimensions,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {exploreData} from '../../Components/DummyData';
 import {VideoCard} from '../../Components/VideoCard';
 
-const {width} = Dimensions.get('window');
-const CARD_WIDTH = width * 0.45;
-
 const SingleExplore = () => {
+  const {width} = useWindowDimensions();
+  const margin = 8;
+
+  let numColumns, CARD_WIDTH;
+  if (width <= 360) {
+    numColumns = 2;
+    CARD_WIDTH = width * 0.45;
+  } else {
+    numColumns = Math.floor(width / 200);
+
+    CARD_WIDTH = width / numColumns;
+  }
+
   const route = useRoute();
   const navigation = useNavigation();
   const {category: categoryObj} = route.params;
@@ -27,8 +43,9 @@ const SingleExplore = () => {
   const viewabilityConfig = React.useRef({
     viewAreaCoveragePercentThreshold: 20,
   }).current;
+
   const renderItem = ({item}) => (
-    <View style={singleExploreStyles.cardContainer}>
+    <View style={[styles.cardContainer, {maxWidth: CARD_WIDTH}]}>
       <VideoCard
         key={item.id + item.profilePic}
         item={item}
@@ -43,23 +60,21 @@ const SingleExplore = () => {
   );
 
   return (
-    <View style={singleExploreStyles.container}>
-      <View style={singleExploreStyles.header}>
+    <View style={styles.container}>
+      <View style={styles.header}>
         <Ionicons name={categoryObj.icon} size={20} />
-        <Text style={singleExploreStyles.headerText}>
-          {' '}
-          {categoryObj.title}{' '}
-        </Text>
+        <Text style={styles.headerText}> {categoryObj.title} </Text>
       </View>
       <FlatList
+        key={`flatlist-${numColumns}`}
         data={filteredData}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
-        numColumns={2}
-        contentContainerStyle={singleExploreStyles.flatListContent}
+        keyExtractor={item => item.id.toString()}
+        numColumns={numColumns}
+        contentContainerStyle={styles.flatListContent}
         onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig} // Lower threshold
-        removeClippedSubviews={false} // Keep items mounted even if partially offscreen
+        viewabilityConfig={viewabilityConfig}
+        removeClippedSubviews={false}
       />
     </View>
   );
@@ -67,7 +82,7 @@ const SingleExplore = () => {
 
 export default SingleExplore;
 
-const singleExploreStyles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -84,6 +99,7 @@ const singleExploreStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
+    marginLeft: 8,
   },
   flatListContent: {
     paddingBottom: 20,
@@ -91,6 +107,5 @@ const singleExploreStyles = StyleSheet.create({
   cardContainer: {
     flex: 1,
     margin: 8,
-    maxWidth: CARD_WIDTH,
   },
 });
