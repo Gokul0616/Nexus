@@ -1,3 +1,6 @@
+import NetInfo from '@react-native-community/netinfo';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import React, {
   useCallback,
   useContext,
@@ -7,27 +10,18 @@ import React, {
 } from 'react';
 import {
   Animated,
-  BackHandler,
   FlatList,
   StyleSheet,
+  Text,
   useWindowDimensions,
   View,
-  Text,
 } from 'react-native';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {
-  CommonActions,
-  useFocusEffect,
-  useIsFocused,
-  useNavigation,
-} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import NetInfo from '@react-native-community/netinfo';
 
 import ClipItem from '../../Components/ClipItem';
-import {videoData} from '../../Components/DummyData';
-import {NavigationContext} from '../../Services/Hooks/NavigationProvider';
 import Comment from '../../Components/Comment';
+import {NavigationContext} from '../../Services/Hooks/NavigationProvider';
+import apiClient from '../../Services/api/apiInterceptor';
 
 export default function ClipVideo() {
   const {isConnected} = useContext(NavigationContext);
@@ -36,6 +30,9 @@ export default function ClipVideo() {
   const [commentVisible, setCommentVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const {width, height: windowHeight} = useWindowDimensions();
+  const [videoData, setVideoData] = useState([]);
+  const [overlayVisible, setOverlayVisible] = useState(true);
+
   const tabBarHeight = useBottomTabBarHeight();
   const availableHeight = windowHeight - insets.bottom;
   const flatListRef = useRef(null);
@@ -48,11 +45,16 @@ export default function ClipVideo() {
   const viewabilityConfig = useRef({viewAreaCoveragePercentThreshold: 50});
   const lastTapTimes = useRef({});
   const likeAnimations = useRef({});
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await apiClient.get('post/getRecommendation');
+      setVideoData(response.data);
+    };
+    fetchData();
+  }, []);
 
-  // Check network conditions to conditionally disable autoplay
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
-      // Disable autoplay on slow cellular networks (2G or 3G)
       if (
         state.type === 'cellular' &&
         (state.details.cellularGeneration === '2g' ||
@@ -113,6 +115,7 @@ export default function ClipVideo() {
       if (!likeAnimations.current[id]) {
         likeAnimations.current[id] = new Animated.Value(0);
       }
+
       Animated.sequence([
         Animated.timing(likeAnimations.current[id], {
           toValue: 1,
@@ -131,7 +134,6 @@ export default function ClipVideo() {
       lastTapTimes.current[id] = now;
     }
   };
-
   const renderItem = useCallback(
     ({item}) => {
       const isPlaying =
@@ -153,7 +155,10 @@ export default function ClipVideo() {
           isConnected={isConnected}
           likeAnimations={likeAnimations}
           commentVisible={commentVisible}
+          navigation={navigation}
           setCommentVisible={setCommentVisible}
+          overlayVisible={overlayVisible}
+          setOverlayVisible={setOverlayVisible}
         />
       );
     },
@@ -171,12 +176,14 @@ export default function ClipVideo() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.headerContainer, {top: insets.top + 10}]}>
-        <Text style={[styles.headerText, styles.activeHeader]}>For You</Text>
-        <Text style={[styles.headerText, styles.inactiveHeader]}>
-          Following
-        </Text>
-      </View>
+      {overlayVisible && (
+        <View style={[styles.headerContainer, {top: insets.top + 10}]}>
+          <Text style={[styles.headerText, styles.activeHeader]}>For You</Text>
+          <Text style={[styles.headerText, styles.inactiveHeader]}>
+            Following
+          </Text>
+        </View>
+      )}
       <FlatList
         ref={flatListRef}
         data={videoData}
@@ -223,9 +230,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginHorizontal: 15,
   },
-  activeHeader: {
-    // styling for active header
-  },
+  activeHeader: {},
   inactiveHeader: {
     opacity: 0.6,
   },

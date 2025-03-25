@@ -142,8 +142,8 @@ const SignupScreen = () => {
         });
       } else {
         setIsMessage({
-          message: response.data.message,
-          heading: 'Alert',
+          message: response.data.message || 'Something went wrong',
+          heading: 'Error',
           isRight: false,
           rightButtonText: 'OK',
           triggerFunction: () => {},
@@ -155,8 +155,8 @@ const SignupScreen = () => {
       }
     } catch (error) {
       setIsMessage({
-        message: error.response.data,
-        heading: 'Alert',
+        message: error.response.data || 'Something went wrong',
+        heading: 'Error',
         isRight: false,
         rightButtonText: 'OK',
         triggerFunction: () => {},

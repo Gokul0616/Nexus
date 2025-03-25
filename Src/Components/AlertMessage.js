@@ -41,7 +41,9 @@ const AlertBox = ({
             {isRight && (
               <TouchableOpacity
                 onPress={triggerFunction}
-                style={[styles.button, styles.rightButton]}>
+                style={[styles.button, styles.rightButton,
+                  isRight && {borderRightWidth: 0},
+                ]}>
                 <Text style={styles.buttonText}>{rightButtonText}</Text>
               </TouchableOpacity>
             )}

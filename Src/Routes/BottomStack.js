@@ -8,9 +8,11 @@ import Explore from '../Screens/Explore/Explore';
 import HomeScreen from '../Screens/Home/HomeScreen';
 import Profile from '../Screens/Home/Profile';
 import {NavigationContext} from '../Services/Hooks/NavigationProvider';
-import {PrimaryColor} from '../Components/CommonData';
+import {PrimaryColor, storage} from '../Components/CommonData';
 import NotificationScreen from '../Screens/Home/NotificationScreen';
 import {ExploreLayout} from '../Screens/Explore/ExploreLayout';
+import {useRoute} from '@react-navigation/native';
+import apiClient from '../Services/api/apiInterceptor';
 
 const Tab = createBottomTabNavigator();
 const CustomAddPostButton = ({onPress}) => (
@@ -30,17 +32,38 @@ const CustomAddPostButton = ({onPress}) => (
 );
 
 export default function BottomStack() {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await apiClient.get('user/profile');
+        storage.set('profile', JSON.stringify(response.data));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchProfile();
+  });
   const {setCurrentIndex, currentIndex} = useContext(NavigationContext);
   useEffect(() => {
     StatusBar.setBackgroundColor(
-      currentIndex === 0 || currentIndex === 2 ? '#151515' : '#fff',
+      currentIndex === 0 ||
+        currentIndex === 2 ||
+        route.name === 'Home' ||
+        route.name === 'AddPost'
+        ? '#151515'
+        : '#fff',
     );
     StatusBar.setBarStyle(
-      currentIndex === 0 || currentIndex === 2
+      currentIndex === 0 ||
+        currentIndex === 2 ||
+        route.name === 'Home' ||
+        route.name === 'AddPost'
         ? 'light-content'
         : 'dark-content',
     );
   }, [currentIndex]);
+  const route = useRoute();
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -94,6 +117,7 @@ export default function BottomStack() {
         component={AddPost}
         options={({navigation}) => ({
           tabBarIcon: () => null,
+
           tabBarLabel: () => null,
           tabBarButton: props => (
             <View style={{alignItems: 'center', justifyContent: 'center'}}>

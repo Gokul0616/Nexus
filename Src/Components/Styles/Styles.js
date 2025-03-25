@@ -312,6 +312,7 @@ const ProfileScreenstyles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
+    resizeMode: 'cover',
   },
   streakBorder: {
     position: 'absolute',
@@ -619,6 +620,18 @@ const ClipItemStyles = StyleSheet.create({
     top: '40%',
     zIndex: 999,
   },
+  progressBarContainer: {
+    position: 'absolute',
+    bottom: 0, // adjust based on your design
+    left: 0,
+    height: 3, // a thin line
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    zIndex: 10,
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#fff', // or any color that matches your theme
+  },
   volumeButtonContainer: {
     position: 'absolute',
     top: 40,
@@ -672,6 +685,7 @@ const ClipItemStyles = StyleSheet.create({
   profileContainer: {
     marginBottom: 20,
     alignItems: 'center',
+    borderRadius: '50%',
   },
   profileImage: {
     width: 48,
@@ -683,7 +697,7 @@ const ClipItemStyles = StyleSheet.create({
   followIcon: {
     position: 'absolute',
     bottom: 0,
-    right: 0,
+    right: '%0%',
     backgroundColor: '#ff004f',
     borderRadius: 10,
     padding: 1,

@@ -7,17 +7,17 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import {storage} from './CommonData';
+import {tokens} from 'react-native-paper/lib/typescript/styles/themes/v3/tokens';
 
 const WebSocketExample = () => {
   const [ws, setWs] = useState(null);
   const [message, setMessage] = useState('');
 
   const [chatLog, setChatLog] = useState([]);
-
   useEffect(() => {
-    const token =
-      'eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJHb2t1bCIsImlhdCI6MTc0MjYyODA3OCwiZXhwIjoxNzQyNzE0NDc4fQ.p4PL7eJNuObJPHRpRaXJVGhUGIWFnEtJ4Y_p8W_dYTe5kMdshkTAfz2OI37Tb4mb';
-
+    const token = storage.getString('token');
+    console.log(token);
     const socket = new WebSocket(
       `ws://192.168.1.19:8080/api/v1/ws?token=${token}`,
       null,

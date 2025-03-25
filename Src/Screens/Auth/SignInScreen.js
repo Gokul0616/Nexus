@@ -10,6 +10,7 @@ import {
   Dimensions,
   ScrollView,
   Vibration,
+  Keyboard,
 } from 'react-native';
 import {TouchableRipple} from 'react-native-paper';
 import {AppName, PrimaryColor, storage} from '../../Components/CommonData';
@@ -94,6 +95,7 @@ const SignInScreen = () => {
     }
     if (valid) {
       try {
+        Keyboard.dismiss();
         setIsLoading(true);
         const response = await apiClient.post('/user/auth/signin', {
           email: email.toLowerCase(),
@@ -119,8 +121,8 @@ const SignInScreen = () => {
           });
         } else {
           setIsMessage({
-            message: response.data,
-            heading: 'Alert',
+            message: response.data || 'Something went wrong',
+            heading: 'Error',
             isRight: false,
             rightButtonText: 'OK',
             triggerFunction: () => {},
@@ -133,7 +135,7 @@ const SignInScreen = () => {
       } catch (error) {
         setIsMessage({
           message: error?.response?.data?.message || 'Something went wrong',
-          heading: 'Alert',
+          heading: 'Error',
           isRight: false,
           rightButtonText: 'OK',
           triggerFunction: () => {},
@@ -218,7 +220,10 @@ const SignInScreen = () => {
           <Text style={styles.errorText}>{passwordError}</Text>
         ) : null}
 
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('ForgotPassword');
+          }}>
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
 

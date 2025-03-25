@@ -3,24 +3,55 @@ import {createStackNavigator} from '@react-navigation/stack';
 import * as React from 'react';
 import EditProfile from '../Components/EditProfile';
 import FullscreenVideoplayer from '../Components/FullscreenVideoplayer';
+import OtherProfileScreen from '../Components/OtherProfile';
 import ProfileMenu from '../Components/ProfileMenu';
+import UploadScreen from '../Components/UploadScreen';
 import {WebScreen} from '../Components/WebView';
 import AddStories from '../Screens/AddStories/AddStories';
+import ForgotPassword from '../Screens/Auth/ForgetPassword/ForgotPassword';
+import LandingHome from '../Screens/Auth/LandingHome';
 import LandingScreen from '../Screens/Auth/LandingScreen';
 import SignInScreen from '../Screens/Auth/SignInScreen';
 import SignUpScreen from '../Screens/Auth/SignUpScreen';
+import AddPost from '../Screens/Home/AddPost';
 import NotificationScreen from '../Screens/Home/NotificationScreen';
 import MessageChatScreen from '../Screens/Messages/MessageChatScreen';
 import MessagesOutside from '../Screens/Messages/MessagesOutside';
 import BottomStack from './BottomStack';
-import AddPost from '../Screens/Home/AddPost';
-import UploadScreen from '../Components/UploadScreen';
-import Profile from '../Screens/Home/Profile';
-import LandingHome from '../Screens/Auth/LandingHome';
-import OtherProfileScreen from '../Components/OtherProfile';
+import {Linking} from 'react-native';
 const Stack = createStackNavigator();
 
 export const MainStack = () => {
+  const [initialRoute, setInitialRoute] = React.useState('');
+
+  React.useEffect(() => {
+    const checkInitialURL = async () => {
+      try {
+        const url = await Linking.getInitialURL();
+        console.log('Initial URL:', url);
+        if (url) {
+          // Parse the URL to determine which route to use.
+          // Using the global URL object which is available in modern React Native versions.
+          const parsedUrl = new URL(url);
+          if (parsedUrl.pathname.includes('reset-password')) {
+            setInitialRoute('ResetPassword');
+          } else {
+            setInitialRoute('Home');
+          }
+        } else {
+          setInitialRoute('Home');
+        }
+      } catch (error) {
+        console.error('Error fetching initial URL:', error);
+        setInitialRoute('Home');
+      } finally {
+      }
+    };
+
+    checkInitialURL();
+  }, []);
+
+  console.log(initialRoute);
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -53,6 +84,7 @@ export const MainStack = () => {
         <Stack.Screen name="MyTabs" component={BottomStack} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="ProfileMenu" component={ProfileMenu} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen
           name="OtherProfileScreen"
           component={OtherProfileScreen}

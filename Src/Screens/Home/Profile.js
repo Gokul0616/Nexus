@@ -291,11 +291,10 @@ const Profile = () => {
                       });
                     });
                   }
-                }}>
-                {profile?.location
-                  ? profile?.location.slice(0, 45)
-                  : 'Add Location'}
-                {profile?.location?.length >= 45 && '...'}
+                }}
+                ellipsizeMode="tail"
+                numberOfLines={1}>
+                {profile?.location ? profile?.location : 'Add Location'}
               </Text>
             </View>
           </View>

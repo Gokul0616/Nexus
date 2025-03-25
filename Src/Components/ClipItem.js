@@ -6,6 +6,7 @@ import {
   Pressable,
   Animated,
   Easing,
+  TouchableOpacity,
 } from 'react-native';
 import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -15,7 +16,8 @@ import DynamicImage from './DynamicImage';
 import {ClipItemStyles as styles} from './Styles/Styles';
 import {TouchableRipple} from 'react-native-paper';
 import RNFS from 'react-native-fs';
-
+import {storage} from './CommonData';
+import {PanResponder} from 'react-native';
 const ClipItem = memo(
   ({
     item,
@@ -34,17 +36,22 @@ const ClipItem = memo(
     handleDoubleTap,
     likeAnimations,
     isConnected,
+    overlayVisible,
+    setOverlayVisible,
+    navigation,
     onLongPressAction,
   }) => {
     const [pausedLocally, setPausedLocally] = useState(false);
-    const [overlayVisible, setOverlayVisible] = useState(true);
     const [cachedUri, setCachedUri] = useState(null);
+    const [videoDuration, setVideoDuration] = useState(0);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [localOverlayVisible, setLocalOverlayVisible] = useState(true);
+
     const spinValue = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
       const cacheVideo = async () => {
         const cacheDir = RNFS.CachesDirectoryPath;
-
         const fileName = item.videoSource.split('/').pop();
         const filePath = `${cacheDir}/${fileName}`;
         try {
@@ -88,9 +95,36 @@ const ClipItem = memo(
       outputRange: ['0deg', '360deg'],
     });
 
+    const [containerLayout, setContainerLayout] = useState({x: 0, width: 0});
+
+    const panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (evt, gestureState) => {
+        if (!containerLayout.width || videoDuration === 0) return;
+
+        const newX = gestureState.moveX - containerLayout.x;
+        const clampedX = Math.max(0, Math.min(newX, containerLayout.width));
+        const newTime = (clampedX / containerLayout.width) * videoDuration;
+        setCurrentTime(newTime);
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        if (!containerLayout.width || videoDuration === 0) return;
+
+        const newX = gestureState.moveX - containerLayout.x;
+        const clampedX = Math.max(0, Math.min(newX, containerLayout.width));
+        const newTime = (clampedX / containerLayout.width) * videoDuration;
+        const videoRef = videoRefs.current.get(item.id);
+
+        if (videoRef) {
+          videoRef.seek(newTime);
+          setCurrentTime(newTime);
+        }
+      },
+    });
     const handleLongPress = () => {
       setPausedLocally(true);
       setOverlayVisible(false);
+      setLocalOverlayVisible(false);
       if (onLongPressAction) {
         onLongPressAction(item.id);
       }
@@ -98,12 +132,25 @@ const ClipItem = memo(
 
     const handlePressOut = () => {
       setPausedLocally(false);
+      setLocalOverlayVisible(true);
       setOverlayVisible(true);
     };
 
     const handlePress = () => {
       handleDoubleTap(item.id);
       onVideoPress(item.id);
+    };
+
+    const handlePressOfProfilePick = () => {
+      const profileString = storage.getString('profile');
+      const profile = JSON.parse(profileString);
+      if (profile.username === item.username) {
+        navigation.navigate('Profile');
+      } else {
+        navigation.navigate('OtherProfileScreen', {
+          username: item.username,
+        });
+      }
     };
 
     return (
@@ -118,13 +165,22 @@ const ClipItem = memo(
             key={`video-${item.id}-${isConnected}`}
             ref={ref => videoRefs.current.set(item.id, ref)}
             source={{uri: cachedUri || item.videoSource}}
+            poster={item.thumbnail}
+            posterResizeMode="cover"
             style={StyleSheet.absoluteFill}
             resizeMode="contain"
             paused={!isPlaying || pausedLocally}
             repeat
             muted={isMuted}
             onLoadStart={() => handleLoadStart(item.id)}
-            onLoad={() => handleLoad(item.id)}
+            onLoad={data => {
+              handleLoad(item.id);
+
+              setVideoDuration(data.duration);
+            }}
+            onProgress={data => {
+              setCurrentTime(data.currentTime);
+            }}
             onBuffer={buffer => {}}
             bufferConfig={{
               minBufferMs: 15000,
@@ -135,7 +191,24 @@ const ClipItem = memo(
             ignoreSilentSwitch="obey"
           />
         </Pressable>
-
+        {localOverlayVisible && (
+          <View
+            style={[styles.progressBarContainer, {width}]}
+            onLayout={e => setContainerLayout(e.nativeEvent.layout)}
+            {...panResponder.panHandlers}>
+            <View
+              style={[
+                styles.progressBar,
+                {
+                  width:
+                    videoDuration > 0
+                      ? (currentTime / videoDuration) * containerLayout.width
+                      : 0,
+                },
+              ]}
+            />
+          </View>
+        )}
         {loadingStates[item.id] && (
           <View style={styles.loadingContainer}>
             <CustomLoadingIndicator />
@@ -163,7 +236,7 @@ const ClipItem = memo(
           </Animated.View>
         )}
 
-        {overlayVisible && (
+        {localOverlayVisible && (
           <View style={styles.volumeButtonContainer}>
             <Pressable onPress={() => setIsMuted(!isMuted)}>
               <View style={styles.volumeButton}>
@@ -177,10 +250,16 @@ const ClipItem = memo(
           </View>
         )}
 
-        {overlayVisible && (
+        {localOverlayVisible && (
           <View style={styles.bottomContainer}>
             <View style={styles.bottomLeft}>
-              <Text style={styles.username}>{item.username}</Text>
+              <Text
+                style={styles.username}
+                onPress={() => {
+                  handlePressOfProfilePick();
+                }}>
+                {item.username}
+              </Text>
               <Text style={styles.caption}>{item.caption}</Text>
               <View style={styles.musicRow}>
                 <Icon name="musical-notes" size={16} color="#fff" />
@@ -188,9 +267,11 @@ const ClipItem = memo(
               </View>
             </View>
             <View style={styles.bottomRight}>
-              <TouchableRipple
-                rippleColor={'rgba(0,0,0,0.5)'}
+              <TouchableOpacity
                 borderless={true}
+                onPress={() => {
+                  handlePressOfProfilePick();
+                }}
                 style={styles.profileContainer}>
                 <>
                   <DynamicImage
@@ -202,7 +283,7 @@ const ClipItem = memo(
                     <Entypo name="plus" size={13} color="#fff" />
                   </View>
                 </>
-              </TouchableRipple>
+              </TouchableOpacity>
               <TouchableRipple
                 rippleColor={'rgba(0,0,0,0.5)'}
                 borderless={true}
@@ -234,7 +315,7 @@ const ClipItem = memo(
               <Animated.View
                 style={[styles.musicDisk, {transform: [{rotate: spin}]}]}>
                 <DynamicImage
-                  uri={item.profilePic}
+                  uri={item.thumbnail}
                   isConnected={isConnected}
                   style={styles.diskImage}
                 />
