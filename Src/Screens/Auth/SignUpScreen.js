@@ -121,7 +121,6 @@ const SignupScreen = () => {
         email: email.toLowerCase(),
         password: password,
       });
-      console.log(response);
       if (response.status === 200) {
         setIsMessage({
           message: response.data.message || 'SignUp Successfull!!!',

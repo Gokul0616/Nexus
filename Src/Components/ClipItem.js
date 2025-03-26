@@ -48,7 +48,6 @@ const ClipItem = memo(
     const [localOverlayVisible, setLocalOverlayVisible] = useState(true);
 
     const spinValue = useRef(new Animated.Value(0)).current;
-
     useEffect(() => {
       const cacheVideo = async () => {
         const cacheDir = RNFS.CachesDirectoryPath;
@@ -137,11 +136,11 @@ const ClipItem = memo(
     };
 
     const handlePress = () => {
-      handleDoubleTap(item.id);
+      handleDoubleTap(item.id, item.videoId);
       onVideoPress(item.id);
     };
 
-    const handlePressOfProfilePick = () => {
+    const handlePressOfProfile = () => {
       const profileString = storage.getString('profile');
       const profile = JSON.parse(profileString);
       if (profile.username === item.username) {
@@ -152,7 +151,6 @@ const ClipItem = memo(
         });
       }
     };
-
     return (
       <View style={[styles.container, {width, height}]}>
         <Pressable
@@ -256,7 +254,7 @@ const ClipItem = memo(
               <Text
                 style={styles.username}
                 onPress={() => {
-                  handlePressOfProfilePick();
+                  handlePressOfProfile();
                 }}>
                 {item.username}
               </Text>
@@ -270,7 +268,7 @@ const ClipItem = memo(
               <TouchableOpacity
                 borderless={true}
                 onPress={() => {
-                  handlePressOfProfilePick();
+                  handlePressOfProfile();
                 }}
                 style={styles.profileContainer}>
                 <>
@@ -289,7 +287,11 @@ const ClipItem = memo(
                 borderless={true}
                 style={styles.iconWrapper}>
                 <>
-                  <Icon name="heart" size={32} color="#fff" />
+                  <Icon
+                    name="heart"
+                    size={32}
+                    color={item.likedByCurrentUser ? '#ed4956' : '#fff'}
+                  />
                   <Text style={styles.iconText}>{item.likes}</Text>
                 </>
               </TouchableRipple>

@@ -17,7 +17,6 @@ const WebSocketExample = () => {
   const [chatLog, setChatLog] = useState([]);
   useEffect(() => {
     const token = storage.getString('token');
-    console.log(token);
     const socket = new WebSocket(
       `ws://192.168.1.19:8080/api/v1/ws?token=${token}`,
       null,

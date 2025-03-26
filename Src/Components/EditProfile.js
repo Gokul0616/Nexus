@@ -59,7 +59,7 @@ const EditProfile = ({route}) => {
       if (resopnse.status === 200) {
         setIsMessage({
           message: resopnse.data || 'Profile Updated Successfully!!',
-          heading: 'Error',
+          heading: 'Success',
           isRight: true,
           rightButtonText: 'OK',
           triggerFunction: () => {

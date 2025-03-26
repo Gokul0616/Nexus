@@ -105,7 +105,7 @@ export default function ClipVideo() {
     }
   };
 
-  const handleDoubleTap = id => {
+  const handleDoubleTap = (id, videoId) => {
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300;
     if (
@@ -129,11 +129,34 @@ export default function ClipVideo() {
           useNativeDriver: true,
         }),
       ]).start();
+      addLike(videoId);
       lastTapTimes.current[id] = 0;
     } else {
       lastTapTimes.current[id] = now;
     }
   };
+  const addLike = async videoId => {
+    try {
+      setVideoData(prevData =>
+        prevData.map(video => {
+          if (video.videoId === videoId) {
+            if (!video.likedByCurrentUser) {
+              return {
+                ...video,
+                likes: video.likes ? video.likes + 1 : 1,
+                likedByCurrentUser: true,
+              };
+            }
+          }
+          return video;
+        }),
+      );
+      const response = await apiClient.post(`post/addLike`, {videoId});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const renderItem = useCallback(
     ({item}) => {
       const isPlaying =
