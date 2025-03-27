@@ -31,6 +31,7 @@ export default function ClipVideo() {
   const insets = useSafeAreaInsets();
   const {width, height: windowHeight} = useWindowDimensions();
   const [videoData, setVideoData] = useState([]);
+  const [likeDataOfUser, setLikeDataOfUser] = useState([]);
   const [overlayVisible, setOverlayVisible] = useState(true);
 
   const tabBarHeight = useBottomTabBarHeight();
@@ -47,8 +48,18 @@ export default function ClipVideo() {
   const likeAnimations = useRef({});
   useEffect(() => {
     const fetchData = async () => {
-      const response = await apiClient.get('post/getRecommendation');
-      setVideoData(response.data);
+      try {
+        const response = await apiClient.get('post/getRecommendation');
+        const data = response.data;
+        setVideoData(data);
+
+        const likedVideos = data
+          .filter(video => video.likedByCurrentUser)
+          .map(video => video.videoId);
+        setLikeDataOfUser(likedVideos);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
     fetchData();
   }, []);
@@ -135,26 +146,69 @@ export default function ClipVideo() {
       lastTapTimes.current[id] = now;
     }
   };
+  const togglingLikes = useRef(new Set());
+
   const addLike = async videoId => {
+    if (togglingLikes.current.has(videoId)) return;
+    togglingLikes.current.add(videoId);
+
+    setVideoData(prevData =>
+      prevData.map(video => {
+        if (video.videoId === videoId && !video.likedByCurrentUser) {
+          const currentLikes = video.likes || 0;
+          return {...video, likes: currentLikes + 1, likedByCurrentUser: true};
+        }
+        return video;
+      }),
+    );
+
+    setLikeDataOfUser(prevData => [...prevData, videoId]);
+
     try {
-      setVideoData(prevData =>
-        prevData.map(video => {
-          if (video.videoId === videoId) {
-            if (!video.likedByCurrentUser) {
-              return {
-                ...video,
-                likes: video.likes ? video.likes + 1 : 1,
-                likedByCurrentUser: true,
-              };
-            }
-          }
-          return video;
-        }),
-      );
-      const response = await apiClient.post(`post/addLike`, {videoId});
+      await apiClient.post(`post/addLike`, {videoId});
     } catch (error) {
-      console.log(error);
+      console.log('Error adding like:', error);
+    } finally {
+      togglingLikes.current.delete(videoId);
     }
+  };
+  const removeLike = async videoId => {
+    if (togglingLikes.current.has(videoId)) return;
+    togglingLikes.current.add(videoId);
+
+    setVideoData(prevData =>
+      prevData.map(video => {
+        if (video.videoId === videoId && video.likedByCurrentUser) {
+          const currentLikes = video.likes || 0;
+          return {
+            ...video,
+            likes: currentLikes > 0 ? currentLikes - 1 : 0,
+            likedByCurrentUser: false,
+          };
+        }
+        return video;
+      }),
+    );
+
+    try {
+      await apiClient.post(`post/removeLike`, {videoId});
+    } catch (error) {
+      console.log('Error removing like:', error);
+    } finally {
+      togglingLikes.current.delete(videoId);
+    }
+  };
+  const handleLikeButtonClick = videoId => {
+    setLikeDataOfUser(prevData => {
+      if (prevData.includes(videoId)) {
+        removeLike(videoId);
+        return prevData.filter(id => id !== videoId);
+      } else {
+        addLike(videoId);
+
+        return [...prevData, videoId];
+      }
+    });
   };
 
   const renderItem = useCallback(
@@ -179,6 +233,7 @@ export default function ClipVideo() {
           likeAnimations={likeAnimations}
           commentVisible={commentVisible}
           navigation={navigation}
+          handleLike={handleLikeButtonClick}
           setCommentVisible={setCommentVisible}
           overlayVisible={overlayVisible}
           setOverlayVisible={setOverlayVisible}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {
   StyleSheet,
   Text,
@@ -37,10 +37,12 @@ const SingleExplore = () => {
 
   const onViewableItemsChanged = React.useRef(({viewableItems}) => {
     const visibleIds = viewableItems.map(viewable => viewable.item.id);
-    setVisibleItems(visibleIds);
+    setTimeout(() => {
+      setVisibleItems(visibleIds);
+    }, 3000);
   }).current;
 
-  const viewabilityConfig = React.useRef({
+  const viewabilityConfig = useRef({
     viewAreaCoveragePercentThreshold: 20,
   }).current;
 

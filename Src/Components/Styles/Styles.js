@@ -389,7 +389,6 @@ const ProfileScreenstyles = StyleSheet.create({
     marginLeft: 5,
   },
   tabsContainer: {
-    flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: '#eee',
     borderBottomWidth: 1,
@@ -399,11 +398,14 @@ const ProfileScreenstyles = StyleSheet.create({
   tab: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: 'transparent',
   },
-  activeTab: {},
+  activeTab: {
+    borderBottomColor: '#000',
+  },
   gridItem: {
     width: width / 3,
     height: width / 3,
@@ -533,7 +535,7 @@ const ChatscreenStyles = StyleSheet.create({
   },
   chatList: {
     padding: 10,
-    // paddingBottom: 70,
+
     backgroundColor: '#f9f9f9',
   },
   chatBubble: {
@@ -588,7 +590,7 @@ const ChatscreenStyles = StyleSheet.create({
   replymessageContainer: {
     backgroundColor: '#f0f0f0',
     borderLeftWidth: 4,
-    borderLeftColor: '#007aff', // Accent color (change as needed)
+    borderLeftColor: '#007aff',
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
@@ -622,15 +624,15 @@ const ClipItemStyles = StyleSheet.create({
   },
   progressBarContainer: {
     position: 'absolute',
-    bottom: 0, // adjust based on your design
+    bottom: 0,
     left: 0,
-    height: 3, // a thin line
+    height: 3,
     backgroundColor: 'rgba(255,255,255,0.3)',
     zIndex: 10,
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#fff', // or any color that matches your theme
+    backgroundColor: '#fff',
   },
   volumeButtonContainer: {
     position: 'absolute',
@@ -807,8 +809,7 @@ const NotificationScreenStyles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    // borderBottomWidth: StyleSheet.hairlineWidth,
-    // borderBottomColor: '#ccc',
+
     marginTop: 10,
   },
   activityHeaderText: {

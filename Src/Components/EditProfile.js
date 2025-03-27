@@ -1,7 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useRef, useState} from 'react';
 import {
-  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -13,17 +12,15 @@ import {
 import {launchImageLibrary} from 'react-native-image-picker';
 import {TouchableRipple} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import CustomHeader from './CustomHeader';
-import {profileDummyData} from './DummyData';
-import NexusInput from './NexusInput';
 import apiClient from '../Services/api/apiInterceptor';
-import CustomLoadingIndicator from './CustomLoadingIndicator';
 import AlertBox from './AlertMessage';
 import {fetchCityData} from './CommonData';
+import CustomHeader from './CustomHeader';
+import CustomLoadingIndicator from './CustomLoadingIndicator';
+import NexusInput from './NexusInput';
 const {height, width} = Dimensions.get('window');
 const EditProfile = ({route}) => {
   const {profileData} = route.params;
-  const profile = profileDummyData[0];
   const navigation = useNavigation();
   const [name, setName] = useState(profileData?.fullName);
   const [username, setUsername] = useState(profileData?.username);

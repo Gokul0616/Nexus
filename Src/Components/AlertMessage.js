@@ -41,7 +41,9 @@ const AlertBox = ({
             {isRight && (
               <TouchableOpacity
                 onPress={triggerFunction}
-                style={[styles.button, styles.rightButton,
+                style={[
+                  styles.button,
+                  styles.rightButton,
                   isRight && {borderRightWidth: 0},
                 ]}>
                 <Text style={styles.buttonText}>{rightButtonText}</Text>
@@ -86,7 +88,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   heading: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'black',
     textAlign: 'center',
@@ -99,7 +101,7 @@ const styles = StyleSheet.create({
     height: 20,
   },
   message: {
-    fontSize: 16,
+    fontSize: 14,
     color: 'grey',
     textAlign: 'center',
     fontFamily: 'Roboto-Medium',
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#007AFF',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Roboto-Medium',
   },
 });

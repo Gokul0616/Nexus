@@ -35,6 +35,7 @@ const ClipItem = memo(
     videoRefs,
     handleDoubleTap,
     likeAnimations,
+    handleLike,
     isConnected,
     overlayVisible,
     setOverlayVisible,
@@ -266,7 +267,6 @@ const ClipItem = memo(
             </View>
             <View style={styles.bottomRight}>
               <TouchableOpacity
-                borderless={true}
                 onPress={() => {
                   handlePressOfProfile();
                 }}
@@ -282,9 +282,8 @@ const ClipItem = memo(
                   </View>
                 </>
               </TouchableOpacity>
-              <TouchableRipple
-                rippleColor={'rgba(0,0,0,0.5)'}
-                borderless={true}
+              <TouchableOpacity
+                onPress={() => handleLike(item.videoId)}
                 style={styles.iconWrapper}>
                 <>
                   <Icon
@@ -294,26 +293,21 @@ const ClipItem = memo(
                   />
                   <Text style={styles.iconText}>{item.likes}</Text>
                 </>
-              </TouchableRipple>
-              <TouchableRipple
-                rippleColor={'rgba(0,0,0,0.5)'}
-                borderless={true}
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={() => setCommentVisible(true)}
                 style={styles.iconWrapper}>
                 <>
                   <Icon name="chatbubble" size={32} color="#fff" />
                   <Text style={styles.iconText}>{item.comments}</Text>
                 </>
-              </TouchableRipple>
-              <TouchableRipple
-                rippleColor={'rgba(0,0,0,0.5)'}
-                borderless={true}
-                style={styles.iconWrapper}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.iconWrapper}>
                 <>
                   <Icon name="share-social" size={32} color="#fff" />
                   <Text style={styles.iconText}>{item.shares}</Text>
                 </>
-              </TouchableRipple>
+              </TouchableOpacity>
               <Animated.View
                 style={[styles.musicDisk, {transform: [{rotate: spin}]}]}>
                 <DynamicImage

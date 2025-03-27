@@ -23,11 +23,12 @@ const {width, height} = Dimensions.get('window');
 
 const SignInScreen = () => {
   const navigation = useNavigation();
-  const [email, setEmail] = useState('');
+
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [emailError, setEmailError] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isMessage, setIsMessage] = useState({
     message: '',
@@ -39,30 +40,33 @@ const SignInScreen = () => {
     showAlert: false,
     leftTriggerFunction: () => {},
   });
+
   const closeAlert = () => {
     setIsMessage(prev => ({...prev, showAlert: false}));
   };
+
   const clearStackAndNavigate = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [
-          {
-            name: 'Signup',
-          },
-        ],
+        routes: [{name: 'Signup'}],
       }),
     );
   };
 
-  const validateEmail = email => {
+  const validateEmail = emailInput => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return emailRegex.test(emailInput);
   };
 
-  const validatePassword = password => {
-    return password.length >= 8;
+  const validateUsername = usernameInput => {
+    return usernameInput.trim().length >= 3;
   };
+
+  const validatePassword = passwordInput => {
+    return passwordInput.length >= 8;
+  };
+
   const navigateHome = token => {
     storage.set('token', token);
     navigation.dispatch(
@@ -76,65 +80,61 @@ const SignInScreen = () => {
   const handleSignin = async () => {
     let valid = true;
 
-    if (!validateEmail(email)) {
-      setEmailError('Please enter a valid email address.');
-      valid = false;
+    setLoginError('');
+    setPasswordError('');
+
+    if (login.includes('@')) {
+      if (!validateEmail(login)) {
+        setLoginError('Please enter a valid email address.');
+        valid = false;
+      }
     } else {
-      setEmailError('');
+      if (!validateUsername(login)) {
+        setLoginError('Please enter a valid username.');
+        valid = false;
+      }
     }
 
     if (!validatePassword(password)) {
-      setPasswordError(`Password must be at least 8 characters long.`);
+      setPasswordError('Password must be at least 8 characters long.');
       valid = false;
-    } else {
-      setPasswordError('');
     }
+
     if (!valid) {
       Vibration.vibrate(100);
       return;
     }
-    if (valid) {
-      try {
-        Keyboard.dismiss();
-        setIsLoading(true);
-        const response = await apiClient.post('/user/auth/signin', {
-          email: email.toLowerCase(),
-          password: password,
-        });
-        if (response.status === 200) {
-          setIsMessage({
-            message: response.data.message || 'Signed In!!',
-            heading: 'Success',
-            isRight: true,
-            leftTriggerFunction: () => {
-              navigateHome(response.data.jwt);
-            },
-            rightButtonText: 'OK',
-            triggerFunction: () => {
-              closeAlert();
-              navigateHome(response.data.jwt);
-            },
-            setShowAlert: () => {
-              isMessage.setShowAlert(false);
-            },
-            showAlert: true,
-          });
-        } else {
-          setIsMessage({
-            message: response.data || 'Something went wrong',
-            heading: 'Error',
-            isRight: false,
-            rightButtonText: 'OK',
-            triggerFunction: () => {},
-            setShowAlert: () => {
-              isMessage.setShowAlert(false);
-            },
-            showAlert: true,
-          });
-        }
-      } catch (error) {
+
+    try {
+      Keyboard.dismiss();
+      setIsLoading(true);
+
+      const payload = {
+        login: login.includes('@') ? login.toLowerCase() : login,
+        password: password,
+      };
+      const response = await apiClient.post('/user/auth/signin', payload);
+      if (response.status === 200) {
         setIsMessage({
-          message: error?.response?.data?.message || 'Something went wrong',
+          message: response.data.message || 'Signed In!!',
+          heading: 'Success',
+          isRight: true,
+          leftTriggerFunction: () => {
+            navigateHome(response.data.jwt);
+          },
+          rightButtonText: 'OK',
+          triggerFunction: () => {
+            closeAlert();
+            navigateHome(response.data.jwt);
+          },
+          setShowAlert: () => {
+            isMessage.setShowAlert(false);
+          },
+          showAlert: true,
+        });
+      } else {
+        setIsMessage({
+          message: response.data || 'Something went wrong',
           heading: 'Error',
           isRight: false,
           rightButtonText: 'OK',
@@ -144,9 +144,21 @@ const SignInScreen = () => {
           },
           showAlert: true,
         });
-      } finally {
-        setIsLoading(false);
       }
+    } catch (error) {
+      setIsMessage({
+        message: error?.response?.data?.message || 'Something went wrong',
+        heading: 'Error',
+        isRight: false,
+        rightButtonText: 'OK',
+        triggerFunction: () => {},
+        setShowAlert: () => {
+          isMessage.setShowAlert(false);
+        },
+        showAlert: true,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -184,15 +196,15 @@ const SignInScreen = () => {
         <Text style={styles.subText}>Sign in to continue using Nexus.</Text>
 
         <TextInput
-          style={[styles.input, emailError ? styles.errorInput : null]}
-          placeholder="Email Address"
-          // placeholder="Email or Username"
+          style={[styles.input, loginError ? styles.errorInput : null]}
+          placeholder="Email or Username"
           placeholderTextColor="#999"
+          autoCapitalize="none"
           keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
+          value={login}
+          onChangeText={setLogin}
         />
-        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+        {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null}
 
         <View
           style={[
@@ -220,10 +232,7 @@ const SignInScreen = () => {
           <Text style={styles.errorText}>{passwordError}</Text>
         ) : null}
 
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('ForgotPassword');
-          }}>
+        <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
 
@@ -247,6 +256,7 @@ const SignInScreen = () => {
 };
 
 export default SignInScreen;
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -315,7 +325,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     width: '100%',
     alignItems: 'center',
-
     marginBottom: 20,
   },
   signInButtonText: {
@@ -345,9 +354,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     backgroundColor: '#f9f9f9',
     width: '100%',
-    marginBlock: 15,
+    marginVertical: 15,
   },
-  passwordInput: {flex: 1, height: 50, fontSize: 16},
+  passwordInput: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+  },
   errorText: {
     color: 'red',
     fontSize: 12,

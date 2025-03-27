@@ -13,20 +13,17 @@ import {
   View,
 } from 'react-native';
 import {createThumbnail} from 'react-native-create-thumbnail';
-import {TouchableRipple} from 'react-native-paper';
+import {RefreshControl} from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {formatNumber, PrimaryColor} from '../../Components/CommonData';
+import AlertBox from '../../Components/AlertMessage';
+import {formatNumber} from '../../Components/CommonData';
 import CustomHeader from '../../Components/CustomHeader';
-import {profileDummyData} from '../../Components/DummyData';
-import DynamicImage from '../../Components/DynamicImage';
+import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
 import {ProfileScreenstyles as styles} from '../../Components/Styles/Styles';
 import apiClient from '../../Services/api/apiInterceptor';
-import AlertBox from '../../Components/AlertMessage';
-import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
-import {RefreshControl} from 'react-native-gesture-handler';
 
 const ReelItem = ({item}) => {
   const [thumbnail, setThumbnail] = useState(null);
@@ -96,14 +93,24 @@ const Profile = () => {
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
-
   const renderContent = () => {
     if (selectedTab === 'reels') {
-      return profile?.videos;
+      return profile?.videos
+        ? [...profile.videos].sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+          )
+        : [];
+    } else if (selectedTab === 'likes') {
+      return profile?.likedVideos
+        ? [...profile.likedVideos].sort(
+            (a, b) =>
+              new Date(b.likes?.[0]?.likedAt) - new Date(a.likes?.[0]?.likedAt),
+          )
+        : [];
     }
-
     return [];
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -130,6 +137,7 @@ const Profile = () => {
     };
     fetchData();
   }, [mediaKey]);
+
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
@@ -301,18 +309,28 @@ const Profile = () => {
         </View>
 
         <View style={styles.tabsContainer}>
-          {['reels'].map(tab => (
-            <TouchableOpacity
-              key={tab}
-              style={[styles.tab, selectedTab === tab && styles.activeTab]}
-              onPress={() => setSelectedTab(tab)}>
-              <FontAwesome
-                name="film"
-                size={24}
-                color={selectedTab === tab ? 'black' : 'gray'}
-              />
-            </TouchableOpacity>
-          ))}
+          <View style={{flexDirection: 'row'}}>
+            {['reels', 'likes'].map(tab => (
+              <TouchableOpacity
+                key={tab}
+                style={[styles.tab, selectedTab === tab && styles.activeTab]}
+                onPress={() => setSelectedTab(tab)}>
+                {tab === 'reels' ? (
+                  <FontAwesome
+                    name="film"
+                    size={24}
+                    color={selectedTab === tab ? 'black' : 'gray'}
+                  />
+                ) : (
+                  <FontAwesome
+                    name="heart"
+                    size={24}
+                    color={selectedTab === tab ? 'black' : 'gray'}
+                  />
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
 
         <FlatList

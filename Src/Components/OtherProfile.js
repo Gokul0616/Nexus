@@ -102,11 +102,24 @@ const Profile = ({route}) => {
 
   const renderContent = () => {
     if (selectedTab === 'reels') {
-      return profile?.videos;
+      // Copy and sort videos by createdAt descending (newest first)
+      return profile?.videos
+        ? [...profile.videos].sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+          )
+        : [];
+      // } else if (selectedTab === 'likes') {
+      //   // Copy and sort likedVideos by the likedAt field (assuming each video has one like record)
+      //   return profile?.likedVideos
+      //     ? [...profile.likedVideos].sort(
+      //         (a, b) =>
+      //           new Date(b.likes?.[0]?.likedAt) - new Date(a.likes?.[0]?.likedAt),
+      //       )
+      //     : [];
     }
-
     return [];
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -370,7 +383,7 @@ const Profile = ({route}) => {
           {['reels'].map(tab => (
             <TouchableOpacity
               key={tab}
-              style={[styles.tab, selectedTab === tab && styles.activeTab]}
+              style={[styles.tab]}
               onPress={() => setSelectedTab(tab)}>
               <FontAwesome
                 name="film"

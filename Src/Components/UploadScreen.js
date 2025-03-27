@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Switch,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import {createThumbnail} from 'react-native-create-thumbnail';
 import {PrimaryColor} from './CommonData';
@@ -88,12 +89,12 @@ const UploadPost = ({route, navigation}) => {
         </View>
 
         <View style={styles.quickToolsRow}>
-          <TouchableOpacity style={styles.quickButton}>
+          <Pressable style={styles.quickButton}>
             <Text style={styles.quickButtonText}># Hashtag</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.quickButton}>
+          </Pressable>
+          <Pressable style={styles.quickButton}>
             <Text style={styles.quickButtonText}>@ Mention</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* <TouchableRipple rippleColor={'rgb(0,0,0,0.5)'} style={styles.menuItem}>
