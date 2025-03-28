@@ -829,6 +829,20 @@ const MainExploreScreenStyle = StyleSheet.create({
     paddingTop: 90,
     paddingBottom: 20,
   },
+  searchHeaderText: {color: '#666'},
+  searchHeaderTextContainer: {
+    padding: 5,
+    borderRadius: '40%',
+    backgroundColor: '#eee',
+    paddingHorizontal: 30,
+  },
+  searchHeaderContainer: {
+    padding: 3,
+    flexDirection: 'row',
+    gap: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
   searchContainer: {
     position: 'absolute',
     top: 0,

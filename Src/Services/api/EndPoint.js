@@ -1,1 +1,3 @@
-export const backendUrl = 'http://192.168.1.19:8080/api/v1/';
+import Config from 'react-native-config';
+
+export const backendUrl = Config.API_URL;

@@ -1,0 +1,245 @@
+{
+  "lockfileVersion": 1,
+  "packages": {
+    "@babel/core": {
+      "version": "^7.25.2",
+      "integrated": false
+    },
+    "@babel/preset-env": {
+      "version": "^7.25.3",
+      "integrated": false
+    },
+    "@babel/runtime": {
+      "version": "^7.25.0",
+      "integrated": false
+    },
+    "@bam.tech/react-native-make": {
+      "version": "^3.0.3",
+      "integrated": false
+    },
+    "@react-native-camera-roll/camera-roll": {
+      "version": "^7.10.0",
+      "integrated": false
+    },
+    "@react-native-clipboard/clipboard": {
+      "version": "^1.16.2",
+      "integrated": false
+    },
+    "@react-native-community/cli": {
+      "version": "15.0.1",
+      "integrated": false
+    },
+    "@react-native-community/cli-platform-android": {
+      "version": "15.0.1",
+      "integrated": false
+    },
+    "@react-native-community/cli-platform-ios": {
+      "version": "15.0.1",
+      "integrated": false
+    },
+    "@react-native-community/netinfo": {
+      "version": "^11.4.1",
+      "integrated": false
+    },
+    "@react-native-firebase/app": {
+      "version": "^21.8.0",
+      "integrated": false
+    },
+    "@react-native-firebase/messaging": {
+      "version": "^21.8.0",
+      "integrated": false
+    },
+    "@react-native/babel-preset": {
+      "version": "0.77.0",
+      "integrated": false
+    },
+    "@react-native/eslint-config": {
+      "version": "0.77.0",
+      "integrated": false
+    },
+    "@react-native/metro-config": {
+      "version": "0.77.0",
+      "integrated": false
+    },
+    "@react-native/typescript-config": {
+      "version": "0.77.0",
+      "integrated": false
+    },
+    "@react-navigation/bottom-tabs": {
+      "version": "^7.2.0",
+      "integrated": false
+    },
+    "@react-navigation/material-top-tabs": {
+      "version": "^7.1.0",
+      "integrated": false
+    },
+    "@react-navigation/native": {
+      "version": "^7.0.14",
+      "integrated": false
+    },
+    "@react-navigation/native-stack": {
+      "version": "^7.2.0",
+      "integrated": false
+    },
+    "@react-navigation/stack": {
+      "version": "^7.1.1",
+      "integrated": false
+    },
+    "@stomp/stompjs": {
+      "version": "^7.0.1",
+      "integrated": false
+    },
+    "@types/jest": {
+      "version": "^29.5.13",
+      "integrated": false
+    },
+    "@types/react": {
+      "version": "^18.2.6",
+      "integrated": false
+    },
+    "@types/react-test-renderer": {
+      "version": "^18.0.0",
+      "integrated": false
+    },
+    "axios": {
+      "version": "^1.8.3",
+      "integrated": false
+    },
+    "eslint": {
+      "version": "^8.19.0",
+      "integrated": false
+    },
+    "firebase": {
+      "version": "^11.3.0",
+      "integrated": false
+    },
+    "jest": {
+      "version": "^29.6.3",
+      "integrated": false
+    },
+    "link-preview-js": {
+      "version": "^3.0.14",
+      "integrated": false
+    },
+    "md5": {
+      "version": "^2.3.0",
+      "integrated": false
+    },
+    "prettier": {
+      "version": "2.8.8",
+      "integrated": false
+    },
+    "react": {
+      "version": "18.3.1",
+      "integrated": false
+    },
+    "react-native": {
+      "version": "0.77.0",
+      "integrated": false
+    },
+    "react-native-config": {
+      "version": "^1.5.5",
+      "integrated": true
+    },
+    "react-native-create-thumbnail": {
+      "version": "^2.0.1",
+      "integrated": false
+    },
+    "react-native-fs": {
+      "version": "^2.20.0",
+      "integrated": false
+    },
+    "react-native-gesture-handler": {
+      "version": "^2.24.0",
+      "integrated": false
+    },
+    "react-native-image-picker": {
+      "version": "^8.2.0",
+      "integrated": false
+    },
+    "react-native-keyboard-aware-scroll-view": {
+      "version": "^0.9.5",
+      "integrated": false
+    },
+    "react-native-linear-gradient": {
+      "version": "^2.8.3",
+      "integrated": false
+    },
+    "react-native-make": {
+      "version": "^1.0.1",
+      "integrated": false
+    },
+    "react-native-mmkv": {
+      "version": "^3.2.0",
+      "integrated": false
+    },
+    "react-native-pager-view": {
+      "version": "^6.7.0",
+      "integrated": false
+    },
+    "react-native-paper": {
+      "version": "^5.13.1",
+      "integrated": false
+    },
+    "react-native-permissions": {
+      "version": "^5.2.6",
+      "integrated": false
+    },
+    "react-native-reanimated": {
+      "version": "^3.17.1",
+      "integrated": false
+    },
+    "react-native-safe-area-context": {
+      "version": "^5.2.0",
+      "integrated": false
+    },
+    "react-native-screens": {
+      "version": "^4.9.0",
+      "integrated": false
+    },
+    "react-native-simple-toast": {
+      "version": "^3.3.2",
+      "integrated": false
+    },
+    "react-native-snap-carousel": {
+      "version": "^3.9.1",
+      "integrated": false
+    },
+    "react-native-vector-icons": {
+      "version": "^10.2.0",
+      "integrated": false
+    },
+    "react-native-video": {
+      "version": "^6.10.1",
+      "integrated": false
+    },
+    "react-native-vision-camera": {
+      "version": "^4.6.4",
+      "integrated": false
+    },
+    "react-native-websocket": {
+      "version": "^1.0.2",
+      "integrated": false
+    },
+    "react-native-websockets": {
+      "version": "^1.0.8",
+      "integrated": false
+    },
+    "react-native-webview": {
+      "version": "^13.13.2",
+      "integrated": false
+    },
+    "react-test-renderer": {
+      "version": "18.3.1",
+      "integrated": false
+    },
+    "sockjs-client": {
+      "version": "^1.6.1",
+      "integrated": false
+    },
+    "typescript": {
+      "version": "5.0.4",
+      "integrated": false
+    }
+  }
+}

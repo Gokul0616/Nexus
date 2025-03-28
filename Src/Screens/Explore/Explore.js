@@ -1,28 +1,68 @@
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useCallback, useRef, useState} from 'react';
 import {
+  Animated,
   BackHandler,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
+  Dimensions,
   FlatList,
   Image,
-  Dimensions,
-  Animated,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import NexusInput from '../../Components/NexusInput';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {exploreData, exploreCategoriesData} from '../../Components/DummyData';
-import CustomHeader from '../../Components/CustomHeader';
-import {formatNumber} from '../../Components/CommonData';
 import {TouchableRipple} from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {formatNumber} from '../../Components/CommonData';
+import CustomHeader from '../../Components/CustomHeader';
 import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
+import {exploreCategoriesData, exploreData} from '../../Components/DummyData';
+import NexusInput from '../../Components/NexusInput';
 import {MainExploreScreenStyle as styles} from '../../Components/Styles/Styles';
+import UsersSearchResults from '../../Components/UsersSearchResults';
+import VideosSearchResults from '../../Components/VideosSearchResults';
 const {width} = Dimensions.get('window');
 const CARD_WIDTH = width * 0.5;
 const CARD_HEIGHT = 300;
+
+const SearchResultsTabs = ({searchVal}) => {
+  const [tabIndex, setTabIndex] = useState(0);
+  return (
+    <>
+      <ScrollView
+        contentContainerStyle={styles.searchHeaderContainer}
+        keyboardShouldPersistTaps="always"
+        scrollEnabled
+        horizontal
+        style={{maxHeight: 50}}>
+        <TouchableOpacity
+          style={styles.searchHeaderTextContainer}
+          onPress={() => {
+            setTabIndex(0);
+          }}>
+          <Text style={styles.searchHeaderText}>user</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.searchHeaderTextContainer}
+          onPress={() => {
+            setTabIndex(1);
+          }}>
+          <Text style={styles.searchHeaderText}>video </Text>
+        </TouchableOpacity>
+      </ScrollView>
+      <View style={{flex: 1}}>
+        {tabIndex === 0 ? (
+          <UsersSearchResults searchVal={searchVal} key={tabIndex} />
+        ) : (
+          <VideosSearchResults searchVal={searchVal} key={tabIndex} />
+        )}
+      </View>
+    </>
+  );
+};
 export const VideoCard = ({item, handleProfileNavigate}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -62,7 +102,7 @@ export const VideoCard = ({item, handleProfileNavigate}) => {
               setError(true);
               setLoading(false);
             }}
-            source={{uri: item.videoThumbnail}}
+            source={{uri: item.videoThumbnail || item.thumbnail}}
             style={styles.videoThumbnail}
             resizeMode="cover"
           />
@@ -222,6 +262,7 @@ const Explore = () => {
             onFocus={() => setIsSearch(true)}
             style={styles.searchInput}
           />
+          <SearchResultsTabs searchVal={searchVal} />
         </>
       )}
 
