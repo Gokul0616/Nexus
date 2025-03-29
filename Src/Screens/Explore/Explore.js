@@ -28,41 +28,6 @@ const {width} = Dimensions.get('window');
 const CARD_WIDTH = width * 0.5;
 const CARD_HEIGHT = 300;
 
-const SearchResultsTabs = ({searchVal}) => {
-  const [tabIndex, setTabIndex] = useState(0);
-  return (
-    <>
-      <ScrollView
-        contentContainerStyle={styles.searchHeaderContainer}
-        keyboardShouldPersistTaps="always"
-        scrollEnabled
-        horizontal
-        style={{maxHeight: 50}}>
-        <TouchableOpacity
-          style={styles.searchHeaderTextContainer}
-          onPress={() => {
-            setTabIndex(0);
-          }}>
-          <Text style={styles.searchHeaderText}>user</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.searchHeaderTextContainer}
-          onPress={() => {
-            setTabIndex(1);
-          }}>
-          <Text style={styles.searchHeaderText}>video </Text>
-        </TouchableOpacity>
-      </ScrollView>
-      <View style={{flex: 1}}>
-        {tabIndex === 0 ? (
-          <UsersSearchResults searchVal={searchVal} key={tabIndex} />
-        ) : (
-          <VideosSearchResults searchVal={searchVal} key={tabIndex} />
-        )}
-      </View>
-    </>
-  );
-};
 export const VideoCard = ({item, handleProfileNavigate}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -158,25 +123,25 @@ const Explore = () => {
     navigation.goBack();
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        if (!isSearch) {
-          naviBack();
-        } else {
-          setIsSearch(false);
-          setSearchVal('');
-        }
-        return true;
-      };
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const onBackPress = () => {
+  //       if (!isSearch) {
+  //         naviBack();
+  //       } else {
+  //         setIsSearch(false);
+  //         setSearchVal('');
+  //       }
+  //       return true;
+  //     };
 
-      const subscription = BackHandler.addEventListener(
-        'hardwareBackPress',
-        onBackPress,
-      );
-      return () => subscription.remove();
-    }, [navigation, isSearch]),
-  );
+  //     const subscription = BackHandler.addEventListener(
+  //       'hardwareBackPress',
+  //       onBackPress,
+  //     );
+  //     return () => subscription.remove();
+  //   }, [navigation, isSearch]),
+  // );
 
   const lastOffsetY = useRef(0);
   const isSearchHidden = useRef(false);
@@ -248,51 +213,29 @@ const Explore = () => {
 
   return (
     <View style={styles.container}>
-      {isSearch && (
-        <>
-          <CustomHeader
-            headerTitle={'Search'}
-            leftIconFunction={() => setIsSearch(false)}
-          />
-          <NexusInput
-            placeholder="Search..."
-            value={searchVal}
-            autofocus={true}
-            onChangeText={setSearchVal}
-            onFocus={() => setIsSearch(true)}
-            style={styles.searchInput}
-          />
-          <SearchResultsTabs searchVal={searchVal} />
-        </>
-      )}
-
-      {!isSearch && (
-        <>
-          <Animated.View
-            style={[
-              styles.searchContainer,
-              {transform: [{translateY: translateY}]},
-            ]}>
-            <Pressable
-              style={styles.searchMessagesContainer}
-              onPress={() => setIsSearch(true)}>
-              <View style={styles.searchInputView}>
-                <Text style={styles.searchText}>Search</Text>
-              </View>
-            </Pressable>
-          </Animated.View>
-          <FlatList
-            data={exploreCategoriesData}
-            renderItem={renderCategorySection}
-            keyExtractor={item => item.category}
-            contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={false}
-            maxToRenderPerBatch={5}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-          />
-        </>
-      )}
+      <Animated.View
+        style={[
+          styles.searchContainer,
+          {transform: [{translateY: translateY}]},
+        ]}>
+        <Pressable
+          style={styles.searchMessagesContainer}
+          onPress={() => navigation.navigate('SearchScreen')}>
+          <View style={styles.searchInputView}>
+            <Text style={styles.searchText}>Search</Text>
+          </View>
+        </Pressable>
+      </Animated.View>
+      <FlatList
+        data={exploreCategoriesData}
+        renderItem={renderCategorySection}
+        keyExtractor={item => item.category}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        maxToRenderPerBatch={5}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      />
     </View>
   );
 };

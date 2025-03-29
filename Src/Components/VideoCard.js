@@ -5,6 +5,7 @@ import {
   View,
   Image,
   TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -17,18 +18,16 @@ export const VideoCard = ({
   item,
   isVisible,
   handleProfileNavigate,
-  viewableItems,
   CARD_WIDTH,
 }) => {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
+
   return (
     <TouchableRipple
       onPress={() => console.log(item)}
       rippleColor={'rgba(0, 0, 0, 0.5)'}
-      style={{
-        borderRadius: 12,
-      }}
+      style={{borderRadius: 12}}
       borderless={true}>
       <View style={videoCardStyles.card}>
         <TouchableWithoutFeedback onPress={() => handleProfileNavigate(item)}>
@@ -47,6 +46,7 @@ export const VideoCard = ({
               resizeMode="contain"
               paused={!isVisible}
               viewType={0}
+              disableFocus={true}
             />
           ) : (
             <>
@@ -128,7 +128,7 @@ const videoCardStyles = StyleSheet.create({
   thumbnailContainer: {
     position: 'relative',
     width: '100%',
-    height: 250, //
+    height: 250,
   },
   thumbnail: {
     width: '100%',

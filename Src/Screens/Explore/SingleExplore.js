@@ -21,7 +21,6 @@ const SingleExplore = () => {
     CARD_WIDTH = width * 0.45;
   } else {
     numColumns = Math.floor(width / 200);
-
     CARD_WIDTH = width / numColumns;
   }
 
@@ -34,12 +33,22 @@ const SingleExplore = () => {
   );
 
   const [visibleItems, setVisibleItems] = React.useState([]);
+  const timeoutRef = useRef(null);
 
-  const onViewableItemsChanged = React.useRef(({viewableItems}) => {
-    const visibleIds = viewableItems.map(viewable => viewable.item.id);
-    setTimeout(() => {
-      setVisibleItems(visibleIds);
-    }, 3000);
+  const onViewableItemsChanged = useRef(({viewableItems}) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      const sortedViewables = [...viewableItems].sort(
+        (a, b) => (a.index || 0) - (b.index || 0),
+      );
+      const visibleIds = sortedViewables.map(viewable => viewable.item.id);
+
+      const lastTwoVisibleIds =
+        visibleIds.length <= 2 ? visibleIds : visibleIds.slice(-2);
+      setVisibleItems(lastTwoVisibleIds);
+    }, 1000);
   }).current;
 
   const viewabilityConfig = useRef({
@@ -53,7 +62,6 @@ const SingleExplore = () => {
         item={item}
         CARD_WIDTH={CARD_WIDTH}
         isVisible={visibleItems.includes(item.id)}
-        viewableItems={visibleItems}
         handleProfileNavigate={item => {
           console.log('Navigate to details for', item);
         }}

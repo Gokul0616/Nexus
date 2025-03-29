@@ -833,7 +833,7 @@ const MainExploreScreenStyle = StyleSheet.create({
   searchHeaderTextContainer: {
     padding: 5,
     borderRadius: '40%',
-    backgroundColor: '#eee',
+
     paddingHorizontal: 30,
   },
   searchHeaderContainer: {

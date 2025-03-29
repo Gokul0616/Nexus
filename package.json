@@ -31,6 +31,7 @@
     "@react-navigation/stack": "^7.1.1",
     "@stomp/stompjs": "^7.0.1",
     "axios": "^1.8.3",
+    "expo-av": "^15.0.2",
     "firebase": "^11.3.0",
     "link-preview-js": "^3.0.14",
     "md5": "^2.3.0",

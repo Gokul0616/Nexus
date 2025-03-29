@@ -1,90 +1,76 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
-import {
-  FlatList,
-  Image,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useEffect, useImperativeHandle, useState} from 'react';
+import {FlatList, Image, Text, TouchableOpacity} from 'react-native';
 import apiClient from '../Services/api/apiInterceptor';
-import CustomLoadingIndicator from './CustomLoadingIndicator';
 import {useDebounce} from '../Services/Hooks/useDebounce';
+import {storage} from './CommonData';
 
-const UsersSearchResults = ({searchVal}) => {
-  const [users, setUsers] = useState([]);
-  const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
-  const debouncedSearchVal = useDebounce(searchVal, 500);
+const UsersSearchResults = React.forwardRef(
+  ({searchVal, loading, setLoading}, ref) => {
+    const [users, setUsers] = useState([]);
+    const navigation = useNavigation();
+    const debouncedSearchVal = useDebounce(searchVal, 500);
 
-  useEffect(() => {
-    if (debouncedSearchVal.length === 0) {
-      return;
-    }
+    const fetchUsers = async () => {
+      if (searchVal.length === 0) return;
 
-    fetchVideos();
-  }, [debouncedSearchVal]);
-  async function fetchVideos() {
-    try {
-      setLoading(true);
-      const response = await apiClient.get(
-        `/search?query=${debouncedSearchVal}&type=users`,
-      );
-      setUsers(response.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-  const renderItem = ({item}) => (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.navigate('OtherProfileScreen', {username: item.username})
+      try {
+        setLoading(true);
+        const response = await apiClient.get(
+          `/search?query=${debouncedSearchVal}&type=users`,
+        );
+        setUsers(response.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-      style={{flexDirection: 'row', alignItems: 'center', padding: 10}}>
-      <Image
-        source={{uri: item.profilePic}}
-        style={{width: 50, height: 50, borderRadius: 25}}
-      />
-      <Text style={{marginLeft: 10}}>{item.username}</Text>
-    </TouchableOpacity>
-  );
+    };
 
-  return (
-    <>
-      {loading && (
-        <View
-          style={{
-            position: 'absolute',
-            height: '100%',
-            backgroundColor: 'rgba(0,0,0,0.5)',
+    useEffect(() => {
+      if (debouncedSearchVal.length === 0) return;
+      fetchUsers();
+    }, [debouncedSearchVal]);
 
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 5000,
-            width: '100%',
-          }}>
-          <CustomLoadingIndicator />
-        </View>
-      )}
+    useImperativeHandle(ref, () => ({
+      refresh: () => {
+        fetchUsers();
+      },
+    }));
+
+    const handlePressOfProfile = item => {
+      const profileString = storage.getString('profile');
+      const profile = JSON.parse(profileString);
+      if (profile.username === item.username) {
+        navigation.navigate('Profile');
+      } else {
+        navigation.navigate('OtherProfileScreen', {username: item.username});
+      }
+    };
+
+    const renderItem = ({item}) => (
+      <TouchableOpacity
+        onPress={() => handlePressOfProfile(item)}
+        style={{flexDirection: 'row', alignItems: 'center', padding: 10}}>
+        <Image
+          source={{uri: item.profilePic}}
+          style={{width: 50, height: 50, borderRadius: 25}}
+        />
+        <Text style={{marginLeft: 10}}>{item.username}</Text>
+      </TouchableOpacity>
+    );
+
+    return (
       <FlatList
         data={users}
+        scrollEnabled={false}
+        nestedScrollEnabled={true}
         renderItem={renderItem}
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={() => {
-              fetchVideos();
-            }}
-          />
-        }
         keyExtractor={item => item.userId}
         contentContainerStyle={{paddingVertical: 20}}
       />
-    </>
-  );
-};
+    );
+  },
+);
 
 export default UsersSearchResults;

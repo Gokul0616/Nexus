@@ -2,6 +2,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import * as React from 'react';
 import Explore from './Explore';
 import SingleExplore from './SingleExplore';
+import SearchScreen from './SearchScreen';
 const Stack = createStackNavigator();
 
 export const ExploreLayout = () => {
@@ -28,6 +29,7 @@ export const ExploreLayout = () => {
       }}>
       <Stack.Screen name="ExploreScreen" component={Explore} />
       <Stack.Screen name="Catagory" component={SingleExplore} />
+      <Stack.Screen name="SearchScreen" component={SearchScreen} />
     </Stack.Navigator>
   );
 };
