@@ -80,6 +80,7 @@ const SingleExplore = () => {
         data={filteredData}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
+        showsVerticalScrollIndicator={false}
         numColumns={numColumns}
         contentContainerStyle={styles.flatListContent}
         onViewableItemsChanged={onViewableItemsChanged}

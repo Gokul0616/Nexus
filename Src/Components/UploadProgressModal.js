@@ -34,8 +34,10 @@ const UploadProgressBar = ({
       }, 1000);
       setTimeout(() => {
         setModalVisible(false);
-        setProgress(0);
       }, 3000);
+      setTimeout(() => {
+        setProgress(0);
+      }, 5000);
     }
   }, [progress, setModalVisible]);
   React.useEffect(() => {

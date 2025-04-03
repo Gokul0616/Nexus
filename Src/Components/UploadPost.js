@@ -45,7 +45,6 @@ export const uploadVideoAndThumbnail = async (
 
     return response.data;
   } catch (error) {
-    console.error(error);
     setProgress(0);
     return error;
   }

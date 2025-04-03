@@ -11,6 +11,15 @@ export const NavigationProvider = ({children}) => {
   const [mediaKey, setMediaKey] = useState(0);
   const [progressmodalVisible, setProgressmodalVisible] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isMessage, setIsMessage] = useState({
+    message: '',
+    heading: '',
+    isRight: false,
+    rightButtonText: 'OK',
+    triggerFunction: () => {},
+    setShowAlert: () => {},
+    showAlert: false,
+  });
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
@@ -40,6 +49,8 @@ export const NavigationProvider = ({children}) => {
         setProgressmodalVisible,
         uploadProgress,
         setUploadProgress,
+        isMessage,
+        setIsMessage,
       }}>
       {children}
     </NavigationContext.Provider>

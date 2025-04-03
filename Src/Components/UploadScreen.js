@@ -41,23 +41,12 @@ const UploadPost = ({route, navigation}) => {
   const [locationVal, setLocationVal] = useState('');
   const [isLocationLoading, setIsLocationLoading] = useState(false);
   const [locationList, setLocationList] = useState([]);
-  const {setProgressmodalVisible, setUploadProgress} =
+  const {setProgressmodalVisible, setUploadProgress, setIsMessage, isMessage} =
     useContext(NavigationContext);
   const [isMusic, setIsMusic] = useState(false);
   const [musicTitle, setMusicTitle] = useState('');
   const [selectedMusic, setSelectedMusic] = useState('');
-  const [isMessage, setIsMessage] = useState({
-    message: '',
-    heading: '',
-    isRight: false,
-    rightButtonText: 'OK',
-    triggerFunction: () => {},
-    setShowAlert: () => {},
-    showAlert: false,
-  });
-  const closeAlert = () => {
-    setIsMessage(prev => ({...prev, showAlert: false}));
-  };
+
   const [isPrivacy, setIsPrivacy] = useState(false);
   const [privacyOption, setPrivacyOption] = useState(
     'Everyone can view this post',
@@ -75,7 +64,6 @@ const UploadPost = ({route, navigation}) => {
         timeStamp: 1000,
       })
         .then(response => {
-          console.log(response);
           setThumbnail(response.path);
         })
         .catch(err => {
@@ -109,7 +97,9 @@ const UploadPost = ({route, navigation}) => {
       return () => subscription.remove();
     }, [navigation, isLocation, isMusic, isPrivacy]),
   );
-
+  const closeAlert = () => {
+    setIsMessage(prev => ({...prev, showAlert: false}));
+  };
   const handlePost = () => {
     if (thumbnail === null) {
       setIsMessage({
@@ -132,9 +122,8 @@ const UploadPost = ({route, navigation}) => {
       .then(response => {
         if (response.status === 500) {
           setProgressmodalVisible(false);
-
           setIsMessage({
-            message: response.response.data.message || 'Unable to upload video',
+            message: response.response.data.error || 'Unable to upload video',
             heading: 'Error',
             isRight: false,
             rightButtonText: 'OK',
@@ -158,7 +147,6 @@ const UploadPost = ({route, navigation}) => {
       })
       .catch(error => {
         setProgressmodalVisible(false);
-
         setIsMessage({
           message: error.message || 'Unable to upload video',
           heading: 'Error',
@@ -195,7 +183,6 @@ const UploadPost = ({route, navigation}) => {
       const response = await apiClient.post('post/savePost', payload);
 
       if (response.status === 200) {
-        console.log('Post saved successfully:', response.data);
         return response.data;
       } else {
         // console.error('Failed to save post:', response.statusText);
@@ -218,7 +205,6 @@ const UploadPost = ({route, navigation}) => {
       const fetchData = async () => {
         try {
           const data = await fetchCityData(debounceVal);
-          console.log(data);
           setLocationList(data);
         } catch (error) {
           // console.error('Error fetching city data:', error);
@@ -232,7 +218,7 @@ const UploadPost = ({route, navigation}) => {
 
   return (
     <View style={styles.container}>
-      <AlertBox
+      {/* <AlertBox
         heading={isMessage.heading}
         message={isMessage.message}
         setShowAlert={closeAlert}
@@ -240,7 +226,7 @@ const UploadPost = ({route, navigation}) => {
         triggerFunction={isMessage.triggerFunction}
         isRight={isMessage.isRight}
         rightButtonText={isMessage.rightButtonText}
-      />
+      /> */}
       {!isLocation && !isMusic && !isPrivacy && (
         <>
           <View style={styles.header}>
@@ -322,7 +308,6 @@ const UploadPost = ({route, navigation}) => {
                 {locationVal.length > 0 ? (
                   <TouchableOpacity
                     onPress={() => {
-                      console.log('Location value:', locationVal);
                       setLocationVal('');
                     }}>
                     <Ionicons name="close" size={22} color="#333" />

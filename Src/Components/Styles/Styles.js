@@ -1080,7 +1080,8 @@ const AddPostScreenStyles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: PrimaryColor,
+    // You can replace '#007bff' with your actual PrimaryColor if imported.
+    backgroundColor: '#007bff',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1104,6 +1105,15 @@ const AddPostScreenStyles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     left: 20,
+  },
+  // New styles for the Camera container with aspect ratio support
+  cameraContainer: {
+    width: '100%',
+    backgroundColor: 'black',
+    overflow: 'hidden',
+  },
+  camera: {
+    flex: 1,
   },
 });
 

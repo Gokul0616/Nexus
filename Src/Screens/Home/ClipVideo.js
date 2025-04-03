@@ -25,7 +25,7 @@ import {NavigationContext} from '../../Services/Hooks/NavigationProvider';
 import apiClient from '../../Services/api/apiInterceptor';
 
 export default function ClipVideo() {
-  const {isConnected} = useContext(NavigationContext);
+  const {isConnected, setIsMessage, isMessage} = useContext(NavigationContext);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [commentVisible, setCommentVisible] = useState(false);
@@ -50,7 +50,9 @@ export default function ClipVideo() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await apiClient.get('post/getRecommendation');
+        const response = await apiClient.get('post/recommendations');
+        // const response = await apiClient.get('post/getRecommendation');
+
         const data = response.data;
         setVideoData(data);
 
@@ -59,12 +61,22 @@ export default function ClipVideo() {
           .map(video => video.videoId);
         setLikeDataOfUser(likedVideos);
       } catch (error) {
-        // console.error('Error fetching data:', error);
+        console.error('Error fetching data:', error);
+        setIsMessage({
+          message: error.response.data.error || 'Unable to load data',
+          heading: 'Error',
+          isRight: false,
+          rightButtonText: 'OK',
+          triggerFunction: () => {},
+          setShowAlert: () => {
+            isMessage.setShowAlert(false);
+          },
+          showAlert: true,
+        });
       }
     };
     fetchData();
   }, []);
-
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       if (

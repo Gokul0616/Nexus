@@ -186,14 +186,14 @@ const Explore = () => {
           />
           <Text style={styles.categoryTitle}>{categoryObj.title}</Text>
         </View>
-        <Pressable
+        <TouchableOpacity
           style={styles.viewAllContainer}
           onPress={() => {
             navigation.navigate('Catagory', {category: categoryObj});
           }}>
           <Text style={styles.viewAll}>View All</Text>
           <Ionicons name="chevron-forward" size={16} color="#666" />
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <FlatList
         data={categorizedData[categoryObj.category]}

@@ -255,7 +255,7 @@ const AddPost = () => {
         if (fileSizeInMB > 100) {
           setIsMessage({
             message: 'The selected video exceeds the 100 MB size limit.',
-            heading: 'Error',
+            heading: 'File Size Exceeded',
             isRight: false,
             rightButtonText: 'OK',
             triggerFunction: () => {},
@@ -273,7 +273,7 @@ const AddPost = () => {
         if (videoAsset.duration && videoAsset.duration > 180) {
           setIsMessage({
             message: 'The selected video exceeds the 3-minute duration limit.',
-            heading: 'Error',
+            heading: 'Video Duration Exceeded',
             isRight: false,
             rightButtonText: 'OK',
             triggerFunction: () => {},

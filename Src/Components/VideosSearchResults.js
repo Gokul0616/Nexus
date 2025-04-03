@@ -28,7 +28,6 @@ const VideoCard = ({item, handleProfileNavigate, cardWidth, navigation}) => {
       navigation.navigate('OtherProfileScreen', {username: item.username});
     }
   };
-
   return (
     <TouchableOpacity
       onPress={() => handleProfileNavigate(item)}
@@ -134,25 +133,42 @@ const VideosSearchResults = React.forwardRef(
     };
 
     return (
-      <FlatList
-        data={videos}
-        numColumns={numColumns}
-        nestedScrollEnabled={true}
-        scrollEnabled={false}
-        key={numColumns}
-        renderItem={({item}) => (
-          <View style={{margin: margin}}>
-            <VideoCard
-              item={item}
-              handleProfileNavigate={handleProfileNavigate}
-              cardWidth={cardWidth}
-              navigation={navigation}
-            />
+      <>
+        {videos.length > 0 && (
+          <FlatList
+            data={videos}
+            numColumns={numColumns}
+            nestedScrollEnabled={true}
+            scrollEnabled={false}
+            key={numColumns}
+            renderItem={({item}) => (
+              <View style={{margin: margin}}>
+                <VideoCard
+                  item={item}
+                  handleProfileNavigate={handleProfileNavigate}
+                  cardWidth={cardWidth}
+                  navigation={navigation}
+                />
+              </View>
+            )}
+            contentContainerStyle={{paddingVertical: 20}}
+            keyExtractor={item => item.id}
+          />
+        )}
+        {videos.length === 0 && debouncedSearchVal.length > 0 && (
+          <View
+            style={{
+              paddingVertical: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Text>
+              Sorry, No videos were found for "
+              <Text style={{fontWeight: 'bold'}}>{debouncedSearchVal}</Text>".
+            </Text>
           </View>
         )}
-        contentContainerStyle={{paddingVertical: 20}}
-        keyExtractor={item => item.id}
-      />
+      </>
     );
   },
 );

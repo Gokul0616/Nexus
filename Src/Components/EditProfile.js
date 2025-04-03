@@ -293,7 +293,7 @@ const EditProfile = ({route}) => {
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Bio</Text>
               <NexusInput
-                style={[styles.input, {height: 80}]}
+                style={[styles.input, {height: 80, textAlignVertical: 'top'}]}
                 value={bio}
                 onChangeText={val => {
                   if (val.length <= 100) {

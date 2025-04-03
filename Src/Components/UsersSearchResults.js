@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useImperativeHandle, useState} from 'react';
-import {FlatList, Image, Text, TouchableOpacity} from 'react-native';
+import {FlatList, Image, Text, TouchableOpacity, View} from 'react-native';
 import apiClient from '../Services/api/apiInterceptor';
 import {useDebounce} from '../Services/Hooks/useDebounce';
 import {storage} from './CommonData';
@@ -21,7 +21,7 @@ const UsersSearchResults = React.forwardRef(
         );
         setUsers(response.data);
       } catch (err) {
-        // console.error(err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -61,14 +61,31 @@ const UsersSearchResults = React.forwardRef(
     );
 
     return (
-      <FlatList
-        data={users}
-        scrollEnabled={false}
-        nestedScrollEnabled={true}
-        renderItem={renderItem}
-        keyExtractor={item => item.userId}
-        contentContainerStyle={{paddingVertical: 20}}
-      />
+      <>
+        {users.length > 0 && (
+          <FlatList
+            data={users}
+            scrollEnabled={false}
+            nestedScrollEnabled={true}
+            renderItem={renderItem}
+            keyExtractor={item => item.userId}
+            contentContainerStyle={{paddingVertical: 20}}
+          />
+        )}
+        {users.length === 0 && debouncedSearchVal.length > 0 && (
+          <View
+            style={{
+              paddingVertical: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Text>
+              Sorry, No users were found for "
+              <Text style={{fontWeight: 'bold'}}>{debouncedSearchVal}</Text>".
+            </Text>
+          </View>
+        )}
+      </>
     );
   },
 );

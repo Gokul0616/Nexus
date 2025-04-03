@@ -14,6 +14,7 @@ import {ExploreLayout} from '../Screens/Explore/ExploreLayout';
 import {useRoute} from '@react-navigation/native';
 import apiClient from '../Services/api/apiInterceptor';
 import UploadProgressBar from '../Components/UploadProgressModal';
+import AlertBox from '../Components/AlertMessage';
 
 const Tab = createBottomTabNavigator();
 const CustomAddPostButton = ({onPress}) => (
@@ -38,6 +39,8 @@ export default function BottomStack() {
     setProgressmodalVisible,
     uploadProgress,
     setUploadProgress,
+    isMessage,
+    setIsMessage,
   } = useContext(NavigationContext);
   useEffect(() => {
     const fetchProfile = async () => {
@@ -51,7 +54,9 @@ export default function BottomStack() {
     fetchProfile();
   });
   const {setCurrentIndex, currentIndex} = useContext(NavigationContext);
-
+  const closeAlert = () => {
+    setIsMessage(prev => ({...prev, showAlert: false}));
+  };
   return (
     <>
       <Tab.Navigator
@@ -143,6 +148,15 @@ export default function BottomStack() {
         setModalVisible={setProgressmodalVisible}
         progress={uploadProgress}
         setProgress={setUploadProgress}
+      />
+      <AlertBox
+        heading={isMessage.heading}
+        message={isMessage.message}
+        setShowAlert={closeAlert}
+        showAlert={isMessage.showAlert}
+        triggerFunction={isMessage.triggerFunction}
+        isRight={isMessage.isRight}
+        rightButtonText={isMessage.rightButtonText}
       />
     </>
   );
