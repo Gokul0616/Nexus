@@ -11,6 +11,7 @@ import React, {
 import {
   Animated,
   FlatList,
+  StatusBar,
   StyleSheet,
   Text,
   useWindowDimensions,
@@ -58,7 +59,7 @@ export default function ClipVideo() {
           .map(video => video.videoId);
         setLikeDataOfUser(likedVideos);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        // console.error('Error fetching data:', error);
       }
     };
     fetchData();
@@ -210,9 +211,17 @@ export default function ClipVideo() {
       }
     });
   };
-
+  useEffect(() => {
+    if (isFocused) {
+      StatusBar.setBackgroundColor('#151515');
+      StatusBar.setBarStyle('light-content');
+    } else {
+      StatusBar.setBackgroundColor('#fff');
+      StatusBar.setBarStyle('dark-content');
+    }
+  }, [isFocused]);
   const renderItem = useCallback(
-    ({item}) => {
+    ({item, index}) => {
       const isPlaying =
         item.id === currentVideoId && isFocused && autoplayEnabled;
       return (
@@ -237,6 +246,7 @@ export default function ClipVideo() {
           setCommentVisible={setCommentVisible}
           overlayVisible={overlayVisible}
           setOverlayVisible={setOverlayVisible}
+          index={index}
         />
       );
     },

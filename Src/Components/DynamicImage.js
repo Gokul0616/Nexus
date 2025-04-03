@@ -16,93 +16,82 @@ const DynamicImage = ({
 }) => {
   const [imgHeight, setImgHeight] = useState(screenWidth);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [loaded, setLoaded] = useState(false);
   const [cachedUri, setCachedUri] = useState(null);
 
   useEffect(() => {
     setErrorMsg(null);
-    // If we already have a cached URI, use it
-    if (cachedUri) {
-      try {
-        Image.getSize(
-          cachedUri,
-          (width, height) => {
-            setImgHeight((height * screenWidth) / width);
-          },
-          err => {
-            console.warn('Error getting size from cached image:', err);
-            setErrorMsg(err.message || 'Error loading cached image');
-          },
-        );
-      } catch (err) {
-        console.warn('Cached image error:', err);
-        setErrorMsg(err.message);
-      }
+
+    if (!uri) {
+      setErrorMsg('Invalid Image URL');
       return;
     }
 
-    // Generate a safe filename using MD5 hash of the URI
     const fileName = md5(uri) + '.jpg';
     const cacheDir = RNFS.CachesDirectoryPath;
     const filePath = `${cacheDir}/${fileName}`;
 
-    // Ensure the cache directory exists
-    RNFS.mkdir(cacheDir)
-      .then(() => RNFS.exists(filePath))
+    const updateImage = () => {
+      if (!isConnected) {
+        setErrorMsg('No Internet Connection');
+        return;
+      }
+
+      RNFS.downloadFile({fromUrl: uri, toFile: filePath})
+        .promise.then(result => {
+          if (result.statusCode === 200) {
+            const localUri = `file://${filePath}`;
+            setCachedUri(localUri);
+            Image.getSize(
+              localUri,
+              (width, height) => {
+                setImgHeight((height * screenWidth) / width);
+              },
+              err => {
+                console.warn('Error getting size from new image:', err);
+                setErrorMsg('Error loading new image');
+              },
+            );
+          } else {
+            setErrorMsg('Failed to download image');
+          }
+        })
+        .catch(e => {
+          // console.error('Error updating cached image:', e);
+          setErrorMsg('Error updating image');
+        });
+    };
+
+    RNFS.exists(filePath)
       .then(exists => {
         if (exists) {
-          const localUri = `file://${filePath}`;
-          setCachedUri(localUri);
-          Image.getSize(
-            localUri,
-            (width, height) => {
-              setImgHeight((height * screenWidth) / width);
-            },
-            err => {
-              console.warn('Error getting size from local file:', err);
-              setErrorMsg(err.message || 'Error loading cached image');
-            },
-          );
-        } else {
-          if (!isConnected) {
-            setErrorMsg('No Internet Connection');
-            return;
-          }
-          // Get size from the network URL first
-          Image.getSize(
-            uri,
-            (width, height) => {
-              setImgHeight((height * screenWidth) / width);
-              // Download and cache the image
-              RNFS.downloadFile({
-                fromUrl: uri,
-                toFile: filePath,
-              })
-                .promise.then(result => {
-                  if (result && result.statusCode === 200) {
-                    const localUri = `file://${filePath}`;
-                    setCachedUri(localUri);
+          RNFS.stat(filePath)
+            .then(stat => {
+              const lastModified = new Date(stat.mtime).getTime();
+              fetch(uri, {method: 'HEAD'})
+                .then(response => {
+                  const remoteLastModified = new Date(
+                    response.headers.get('Last-Modified'),
+                  ).getTime();
+                  if (
+                    !remoteLastModified ||
+                    remoteLastModified > lastModified
+                  ) {
+                    updateImage();
                   } else {
-                    // Fall back to network URL if download fails
-                    setCachedUri(uri);
+                    setCachedUri(`file://${filePath}`);
                   }
                 })
-                .catch(e => {
-                  console.error('Error caching image:', e);
-                  setCachedUri(uri);
+                .catch(() => {
+                  setCachedUri(`file://${filePath}`);
                 });
-            },
-            error => {
-              setErrorMsg(error.message || 'Error loading image');
-            },
-          );
+            })
+            .catch(() => updateImage());
+        } else {
+          updateImage();
         }
       })
-      .catch(err => {
-        console.error('Error ensuring cache directory:', err);
-        setErrorMsg(err.message);
-      });
-  }, [uri, isConnected, cachedUri]);
+      .catch(() => updateImage());
+  }, [uri, isConnected]);
 
   if (errorMsg) {
     return (
@@ -116,6 +105,7 @@ const DynamicImage = ({
       </View>
     );
   }
+
   return (
     <Image
       source={{uri: cachedUri || uri}}
@@ -123,13 +113,11 @@ const DynamicImage = ({
       resizeMode={resizeMode}
       onLoadStart={() => {
         if (item) {
-          setLoaded(false);
           setLoadingPosts(prev => ({...prev, [item.id]: true}));
         }
       }}
       onLoadEnd={() => {
         if (item) {
-          setLoaded(true);
           setLoadingPosts(prev => ({...prev, [item.id]: false}));
         }
       }}

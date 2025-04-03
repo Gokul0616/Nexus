@@ -1,11 +1,16 @@
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {
   Alert,
   Image,
   PermissionsAndroid,
   Platform,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -110,7 +115,7 @@ const AddPost = () => {
           setVideoUri(uri);
         }
       } catch (error) {
-        console.error('Error fetching video:', error);
+        // console.error('Error fetching video:', error);
       }
     };
     if (cameraPer) {
@@ -202,6 +207,17 @@ const AddPost = () => {
       }
     };
   }, []);
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBackgroundColor('#151515');
+      StatusBar.setBarStyle('light-content');
+
+      return () => {
+        StatusBar.setBackgroundColor('#fff');
+        StatusBar.setBarStyle('dark-content');
+      };
+    }, []),
+  );
 
   const handleRecordPress = () => {
     if (isRecording) {
@@ -272,6 +288,8 @@ const AddPost = () => {
         video={true}
         torch={torch ? 'on' : 'off'}
         audio={true}
+        enableZoomGesture
+        lowLightBoost
       />
 
       {/* <View style={styles.topBar}>

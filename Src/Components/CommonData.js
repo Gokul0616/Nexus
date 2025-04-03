@@ -35,7 +35,7 @@ export const fetchLinkPreview = async url => {
     const previewData = await getLinkPreview(url);
     return previewData;
   } catch (error) {
-    console.error('Error fetching link preview:', error.message);
+    // console.error('Error fetching link preview:', error.message);
     return null;
   }
 };
@@ -68,7 +68,7 @@ export const fetchCityData = async city => {
     }
     return null;
   } catch (error) {
-    console.error('Error fetching city data:', error.message);
+    // console.error('Error fetching city data:', error.message);
     return null;
   }
 };

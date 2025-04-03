@@ -37,7 +37,7 @@ const ReelItem = ({item}) => {
           setThumbnail(response.path);
         })
         .catch(err => {
-          console.error('Error generating thumbnail:', err);
+          // console.error('Error generating thumbnail:', err);
         });
     }
   }, [item]);
@@ -285,7 +285,7 @@ const Profile = () => {
                       url = `geo:0,0?q=${profile.location}`;
                     }
                     Linking.openURL(url).catch(err => {
-                      console.error('An error occurred', err);
+                      // console.error('An error occurred', err);
                       setIsMessage({
                         message: err?.message || 'Unexpected error occurred',
                         heading: 'Error',

@@ -112,7 +112,7 @@ const VideosSearchResults = React.forwardRef(
         );
         setVideos(response.data);
       } catch (err) {
-        console.error(err);
+        // console.error(err);
       } finally {
         setLoading(false);
       }

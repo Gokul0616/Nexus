@@ -40,7 +40,7 @@ const ReelItem = ({item}) => {
           setThumbnail(response.path);
         })
         .catch(err => {
-          console.error('Error generating thumbnail:', err);
+          // console.error('Error generating thumbnail:', err);
         });
     }
   }, [item]);
@@ -166,7 +166,7 @@ const Profile = ({route}) => {
         setMediaKey(prev => prev + 1);
       }
     } catch (err) {
-      console.error('Error toggling follow status', err.message);
+      // console.error('Error toggling follow status', err.message);
       setIsMessage({
         message: err?.message || 'Something went wrong',
         heading: 'Error',
@@ -310,7 +310,7 @@ const Profile = ({route}) => {
                         url = `geo:0,0?q=${profile.location}`;
                       }
                       Linking.openURL(url).catch(err => {
-                        console.error('An error occurred', err);
+                        // console.error('An error occurred', err);
                         setIsMessage({
                           message: err?.message || 'Unexpected error occurred',
                           heading: 'Error',

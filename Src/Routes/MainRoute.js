@@ -19,6 +19,7 @@ import MessageChatScreen from '../Screens/Messages/MessageChatScreen';
 import MessagesOutside from '../Screens/Messages/MessagesOutside';
 import BottomStack from './BottomStack';
 import {Linking} from 'react-native';
+import SelectThumbnail from '../Components/SeelctThumbnail';
 const Stack = createStackNavigator();
 
 export const MainStack = () => {
@@ -42,7 +43,7 @@ export const MainStack = () => {
           setInitialRoute('Home');
         }
       } catch (error) {
-        console.error('Error fetching initial URL:', error);
+        // console.error('Error fetching initial URL:', error);
         setInitialRoute('Home');
       } finally {
       }
@@ -85,6 +86,7 @@ export const MainStack = () => {
         <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="ProfileMenu" component={ProfileMenu} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="SelectThumbnail" component={SelectThumbnail} />
         <Stack.Screen
           name="OtherProfileScreen"
           component={OtherProfileScreen}

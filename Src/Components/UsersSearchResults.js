@@ -21,7 +21,7 @@ const UsersSearchResults = React.forwardRef(
         );
         setUsers(response.data);
       } catch (err) {
-        console.error(err);
+        // console.error(err);
       } finally {
         setLoading(false);
       }

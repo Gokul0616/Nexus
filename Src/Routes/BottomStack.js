@@ -44,25 +44,6 @@ export default function BottomStack() {
     fetchProfile();
   });
   const {setCurrentIndex, currentIndex} = useContext(NavigationContext);
-  useEffect(() => {
-    StatusBar.setBackgroundColor(
-      currentIndex === 0 ||
-        currentIndex === 2 ||
-        route.name === 'Home' ||
-        route.name === 'AddPost'
-        ? '#151515'
-        : '#fff',
-    );
-    StatusBar.setBarStyle(
-      currentIndex === 0 ||
-        currentIndex === 2 ||
-        route.name === 'Home' ||
-        route.name === 'AddPost'
-        ? 'light-content'
-        : 'dark-content',
-    );
-  }, [currentIndex]);
-  const route = useRoute();
 
   return (
     <Tab.Navigator

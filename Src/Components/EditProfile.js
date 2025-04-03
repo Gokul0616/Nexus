@@ -71,7 +71,7 @@ const EditProfile = ({route}) => {
         });
       }
     } catch (error) {
-      console.error('error', error);
+      // console.error('error', error);
       setIsMessage({
         message: error?.message || 'Unable to save user Profile!!',
         heading: 'Error',
@@ -114,7 +114,7 @@ const EditProfile = ({route}) => {
           setCityLoading(false);
         })
         .catch(err => {
-          console.error('Error fetching city data:', err);
+          // console.error('Error fetching city data:', err);
           setCityLoading(false);
         });
     }, 1000);
@@ -135,7 +135,7 @@ const EditProfile = ({route}) => {
         type: 'image/jpeg',
         name: 'profile.jpg',
       });
-
+      console.log(formData);
       const response = await apiClient.post('images/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -143,7 +143,7 @@ const EditProfile = ({route}) => {
       });
       return response.data;
     } catch (error) {
-      console.error('Error uploading image:', error);
+      // console.error('Error uploading image:', error);
       setIsMessage({
         message: error?.message || 'Unable to upload image',
         heading: 'Error',

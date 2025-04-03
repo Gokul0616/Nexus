@@ -21,7 +21,7 @@ apiClient.interceptors.request.use(
     return config;
   },
   error => {
-    // console.error('Request error:', error);
+    // // console.error('Request error:', error);
     return Promise.reject(error);
   },
 );
@@ -32,7 +32,7 @@ apiClient.interceptors.response.use(
     return response;
   },
   error => {
-    // console.error('Response error:', error);
+    // // console.error('Response error:', error);
     if (error.response && error.response.status === 401) {
       // console.warn('Unauthorized! Redirecting to login...');
     }

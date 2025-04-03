@@ -6,7 +6,9 @@ import {
   Pressable,
   Animated,
   Easing,
+  PanResponder,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -17,7 +19,8 @@ import {ClipItemStyles as styles} from './Styles/Styles';
 import {TouchableRipple} from 'react-native-paper';
 import RNFS from 'react-native-fs';
 import {storage} from './CommonData';
-import {PanResponder} from 'react-native';
+import {PanResponder as RN_PanResponder} from 'react-native';
+
 const ClipItem = memo(
   ({
     item,
@@ -41,6 +44,7 @@ const ClipItem = memo(
     setOverlayVisible,
     navigation,
     onLongPressAction,
+    index,
   }) => {
     const [pausedLocally, setPausedLocally] = useState(false);
     const [cachedUri, setCachedUri] = useState(null);
@@ -48,9 +52,76 @@ const ClipItem = memo(
     const [currentTime, setCurrentTime] = useState(0);
     const [localOverlayVisible, setLocalOverlayVisible] = useState(true);
 
-    const spinValue = useRef(new Animated.Value(0)).current;
+    const [containerLayout, setContainerLayout] = useState({x: 0, width: 0});
+    const progressAnim = useRef(new Animated.Value(0)).current;
+    useEffect(() => {
+      if (containerLayout.width && videoDuration) {
+        const progressWidth =
+          (currentTime / videoDuration) * containerLayout.width;
+        Animated.timing(progressAnim, {
+          toValue: progressWidth,
+          duration: 50,
+          easing: Easing.linear,
+          useNativeDriver: false,
+        }).start();
+      }
+    }, [currentTime, containerLayout.width, videoDuration]);
+
+    const progressPanResponder = useRef(
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onPanResponderGrant: () => {
+          // Optionally pause video during scrubbing
+        },
+        onPanResponderMove: (evt, gestureState) => {
+          if (!containerLayout.width || videoDuration === 0) return;
+          // Use locationX for coordinate within the container
+          const relativeX = evt.nativeEvent.locationX;
+          const clampedX = Math.max(
+            0,
+            Math.min(relativeX, containerLayout.width),
+          );
+          const newTime = (clampedX / containerLayout.width) * videoDuration;
+          console.log(
+            `Dragged - LocationX: ${relativeX}, Clamped: ${clampedX}, New Time: ${newTime.toFixed(
+              2,
+            )}s`,
+          );
+          const videoRef = videoRefs.current.get(item.id);
+          if (videoRef && videoRef.seek) {
+            videoRef.seek(newTime);
+          }
+          setCurrentTime(newTime);
+        },
+        onPanResponderRelease: (evt, gestureState) => {
+          if (!containerLayout.width || videoDuration === 0) return;
+          const relativeX = evt.nativeEvent.locationX;
+          const clampedX = Math.max(
+            0,
+            Math.min(relativeX, containerLayout.width),
+          );
+          const newTime = (clampedX / containerLayout.width) * videoDuration;
+          console.log(
+            `Released - LocationX: ${relativeX}, Clamped: ${clampedX}, Seeking to: ${newTime.toFixed(
+              2,
+            )}s`,
+          );
+          const videoRef = videoRefs.current.get(item.id);
+          if (videoRef && videoRef.seek) {
+            videoRef.seek(newTime);
+          }
+          setCurrentTime(newTime);
+        },
+      }),
+    ).current;
+
     useEffect(() => {
       const cacheVideo = async () => {
+        // Only cache the first 10 videos
+        if (index >= 10) {
+          setCachedUri(item.videoSource);
+          return;
+        }
         const cacheDir = RNFS.CachesDirectoryPath;
         const fileName = item.videoSource.split('/').pop();
         const filePath = `${cacheDir}/${fileName}`;
@@ -71,14 +142,15 @@ const ClipItem = memo(
             }
           }
         } catch (error) {
-          console.error('Error caching video:', error);
+          // In case of error, use the original source
           setCachedUri(item.videoSource);
         }
       };
 
       cacheVideo();
-    }, [item.videoSource]);
+    }, [item.videoSource, index]);
 
+    const spinValue = useRef(new Animated.Value(0)).current;
     useEffect(() => {
       Animated.loop(
         Animated.timing(spinValue, {
@@ -89,38 +161,11 @@ const ClipItem = memo(
         }),
       ).start();
     }, [pausedLocally]);
-
     const spin = spinValue.interpolate({
       inputRange: [0, 1],
       outputRange: ['0deg', '360deg'],
     });
 
-    const [containerLayout, setContainerLayout] = useState({x: 0, width: 0});
-
-    const panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: (evt, gestureState) => {
-        if (!containerLayout.width || videoDuration === 0) return;
-
-        const newX = gestureState.moveX - containerLayout.x;
-        const clampedX = Math.max(0, Math.min(newX, containerLayout.width));
-        const newTime = (clampedX / containerLayout.width) * videoDuration;
-        setCurrentTime(newTime);
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-        if (!containerLayout.width || videoDuration === 0) return;
-
-        const newX = gestureState.moveX - containerLayout.x;
-        const clampedX = Math.max(0, Math.min(newX, containerLayout.width));
-        const newTime = (clampedX / containerLayout.width) * videoDuration;
-        const videoRef = videoRefs.current.get(item.id);
-
-        if (videoRef) {
-          videoRef.seek(newTime);
-          setCurrentTime(newTime);
-        }
-      },
-    });
     const handleLongPress = () => {
       setPausedLocally(true);
       setOverlayVisible(false);
@@ -147,11 +192,10 @@ const ClipItem = memo(
       if (profile.username === item.username) {
         navigation.navigate('Profile');
       } else {
-        navigation.navigate('OtherProfileScreen', {
-          username: item.username,
-        });
+        navigation.navigate('OtherProfileScreen', {username: item.username});
       }
     };
+
     return (
       <View style={[styles.container, {width, height}]}>
         <Pressable
@@ -161,26 +205,23 @@ const ClipItem = memo(
           onPressOut={handlePressOut}
           delayLongPress={300}>
           <Video
-            key={`video-${item.id}-${isConnected}`}
-            ref={ref => videoRefs.current.set(item.id, ref)}
             source={{uri: cachedUri || item.videoSource}}
             poster={item.thumbnail}
-            posterResizeMode="cover"
             style={StyleSheet.absoluteFill}
             resizeMode="contain"
             paused={!isPlaying || pausedLocally}
-            repeat
             muted={isMuted}
+            mixWithOthers={isMuted ? 'mix' : 'inherit'}
+            disableFocus={isMuted}
+            repeat
             onLoadStart={() => handleLoadStart(item.id)}
             onLoad={data => {
               handleLoad(item.id);
-
               setVideoDuration(data.duration);
             }}
             onProgress={data => {
               setCurrentTime(data.currentTime);
             }}
-            onBuffer={buffer => {}}
             bufferConfig={{
               minBufferMs: 15000,
               maxBufferMs: 50000,
@@ -190,24 +231,20 @@ const ClipItem = memo(
             ignoreSilentSwitch="obey"
           />
         </Pressable>
+
         {localOverlayVisible && (
           <View
             style={[styles.progressBarContainer, {width}]}
-            onLayout={e => setContainerLayout(e.nativeEvent.layout)}
-            {...panResponder.panHandlers}>
-            <View
-              style={[
-                styles.progressBar,
-                {
-                  width:
-                    videoDuration > 0
-                      ? (currentTime / videoDuration) * containerLayout.width
-                      : 0,
-                },
-              ]}
+            onLayout={e => {
+              setContainerLayout(e.nativeEvent.layout);
+            }}
+            {...progressPanResponder.panHandlers}>
+            <Animated.View
+              style={[styles.progressBar, {width: progressAnim}]}
             />
           </View>
         )}
+
         {loadingStates[item.id] && (
           <View style={styles.loadingContainer}>
             <CustomLoadingIndicator />
@@ -252,11 +289,7 @@ const ClipItem = memo(
         {localOverlayVisible && (
           <View style={styles.bottomContainer}>
             <View style={styles.bottomLeft}>
-              <Text
-                style={styles.username}
-                onPress={() => {
-                  handlePressOfProfile();
-                }}>
+              <Text style={styles.username} onPress={handlePressOfProfile}>
                 {item.username}
               </Text>
               <Text style={styles.caption}>{item.caption}</Text>
@@ -267,15 +300,14 @@ const ClipItem = memo(
             </View>
             <View style={styles.bottomRight}>
               <TouchableOpacity
-                onPress={() => {
-                  handlePressOfProfile();
-                }}
+                onPress={handlePressOfProfile}
                 style={styles.profileContainer}>
                 <>
                   <DynamicImage
                     uri={item.profilePic}
                     isConnected={isConnected}
                     style={styles.profileImage}
+                    resizeMode="cover"
                   />
                   <View style={styles.followIcon}>
                     <Entypo name="plus" size={13} color="#fff" />
@@ -314,6 +346,7 @@ const ClipItem = memo(
                   uri={item.thumbnail}
                   isConnected={isConnected}
                   style={styles.diskImage}
+                  resizeMode="cover"
                 />
                 <View style={styles.overlayLayer} />
                 <View style={styles.musicIconOverlay}>
