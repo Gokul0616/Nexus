@@ -19,7 +19,7 @@ import MessageChatScreen from '../Screens/Messages/MessageChatScreen';
 import MessagesOutside from '../Screens/Messages/MessagesOutside';
 import BottomStack from './BottomStack';
 import {Linking} from 'react-native';
-import SelectThumbnail from '../Components/SeelctThumbnail';
+import SelectThumbnail from '../Components/SelctThumbnail';
 const Stack = createStackNavigator();
 
 export const MainStack = () => {

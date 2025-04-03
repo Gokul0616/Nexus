@@ -1,30 +1,29 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
-  View,
-  Text,
+  BackHandler,
   Image,
-  TextInput,
-  TouchableOpacity,
+  Pressable,
+  ScrollView,
   StyleSheet,
   Switch,
-  ScrollView,
-  Pressable,
-  BackHandler,
-  Alert,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import {createThumbnail} from 'react-native-create-thumbnail';
-import {fetchCityData, PrimaryColor} from './CommonData';
-import Octicons from 'react-native-vector-icons/Octicons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import {TouchableRipple} from 'react-native-paper';
-import {useFocusEffect} from '@react-navigation/native';
-import NexusInput from './NexusInput';
-import {useDebounce} from '../Services/Hooks/useDebounce';
-import CustomLoadingIndicator from './CustomLoadingIndicator';
-import {uploadVideoAndThumbnail} from './UploadPost';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../Services/api/apiInterceptor';
+import {useDebounce} from '../Services/Hooks/useDebounce';
 import AlertBox from './AlertMessage';
+import {fetchCityData, PrimaryColor} from './CommonData';
+import CustomLoadingIndicator from './CustomLoadingIndicator';
+import NexusInput from './NexusInput';
+import {uploadVideoAndThumbnail} from './UploadPost';
+import {NavigationContext} from '../Services/Hooks/NavigationProvider';
 
 const UploadPost = ({route, navigation}) => {
   const {path: uri} = route.params || {};
@@ -42,7 +41,8 @@ const UploadPost = ({route, navigation}) => {
   const [locationVal, setLocationVal] = useState('');
   const [isLocationLoading, setIsLocationLoading] = useState(false);
   const [locationList, setLocationList] = useState([]);
-
+  const {setProgressmodalVisible, setUploadProgress} =
+    useContext(NavigationContext);
   const [isMusic, setIsMusic] = useState(false);
   const [musicTitle, setMusicTitle] = useState('');
   const [selectedMusic, setSelectedMusic] = useState('');
@@ -127,19 +127,52 @@ const UploadPost = ({route, navigation}) => {
       0;
     }
     navigation.pop(2);
+    setProgressmodalVisible(true);
+    uploadVideoAndThumbnail(uri, thumbnail, setUploadProgress)
+      .then(response => {
+        if (response.status === 500) {
+          setProgressmodalVisible(false);
 
-    uploadVideoAndThumbnail(uri, thumbnail).then(response => {
-      if (response) {
-        saveVideo(
-          response.videoId,
-          response.videoUrl,
-          response.thumbnailUrl,
-          caption,
-          'Music',
-          'music',
-        );
-      }
-    });
+          setIsMessage({
+            message: response.response.data.message || 'Unable to upload video',
+            heading: 'Error',
+            isRight: false,
+            rightButtonText: 'OK',
+            triggerFunction: () => {},
+            setShowAlert: () => {
+              isMessage.setShowAlert(false);
+            },
+            showAlert: true,
+          });
+          return;
+        } else {
+          saveVideo(
+            response.videoId,
+            response.videoUrl,
+            response.thumbnailUrl,
+            caption,
+            'Music',
+            'music',
+          );
+        }
+      })
+      .catch(error => {
+        setProgressmodalVisible(false);
+
+        setIsMessage({
+          message: error.message || 'Unable to upload video',
+          heading: 'Error',
+          isRight: false,
+          rightButtonText: 'OK',
+          triggerFunction: () => {},
+          setShowAlert: () => {
+            isMessage.setShowAlert(false);
+          },
+          showAlert: true,
+        });
+        return;
+        0;
+      });
   };
   const saveVideo = async (
     videoId,
@@ -431,7 +464,6 @@ const UploadPost = ({route, navigation}) => {
           </View>
         </>
       )}
-
       {isLocation && (
         <View style={styles.locationContainer}>
           <NexusInput
@@ -492,7 +524,6 @@ const UploadPost = ({route, navigation}) => {
           </View>
         </View>
       )}
-
       {isPrivacy && (
         <View style={styles.inlineContainer}>
           <Text style={styles.inlineTitle}>Select Privacy Option</Text>

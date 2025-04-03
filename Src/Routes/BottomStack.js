@@ -13,6 +13,7 @@ import NotificationScreen from '../Screens/Home/NotificationScreen';
 import {ExploreLayout} from '../Screens/Explore/ExploreLayout';
 import {useRoute} from '@react-navigation/native';
 import apiClient from '../Services/api/apiInterceptor';
+import UploadProgressBar from '../Components/UploadProgressModal';
 
 const Tab = createBottomTabNavigator();
 const CustomAddPostButton = ({onPress}) => (
@@ -32,6 +33,12 @@ const CustomAddPostButton = ({onPress}) => (
 );
 
 export default function BottomStack() {
+  const {
+    progressmodalVisible,
+    setProgressmodalVisible,
+    uploadProgress,
+    setUploadProgress,
+  } = useContext(NavigationContext);
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -46,89 +53,97 @@ export default function BottomStack() {
   const {setCurrentIndex, currentIndex} = useContext(NavigationContext);
 
   return (
-    <Tab.Navigator
-      initialRouteName="Home"
-      screenOptions={({route, focused}) => ({
-        tabBarIcon: ({focused, color, size}) => {
-          let iconName;
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Explore') {
-            iconName = focused ? 'search' : 'search-outline';
-          } else if (route.name === 'Clips') {
-            iconName = focused ? 'film' : 'film-outline';
-          } else if (route.name === 'Notification') {
-            iconName = focused ? 'notifications' : 'notifications-outline';
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
-          }
-          return (
-            <Icon
-              name={iconName}
-              size={size}
-              color={focused ? PrimaryColor : color}
-            />
-          );
-        },
-        headerShown: false,
-        tabBarActiveTintColor: PrimaryColor,
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: {
-          height: 60,
-          paddingBottom: 5,
-          backgroundColor: currentIndex === 0 ? '#151515' : '#fff',
-        },
-      })}>
-      <Tab.Screen
-        name="Home"
-        component={ClipVideo}
-        listeners={{
-          focus: () => setCurrentIndex(0),
-        }}
-      />
-      <Tab.Screen
-        name="Explore"
-        component={ExploreLayout}
-        listeners={{
-          focus: () => setCurrentIndex(1),
-        }}
-      />
-      <Tab.Screen
-        name="AddPost"
-        component={AddPost}
-        options={({navigation}) => ({
-          tabBarIcon: () => null,
-
-          tabBarLabel: () => null,
-          tabBarButton: props => (
-            <View style={{alignItems: 'center', justifyContent: 'center'}}>
-              <CustomAddPostButton
-                onPress={() => {
-                  navigation.navigate('AddPosts');
-                  setCurrentIndex(2);
-                }}
+    <>
+      <Tab.Navigator
+        initialRouteName="Home"
+        screenOptions={({route, focused}) => ({
+          tabBarIcon: ({focused, color, size}) => {
+            let iconName;
+            if (route.name === 'Home') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'Explore') {
+              iconName = focused ? 'search' : 'search-outline';
+            } else if (route.name === 'Clips') {
+              iconName = focused ? 'film' : 'film-outline';
+            } else if (route.name === 'Notification') {
+              iconName = focused ? 'notifications' : 'notifications-outline';
+            } else if (route.name === 'Profile') {
+              iconName = focused ? 'person' : 'person-outline';
+            }
+            return (
+              <Icon
+                name={iconName}
+                size={size}
+                color={focused ? PrimaryColor : color}
               />
-            </View>
-          ),
-        })}
-        listeners={{
-          focus: () => setCurrentIndex(2),
-        }}
+            );
+          },
+          headerShown: false,
+          tabBarActiveTintColor: PrimaryColor,
+          tabBarInactiveTintColor: 'gray',
+          tabBarStyle: {
+            height: 60,
+            paddingBottom: 5,
+            backgroundColor: currentIndex === 0 ? '#151515' : '#fff',
+          },
+        })}>
+        <Tab.Screen
+          name="Home"
+          component={ClipVideo}
+          listeners={{
+            focus: () => setCurrentIndex(0),
+          }}
+        />
+        <Tab.Screen
+          name="Explore"
+          component={ExploreLayout}
+          listeners={{
+            focus: () => setCurrentIndex(1),
+          }}
+        />
+        <Tab.Screen
+          name="AddPost"
+          component={AddPost}
+          options={({navigation}) => ({
+            tabBarIcon: () => null,
+
+            tabBarLabel: () => null,
+            tabBarButton: props => (
+              <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                <CustomAddPostButton
+                  onPress={() => {
+                    navigation.navigate('AddPosts');
+                    setCurrentIndex(2);
+                  }}
+                />
+              </View>
+            ),
+          })}
+          listeners={{
+            focus: () => setCurrentIndex(2),
+          }}
+        />
+        <Tab.Screen
+          name="Notification"
+          component={NotificationScreen}
+          listeners={{
+            focus: () => setCurrentIndex(3),
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={Profile}
+          listeners={{
+            focus: () => setCurrentIndex(4),
+          }}
+        />
+      </Tab.Navigator>
+      <UploadProgressBar
+        visible={progressmodalVisible}
+        setModalVisible={setProgressmodalVisible}
+        progress={uploadProgress}
+        setProgress={setUploadProgress}
       />
-      <Tab.Screen
-        name="Notification"
-        component={NotificationScreen}
-        listeners={{
-          focus: () => setCurrentIndex(3),
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={Profile}
-        listeners={{
-          focus: () => setCurrentIndex(4),
-        }}
-      />
-    </Tab.Navigator>
+    </>
   );
 }

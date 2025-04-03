@@ -25,6 +25,7 @@ import DurationSelector from '../../Components/DurationSelector';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {AddPostScreenStyles as styles} from '../../Components/Styles/Styles';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import AlertBox from '../../Components/AlertMessage';
 
 const AddPost = () => {
   const [hasPermission, setHasPermission] = useState(false);
@@ -46,6 +47,18 @@ const AddPost = () => {
   const intervalRef = useRef(null);
   const [videoUri, setVideoUri] = useState(null);
   const [cameraPer, setCamerPer] = useState(false);
+  const [isMessage, setIsMessage] = useState({
+    message: '',
+    heading: '',
+    isRight: false,
+    rightButtonText: 'OK',
+    triggerFunction: () => {},
+    setShowAlert: () => {},
+    showAlert: false,
+  });
+  const closeAlert = () => {
+    setIsMessage(prev => ({...prev, showAlert: false}));
+  };
   useEffect(() => {
     (async () => {
       const cameraPermission = await Camera.requestCameraPermission();
@@ -75,10 +88,6 @@ const AddPost = () => {
       if (result === RESULTS.GRANTED) {
         return true;
       } else if (result === RESULTS.BLOCKED || result === RESULTS.UNAVAILABLE) {
-        // Alert.alert(
-        //   'Permission Required',
-        //   'Please enable storage permission in settings to load videos.',
-        // );
         console.log(
           'Permission Required Please enable storage permission in settings to load videos.',
         );
@@ -114,9 +123,7 @@ const AddPost = () => {
             (latestVideo.video && latestVideo.video.uri);
           setVideoUri(uri);
         }
-      } catch (error) {
-        // console.error('Error fetching video:', error);
-      }
+      } catch (error) {}
     };
     if (cameraPer) {
       fetchLatestVideo();
@@ -233,27 +240,59 @@ const AddPost = () => {
       mediaType: 'video',
       selectionLimit: 1,
       durationLimit: 180,
-      maxDurationSec: 180,
     };
 
     launchImageLibrary(options, res => {
+      setLoading(false);
       if (res.didCancel) {
         console.log('User cancelled');
       } else if (res.errorCode) {
         console.log('ImagePickerError: ', res.errorMessage);
       } else {
-        console.log('loading');
         const videoAsset = res.assets[0];
-        if (videoAsset.duration && videoAsset.duration > 180) {
-          Alert.alert('Please select a video that is 3 minutes or shorter');
+        const fileSizeInMB = videoAsset.fileSize / (1024 * 1024);
+
+        if (fileSizeInMB > 100) {
+          setIsMessage({
+            message: 'The selected video exceeds the 100 MB size limit.',
+            heading: 'Error',
+            isRight: false,
+            rightButtonText: 'OK',
+            triggerFunction: () => {},
+            setShowAlert: () => {
+              setIsMessage(prevState => ({
+                ...prevState,
+                showAlert: false,
+              }));
+            },
+            showAlert: true,
+          });
           return;
         }
+
+        if (videoAsset.duration && videoAsset.duration > 180) {
+          setIsMessage({
+            message: 'The selected video exceeds the 3-minute duration limit.',
+            heading: 'Error',
+            isRight: false,
+            rightButtonText: 'OK',
+            triggerFunction: () => {},
+            setShowAlert: () => {
+              setIsMessage(prevState => ({
+                ...prevState,
+                showAlert: false,
+              }));
+            },
+            showAlert: true,
+          });
+          return;
+        }
+
         navigation.navigate('UploadScreen', {path: videoAsset.uri});
       }
-    }).finally(() => {
-      setLoading(false);
     });
   };
+
   if (!hasPermission) {
     return (
       <View style={styles.permissionContainer}>
@@ -280,6 +319,15 @@ const AddPost = () => {
           <CustomLoadingIndicator />
         </View>
       )}
+      <AlertBox
+        heading={isMessage.heading}
+        message={isMessage.message}
+        setShowAlert={closeAlert}
+        showAlert={isMessage.showAlert}
+        triggerFunction={isMessage.triggerFunction}
+        isRight={isMessage.isRight}
+        rightButtonText={isMessage.rightButtonText}
+      />
       <Camera
         ref={cameraRef}
         style={StyleSheet.absoluteFill}

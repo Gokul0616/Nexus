@@ -9,6 +9,8 @@ export const NavigationProvider = ({children}) => {
   const [topStackIndex, setTopStackIndex] = useState(true);
   const [isConnected, setIsConnected] = useState(true);
   const [mediaKey, setMediaKey] = useState(0);
+  const [progressmodalVisible, setProgressmodalVisible] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
@@ -34,6 +36,10 @@ export const NavigationProvider = ({children}) => {
         setTopStackIndex,
         isConnected,
         mediaKey,
+        progressmodalVisible,
+        setProgressmodalVisible,
+        uploadProgress,
+        setUploadProgress,
       }}>
       {children}
     </NavigationContext.Provider>
