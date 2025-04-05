@@ -168,38 +168,38 @@ export default function ClipVideo() {
     }
   };
   const likeIconRef = useRef(null);
-  const [likeIconPos, setLikeIconPos] = useState({x: 0, y: 0});
+  const [likeIconPos, setLikeIconPos] = useState({
+    x: 317.6666564941406,
+    y: 453.6666259765625,
+  });
   const animationTranslate = useRef(new Animated.ValueXY({x: 0, y: 0})).current;
   const animationScale = useRef(new Animated.Value(1)).current;
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const screenCenter = {x: width / 2 - 40, y: windowHeight / 2 - 40}; // adjust icon size offset
   const animationOpacity = useRef(new Animated.Value(1)).current;
-  useEffect(() => {
-    measureLikeIconPosition();
-  }, []);
-  const triggerLikeAnimation = () => {
+  const triggerLikeAnimation = destination => {
     setShowLikeAnimation(true);
     animationTranslate.setValue(screenCenter);
     animationScale.setValue(1);
     animationOpacity.setValue(1);
 
-    // Pulse before flying
     Animated.sequence([
-      Animated.timing(animationScale, {
-        toValue: 1.3,
-        duration: 100,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(animationScale, {
-        toValue: 1,
-        duration: 100,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
+      Animated.sequence([
+        Animated.timing(animationScale, {
+          toValue: 1.3,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animationScale, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.delay(400),
       Animated.parallel([
         Animated.timing(animationTranslate, {
-          toValue: {x: likeIconPos.x - 10, y: likeIconPos.y - 10},
+          toValue: {x: destination.x - 10, y: destination.y - 10},
           duration: 400,
           easing: Easing.out(Easing.ease),
           useNativeDriver: true,
@@ -218,10 +218,56 @@ export default function ClipVideo() {
         }),
       ]),
     ]).start(() => {
-      pulseLikeIcon();
       setShowLikeAnimation(false);
+      pulseLikeIcon();
     });
   };
+
+  // const triggerLikeAnimation = () => {
+  //   setShowLikeAnimation(true);
+  //   animationTranslate.setValue(screenCenter);
+  //   animationScale.setValue(1);
+  //   animationOpacity.setValue(1);
+
+  //   // Pulse before flying
+  //   Animated.sequence([
+  //     Animated.timing(animationScale, {
+  //       toValue: 1.3,
+  //       duration: 100,
+  //       easing: Easing.out(Easing.ease),
+  //       useNativeDriver: true,
+  //     }),
+  //     Animated.timing(animationScale, {
+  //       toValue: 1,
+  //       duration: 100,
+  //       easing: Easing.out(Easing.ease),
+  //       useNativeDriver: true,
+  //     }),
+  //     Animated.parallel([
+  //       Animated.timing(animationTranslate, {
+  //         toValue: {x: likeIconPos.x, y: likeIconPos.y},
+  //         duration: 400,
+  //         easing: Easing.out(Easing.ease),
+  //         useNativeDriver: true,
+  //       }),
+  //       Animated.timing(animationScale, {
+  //         toValue: 0.3,
+  //         duration: 400,
+  //         easing: Easing.out(Easing.ease),
+  //         useNativeDriver: true,
+  //       }),
+  //       Animated.timing(animationOpacity, {
+  //         toValue: 0,
+  //         duration: 300,
+  //         delay: 100,
+  //         useNativeDriver: true,
+  //       }),
+  //     ]),
+  //   ]).start(() => {
+  //     pulseLikeIcon();
+  //     setShowLikeAnimation(false);
+  //   });
+  // };
   const measureLikeIconPosition = () => {
     if (likeIconRef.current) {
       likeIconRef.current.measureInWindow((x, y, width, height) => {
@@ -289,6 +335,7 @@ export default function ClipVideo() {
       togglingLikes.current.delete(videoId);
     }
   };
+
   const removeLike = async videoId => {
     if (togglingLikes.current.has(videoId)) return;
     togglingLikes.current.add(videoId);
