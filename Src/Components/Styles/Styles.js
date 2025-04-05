@@ -653,7 +653,7 @@ const ClipItemStyles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    paddingHorizontal: 10,
+    paddingLeft: 10,
     paddingBottom: 20,
     justifyContent: 'space-between',
   },
@@ -663,13 +663,13 @@ const ClipItemStyles = StyleSheet.create({
   },
   username: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 4,
   },
   caption: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 13,
     marginBottom: 8,
   },
   musicRow: {
@@ -678,8 +678,23 @@ const ClipItemStyles = StyleSheet.create({
   },
   musicTitle: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 13,
     marginLeft: 4,
+  },
+  followButton: {
+    marginLeft: 15,
+    padding: 5,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ff004f',
+    minWidth: 80,
+  },
+  followText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   bottomRight: {
     width: 60,
@@ -692,15 +707,15 @@ const ClipItemStyles = StyleSheet.create({
     borderRadius: '50%',
   },
   profileImage: {
-    width: 48,
-    height: 48,
+    width: 45,
+    height: 45,
     borderRadius: 25,
     borderWidth: 2,
     borderColor: '#fff',
   },
   followIcon: {
     position: 'absolute',
-    bottom: 0,
+    bottom: -6,
     right: '%0%',
     backgroundColor: '#ff004f',
     borderRadius: 10,
@@ -718,8 +733,8 @@ const ClipItemStyles = StyleSheet.create({
     marginTop: 2,
   },
   musicDisk: {
-    width: 48,
-    height: 48,
+    width: 45,
+    height: 45,
     borderRadius: 24,
     borderWidth: 5,
     borderColor: 'rgba(255,255,255,0.3)',
@@ -727,8 +742,8 @@ const ClipItemStyles = StyleSheet.create({
     alignItems: 'center',
   },
   diskImage: {
-    width: 38,
-    height: 38,
+    width: 35,
+    height: 35,
     borderRadius: 19,
   },
   overlayLayer: {

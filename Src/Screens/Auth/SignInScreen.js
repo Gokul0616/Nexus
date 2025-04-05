@@ -203,6 +203,7 @@ const SignInScreen = () => {
           keyboardType="email-address"
           value={login}
           onChangeText={setLogin}
+          cursorColor={PrimaryColor}
         />
         {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null}
 
@@ -216,6 +217,7 @@ const SignInScreen = () => {
             placeholder="Password"
             placeholderTextColor="#999"
             secureTextEntry={!passwordVisible}
+            cursorColor={PrimaryColor}
             value={password}
             onChangeText={setPassword}
           />

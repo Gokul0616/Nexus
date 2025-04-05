@@ -13,47 +13,65 @@ import {
 import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import CustomLoadingIndicator from './CustomLoadingIndicator';
 import DynamicImage from './DynamicImage';
 import {ClipItemStyles as styles} from './Styles/Styles';
-import {TouchableRipple} from 'react-native-paper';
+import {ActivityIndicator, TouchableRipple} from 'react-native-paper';
 import RNFS from 'react-native-fs';
 import {storage} from './CommonData';
 import {PanResponder as RN_PanResponder} from 'react-native';
+import apiClient from '../Services/api/apiInterceptor';
 
 const ClipItem = memo(
   ({
     item,
     isPlaying,
     isMuted,
+    likeIconRef,
     onVideoPress,
     handleLoadStart,
     handleLoad,
     loadingStates,
     commentVisible,
+    setLikeIconPos,
     setCommentVisible,
     width,
     height,
     setIsMuted,
+    previousVideoIdRef,
     videoRefs,
     handleDoubleTap,
     likeAnimations,
     handleLike,
     isConnected,
+    hasFullyWatched,
+    setHasFullyWatched,
+    likeIconScale,
     overlayVisible,
     setOverlayVisible,
     navigation,
     onLongPressAction,
     index,
+    onTimeUpdate,
+    sendWatchTime,
+    animationTranslate,
+    animationScale,
+    animationOpacity,
   }) => {
     const [pausedLocally, setPausedLocally] = useState(false);
     const [cachedUri, setCachedUri] = useState(null);
     const [videoDuration, setVideoDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
     const [localOverlayVisible, setLocalOverlayVisible] = useState(true);
-
     const [containerLayout, setContainerLayout] = useState({x: 0, width: 0});
     const progressAnim = useRef(new Animated.Value(0)).current;
+
+    const [followLoading, setFollowLoading] = useState(false);
+    const profileString = storage.getString('profile');
+    const profile = JSON.parse(profileString);
     useEffect(() => {
       if (containerLayout.width && videoDuration) {
         const progressWidth =
@@ -70,30 +88,22 @@ const ClipItem = memo(
     const progressPanResponder = useRef(
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
-        onPanResponderGrant: () => {
-          // Optionally pause video during scrubbing
-        },
-        onPanResponderMove: (evt, gestureState) => {
+        onPanResponderGrant: () => {},
+        onPanResponderMove: evt => {
           if (!containerLayout.width || videoDuration === 0) return;
-          // Use locationX for coordinate within the container
           const relativeX = evt.nativeEvent.locationX;
           const clampedX = Math.max(
             0,
             Math.min(relativeX, containerLayout.width),
           );
           const newTime = (clampedX / containerLayout.width) * videoDuration;
-          console.log(
-            `Dragged - LocationX: ${relativeX}, Clamped: ${clampedX}, New Time: ${newTime.toFixed(
-              2,
-            )}s`,
-          );
           const videoRef = videoRefs.current.get(item.id);
           if (videoRef && videoRef.seek) {
             videoRef.seek(newTime);
           }
           setCurrentTime(newTime);
         },
-        onPanResponderRelease: (evt, gestureState) => {
+        onPanResponderRelease: evt => {
           if (!containerLayout.width || videoDuration === 0) return;
           const relativeX = evt.nativeEvent.locationX;
           const clampedX = Math.max(
@@ -101,11 +111,6 @@ const ClipItem = memo(
             Math.min(relativeX, containerLayout.width),
           );
           const newTime = (clampedX / containerLayout.width) * videoDuration;
-          console.log(
-            `Released - LocationX: ${relativeX}, Clamped: ${clampedX}, Seeking to: ${newTime.toFixed(
-              2,
-            )}s`,
-          );
           const videoRef = videoRefs.current.get(item.id);
           if (videoRef && videoRef.seek) {
             videoRef.seek(newTime);
@@ -114,10 +119,43 @@ const ClipItem = memo(
         },
       }),
     ).current;
+    const noteAnimations = Array.from({length: 3}).map(() => ({
+      translateX: useRef(new Animated.Value(0)).current,
+      translateY: useRef(new Animated.Value(0)).current,
+      opacity: useRef(new Animated.Value(1)).current,
+    }));
+    useEffect(() => {
+      noteAnimations.forEach(({translateX, translateY, opacity}, index) => {
+        const scatter = () => {
+          translateX.setValue(0);
+          translateY.setValue(0);
+          opacity.setValue(1);
+
+          Animated.parallel([
+            Animated.timing(translateX, {
+              toValue: Math.random() * 40 - 20,
+              duration: 2000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(translateY, {
+              toValue: -40 - Math.random() * 30,
+              duration: 2000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(opacity, {
+              toValue: 0,
+              duration: 2000,
+              useNativeDriver: true,
+            }),
+          ]).start(() => scatter());
+        };
+
+        setTimeout(scatter, index * 700); // stagger each note
+      });
+    }, []);
 
     useEffect(() => {
       const cacheVideo = async () => {
-        // Only cache the first 10 videos
         if (index >= 10) {
           setCachedUri(item.videoSource);
           return;
@@ -142,7 +180,6 @@ const ClipItem = memo(
             }
           }
         } catch (error) {
-          // In case of error, use the original source
           setCachedUri(item.videoSource);
         }
       };
@@ -165,6 +202,20 @@ const ClipItem = memo(
       inputRange: [0, 1],
       outputRange: ['0deg', '360deg'],
     });
+    const toggleFollow = async () => {
+      setFollowLoading(true);
+      const profileString = storage.getString('profile');
+      const currUser = JSON.parse(profileString);
+      const payload = {
+        followerId: currUser.userId,
+        followeeId: item.userId,
+      };
+      const response = await apiClient.post('follow/toggleFollow', payload);
+      if (response.status === 200) {
+        item.followedByCurrentUser = !item.followedByCurrentUser;
+      }
+      setFollowLoading(false);
+    };
 
     const handleLongPress = () => {
       setPausedLocally(true);
@@ -187,8 +238,6 @@ const ClipItem = memo(
     };
 
     const handlePressOfProfile = () => {
-      const profileString = storage.getString('profile');
-      const profile = JSON.parse(profileString);
       if (profile.username === item.username) {
         navigation.navigate('Profile');
       } else {
@@ -196,6 +245,18 @@ const ClipItem = memo(
       }
     };
 
+    const handleVideoEnd = () => {
+      if (!hasFullyWatched) {
+        setHasFullyWatched(true);
+      }
+      sendWatchTime(item.videoId, currentTime, true);
+      setCurrentTime(0);
+      setHasFullyWatched(false);
+    };
+
+    const handleVideoPause = () => {
+      sendWatchTime(item.videoId, currentTime);
+    };
     return (
       <View style={[styles.container, {width, height}]}>
         <Pressable
@@ -213,7 +274,7 @@ const ClipItem = memo(
             muted={isMuted}
             mixWithOthers={isMuted ? 'mix' : 'inherit'}
             disableFocus={isMuted}
-            repeat
+            repeat={true}
             onLoadStart={() => handleLoadStart(item.id)}
             onLoad={data => {
               handleLoad(item.id);
@@ -221,7 +282,16 @@ const ClipItem = memo(
             }}
             onProgress={data => {
               setCurrentTime(data.currentTime);
+              onTimeUpdate?.(item.videoId, data.currentTime);
+              if (data.duration - data.currentTime < 1) {
+                setHasFullyWatched(true);
+                console.log('Video has been fully watched');
+              } else {
+                setHasFullyWatched(false);
+              }
             }}
+            onEnd={handleVideoEnd}
+            onPause={handleVideoPause}
             bufferConfig={{
               minBufferMs: 15000,
               maxBufferMs: 50000,
@@ -231,8 +301,7 @@ const ClipItem = memo(
             ignoreSilentSwitch="obey"
           />
         </Pressable>
-
-        {localOverlayVisible && (
+        {/* {localOverlayVisible && (
           <View
             style={[styles.progressBarContainer, {width}]}
             onLayout={e => {
@@ -243,58 +312,75 @@ const ClipItem = memo(
               style={[styles.progressBar, {width: progressAnim}]}
             />
           </View>
-        )}
-
+        )} */}
         {loadingStates[item.id] && (
           <View style={styles.loadingContainer}>
             <CustomLoadingIndicator />
           </View>
         )}
-
         {likeAnimations.current[item.id] && (
           <Animated.View
             pointerEvents="none"
-            style={[
-              styles.likeAnimation,
-              {
-                opacity: likeAnimations.current[item.id],
-                transform: [
-                  {
-                    scale: likeAnimations.current[item.id].interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.5, 1.2],
-                    }),
-                  },
-                ],
-              },
-            ]}>
-            <Icon name="heart" size={100} color="#ed4956" />
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              transform: [
+                {translateX: animationTranslate.x},
+                {translateY: animationTranslate.y},
+                {scale: animationScale},
+              ],
+              opacity: animationOpacity,
+            }}>
+            <AntDesign name="heart" size={80} color="#ff004f" />
           </Animated.View>
         )}
-
         {localOverlayVisible && (
           <View style={styles.volumeButtonContainer}>
             <Pressable onPress={() => setIsMuted(!isMuted)}>
               <View style={styles.volumeButton}>
                 <Icon
                   name={isMuted ? 'volume-mute' : 'volume-high'}
-                  size={24}
+                  size={20}
                   color="#fff"
                 />
               </View>
             </Pressable>
           </View>
         )}
-
         {localOverlayVisible && (
           <View style={styles.bottomContainer}>
             <View style={styles.bottomLeft}>
-              <Text style={styles.username} onPress={handlePressOfProfile}>
-                {item.username}
-              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginBottom: 10,
+                }}>
+                <Text style={styles.username} onPress={handlePressOfProfile}>
+                  @{item.username}
+                </Text>
+
+                {item.userId !== profile.userId && (
+                  <TouchableRipple
+                    rippleColor={'rgba(0, 0, 0, 0.25)'}
+                    onPress={() => {
+                      toggleFollow();
+                    }}
+                    style={styles.followButton}>
+                    {followLoading ? (
+                      <ActivityIndicator size={14} color="#fff" />
+                    ) : (
+                      <Text style={styles.followText}>
+                        {item.followedByCurrentUser ? 'Following' : 'Follow'}
+                      </Text>
+                    )}
+                  </TouchableRipple>
+                )}
+              </View>
               <Text style={styles.caption}>{item.caption}</Text>
               <View style={styles.musicRow}>
-                <Icon name="musical-notes" size={16} color="#fff" />
+                <Icon name="musical-notes" size={12} color="#fff" />
                 <Text style={styles.musicTitle}>{item.musicTitle}</Text>
               </View>
             </View>
@@ -310,33 +396,44 @@ const ClipItem = memo(
                     resizeMode="cover"
                   />
                   <View style={styles.followIcon}>
-                    <Entypo name="plus" size={13} color="#fff" />
+                    <Entypo name="plus" size={14} color="#fff" />
                   </View>
                 </>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => handleLike(item.videoId)}
-                style={styles.iconWrapper}>
-                <>
-                  <Icon
-                    name="heart"
-                    size={32}
-                    color={item.likedByCurrentUser ? '#ed4956' : '#fff'}
-                  />
-                  <Text style={styles.iconText}>{item.likes}</Text>
-                </>
-              </TouchableOpacity>
+              <Animated.View
+                style={{
+                  transform: [{scale: likeIconScale}],
+                }}>
+                <TouchableOpacity
+                  ref={likeIconRef}
+                  onPress={() => handleLike(item.videoId)}
+                  style={styles.iconWrapper}>
+                  <>
+                    <AntDesign
+                      name="heart"
+                      size={25}
+                      color={item.likedByCurrentUser ? '#ff004f' : '#fff'}
+                    />
+                    <Text style={styles.iconText}>{item.likes}</Text>
+                  </>
+                </TouchableOpacity>
+              </Animated.View>
+
               <TouchableOpacity
                 onPress={() => setCommentVisible(true)}
                 style={styles.iconWrapper}>
                 <>
-                  <Icon name="chatbubble" size={32} color="#fff" />
+                  <Fontisto name="comments" size={25} color="#fff" />
                   <Text style={styles.iconText}>{item.comments}</Text>
                 </>
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconWrapper}>
                 <>
-                  <Icon name="share-social" size={32} color="#fff" />
+                  <MaterialCommunityIcons
+                    name="share-all-outline"
+                    size={25}
+                    color="#fff"
+                  />
                   <Text style={styles.iconText}>{item.shares}</Text>
                 </>
               </TouchableOpacity>
@@ -350,7 +447,27 @@ const ClipItem = memo(
                 />
                 <View style={styles.overlayLayer} />
                 <View style={styles.musicIconOverlay}>
-                  <Icon name="musical-notes" size={18} color="#fff" />
+                  {noteAnimations.map(
+                    ({translateX, translateY, opacity}, i) => (
+                      <Animated.View
+                        key={i}
+                        style={{
+                          position: 'absolute',
+                          top: -5,
+                          left: 5,
+                          opacity,
+                          transform: [
+                            {translateX},
+                            {translateY},
+                            {scale: opacity}, // shrink as it fades
+                          ],
+                        }}>
+                        <Icon name="musical-notes" size={12} color="#fff" />
+                      </Animated.View>
+                    ),
+                  )}
+
+                  <Icon name="musical-notes" size={15} color="#fff" />
                 </View>
               </Animated.View>
             </View>

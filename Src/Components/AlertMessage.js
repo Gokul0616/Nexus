@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#007AFF',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: 'Roboto-Medium',
   },
 });

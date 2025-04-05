@@ -246,6 +246,7 @@ const SignupScreen = () => {
             placeholderTextColor="#999"
             secureTextEntry={!passwordVisible}
             value={password}
+            cursorColor={PrimaryColor}
             onChangeText={setPassword}
           />
           <TouchableOpacity

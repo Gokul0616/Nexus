@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import {
   Animated,
+  Easing,
   FlatList,
   StatusBar,
   StyleSheet,
@@ -34,6 +35,7 @@ export default function ClipVideo() {
   const [videoData, setVideoData] = useState([]);
   const [likeDataOfUser, setLikeDataOfUser] = useState([]);
   const [overlayVisible, setOverlayVisible] = useState(true);
+  const [hasFullyWatched, setHasFullyWatched] = useState(false);
 
   const tabBarHeight = useBottomTabBarHeight();
   const availableHeight = windowHeight - insets.bottom;
@@ -47,10 +49,35 @@ export default function ClipVideo() {
   const viewabilityConfig = useRef({viewAreaCoveragePercentThreshold: 50});
   const lastTapTimes = useRef({});
   const likeAnimations = useRef({});
+  const previousVideoIdRef = useRef(null);
+  const videoWatchTimes = useRef(new Map());
+  const likeIconScale = useRef(new Animated.Value(1)).current;
+
+  const sendWatchTime = async (videoId, watchTime, fullyWatched = false) => {
+    try {
+      await apiClient.post('video/watch', {
+        videoId,
+        watchTime,
+        fullyWatched,
+      });
+    } catch (err) {
+      console.log('Error sending watch time', err);
+    }
+  };
+  useEffect(() => {
+    return () => {
+      const prevId = previousVideoIdRef.current;
+      if (prevId) {
+        const watchTime = videoWatchTimes.current.get(prevId) || 0;
+        sendWatchTime(prevId, watchTime, hasFullyWatched);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await apiClient.get('post/recommendations');
+        const response = await apiClient.get('recommendation');
         // const response = await apiClient.get('post/getRecommendation');
 
         const data = response.data;
@@ -63,7 +90,7 @@ export default function ClipVideo() {
       } catch (error) {
         console.error('Error fetching data:', error);
         setIsMessage({
-          message: error.response.data.error || 'Unable to load data',
+          message: error.response?.data?.message || 'Unable to load data',
           heading: 'Error',
           isRight: false,
           rightButtonText: 'OK',
@@ -91,13 +118,25 @@ export default function ClipVideo() {
     });
     return () => unsubscribe();
   }, []);
-
   const onViewableItemsChanged = useCallback(({viewableItems}) => {
     if (viewableItems.length > 0) {
       const visibleItem = viewableItems[0].item;
+      const newVideoId = visibleItem.videoId;
+
+      const prevId = previousVideoIdRef.current;
+      if (prevId && prevId !== newVideoId) {
+        const watchTime = videoWatchTimes.current.get(prevId) || 0;
+        sendWatchTime(prevId, watchTime, hasFullyWatched);
+        videoWatchTimes.current.set(prevId, 0);
+      }
+
+      previousVideoIdRef.current = newVideoId;
       setCurrentVideoId(visibleItem.id);
     }
   }, []);
+  const handleTimeUpdate = (videoId, time) => {
+    videoWatchTimes.current.set(videoId, time);
+  };
 
   const viewabilityConfigCallbackPairs = useRef([
     {viewabilityConfig: viewabilityConfig.current, onViewableItemsChanged},
@@ -128,6 +167,83 @@ export default function ClipVideo() {
       }
     }
   };
+  const likeIconRef = useRef(null);
+  const [likeIconPos, setLikeIconPos] = useState({x: 0, y: 0});
+  const animationTranslate = useRef(new Animated.ValueXY({x: 0, y: 0})).current;
+  const animationScale = useRef(new Animated.Value(1)).current;
+  const [showLikeAnimation, setShowLikeAnimation] = useState(false);
+  const screenCenter = {x: width / 2 - 40, y: windowHeight / 2 - 40}; // adjust icon size offset
+  const animationOpacity = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    measureLikeIconPosition();
+  }, []);
+  const triggerLikeAnimation = () => {
+    setShowLikeAnimation(true);
+    animationTranslate.setValue(screenCenter);
+    animationScale.setValue(1);
+    animationOpacity.setValue(1);
+
+    // Pulse before flying
+    Animated.sequence([
+      Animated.timing(animationScale, {
+        toValue: 1.3,
+        duration: 100,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(animationScale, {
+        toValue: 1,
+        duration: 100,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.parallel([
+        Animated.timing(animationTranslate, {
+          toValue: {x: likeIconPos.x - 10, y: likeIconPos.y - 10},
+          duration: 400,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(animationScale, {
+          toValue: 0.3,
+          duration: 400,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(animationOpacity, {
+          toValue: 0,
+          duration: 300,
+          delay: 100,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start(() => {
+      pulseLikeIcon();
+      setShowLikeAnimation(false);
+    });
+  };
+  const measureLikeIconPosition = () => {
+    if (likeIconRef.current) {
+      likeIconRef.current.measureInWindow((x, y, width, height) => {
+        setLikeIconPos({x, y});
+        triggerLikeAnimation({x, y}); // pass position
+      });
+    }
+  };
+  const pulseLikeIcon = () => {
+    Animated.sequence([
+      Animated.timing(likeIconScale, {
+        toValue: 1.4,
+        duration: 120,
+        useNativeDriver: true,
+      }),
+      Animated.timing(likeIconScale, {
+        toValue: 1,
+        duration: 120,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
   const handleDoubleTap = (id, videoId) => {
     const now = Date.now();
@@ -139,28 +255,16 @@ export default function ClipVideo() {
       if (!likeAnimations.current[id]) {
         likeAnimations.current[id] = new Animated.Value(0);
       }
+      measureLikeIconPosition();
 
-      Animated.sequence([
-        Animated.timing(likeAnimations.current[id], {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.delay(350),
-        Animated.timing(likeAnimations.current[id], {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
       addLike(videoId);
+
       lastTapTimes.current[id] = 0;
     } else {
       lastTapTimes.current[id] = now;
     }
   };
   const togglingLikes = useRef(new Set());
-
   const addLike = async videoId => {
     if (togglingLikes.current.has(videoId)) return;
     togglingLikes.current.add(videoId);
@@ -244,6 +348,8 @@ export default function ClipVideo() {
           onVideoPress={handleVideoPress}
           handleLoadStart={handleLoadStart}
           handleLoad={handleLoad}
+          previousVideoIdRef={previousVideoIdRef}
+          onTimeUpdate={handleTimeUpdate}
           loadingStates={loadingStates}
           width={width}
           setIsMuted={setIsMuted}
@@ -253,12 +359,21 @@ export default function ClipVideo() {
           isConnected={isConnected}
           likeAnimations={likeAnimations}
           commentVisible={commentVisible}
+          sendWatchTime={sendWatchTime}
           navigation={navigation}
           handleLike={handleLikeButtonClick}
           setCommentVisible={setCommentVisible}
           overlayVisible={overlayVisible}
           setOverlayVisible={setOverlayVisible}
+          hasFullyWatched={hasFullyWatched}
+          likeIconRef={likeIconRef}
+          setHasFullyWatched={setHasFullyWatched}
           index={index}
+          setLikeIconPos={setLikeIconPos}
+          animationTranslate={animationTranslate}
+          animationScale={animationScale}
+          animationOpacity={animationOpacity}
+          likeIconScale={likeIconScale}
         />
       );
     },
@@ -278,10 +393,16 @@ export default function ClipVideo() {
     <View style={styles.container}>
       {overlayVisible && (
         <View style={[styles.headerContainer, {top: insets.top + 10}]}>
-          <Text style={[styles.headerText, styles.activeHeader]}>For You</Text>
-          <Text style={[styles.headerText, styles.inactiveHeader]}>
-            Following
-          </Text>
+          <View>
+            <Text style={[styles.headerText, styles.inactiveHeader]}>
+              For You
+            </Text>
+          </View>
+          <View>
+            <Text style={[styles.headerText, styles.activeHeader]}>
+              Following
+            </Text>
+          </View>
         </View>
       )}
       <FlatList
@@ -325,12 +446,12 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   headerText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
     marginHorizontal: 15,
   },
-  activeHeader: {},
+  activeHeader: {borderBottomWidth: 0.5, borderBottomColor: '#fff'},
   inactiveHeader: {
     opacity: 0.6,
   },
