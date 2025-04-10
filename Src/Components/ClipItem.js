@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useRef, useState} from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,20 +9,22 @@ import {
   PanResponder,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Image,
 } from 'react-native';
 import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import CustomLoadingIndicator from './CustomLoadingIndicator';
 import DynamicImage from './DynamicImage';
-import {ClipItemStyles as styles} from './Styles/Styles';
-import {ActivityIndicator, TouchableRipple} from 'react-native-paper';
+import { ClipItemStyles as styles } from './Styles/Styles';
+import { ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import RNFS from 'react-native-fs';
-import {storage} from './CommonData';
-import {PanResponder as RN_PanResponder} from 'react-native';
+import { storage } from './CommonData';
+import { PanResponder as RN_PanResponder } from 'react-native';
 import apiClient from '../Services/api/apiInterceptor';
 
 const ClipItem = memo(
@@ -66,8 +68,9 @@ const ClipItem = memo(
     const [videoDuration, setVideoDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
     const [localOverlayVisible, setLocalOverlayVisible] = useState(true);
-    const [containerLayout, setContainerLayout] = useState({x: 0, width: 0});
+    const [containerLayout, setContainerLayout] = useState({ x: 0, width: 0 });
     const progressAnim = useRef(new Animated.Value(0)).current;
+    const [avatarError, setAvatarError] = useState(false);
 
     const [followLoading, setFollowLoading] = useState(false);
     const profileString = storage.getString('profile');
@@ -88,7 +91,7 @@ const ClipItem = memo(
     const progressPanResponder = useRef(
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
-        onPanResponderGrant: () => {},
+        onPanResponderGrant: () => { },
         onPanResponderMove: evt => {
           if (!containerLayout.width || videoDuration === 0) return;
           const relativeX = evt.nativeEvent.locationX;
@@ -119,13 +122,13 @@ const ClipItem = memo(
         },
       }),
     ).current;
-    const noteAnimations = Array.from({length: 3}).map(() => ({
+    const noteAnimations = Array.from({ length: 3 }).map(() => ({
       translateX: useRef(new Animated.Value(0)).current,
       translateY: useRef(new Animated.Value(0)).current,
       opacity: useRef(new Animated.Value(1)).current,
     }));
     useEffect(() => {
-      noteAnimations.forEach(({translateX, translateY, opacity}, index) => {
+      noteAnimations.forEach(({ translateX, translateY, opacity }, index) => {
         const scatter = () => {
           translateX.setValue(0);
           translateY.setValue(0);
@@ -154,38 +157,38 @@ const ClipItem = memo(
       });
     }, []);
 
-    useEffect(() => {
-      const cacheVideo = async () => {
-        if (index >= 10) {
-          setCachedUri(item.videoSource);
-          return;
-        }
-        const cacheDir = RNFS.CachesDirectoryPath;
-        const fileName = item.videoSource.split('/').pop();
-        const filePath = `${cacheDir}/${fileName}`;
-        try {
-          const exists = await RNFS.exists(filePath);
-          if (exists) {
-            setCachedUri(`file://${filePath}`);
-          } else {
-            const downloadOptions = {
-              fromUrl: item.videoSource,
-              toFile: filePath,
-            };
-            const result = await RNFS.downloadFile(downloadOptions).promise;
-            if (result && result.statusCode === 200) {
-              setCachedUri(`file://${filePath}`);
-            } else {
-              setCachedUri(item.videoSource);
-            }
-          }
-        } catch (error) {
-          setCachedUri(item.videoSource);
-        }
-      };
+    // useEffect(() => {
+    //   const cacheVideo = async () => {
+    //     if (index >= 10) {
+    //       setCachedUri(item.videoSource);
+    //       return;
+    //     }
+    //     const cacheDir = RNFS.CachesDirectoryPath;
+    //     const fileName = item.videoSource.split('/').pop();
+    //     const filePath = `${cacheDir}/${fileName}`;
+    //     try {
+    //       const exists = await RNFS.exists(filePath);
+    //       if (exists) {
+    //         setCachedUri(`file://${filePath}`);
+    //       } else {
+    //         const downloadOptions = {
+    //           fromUrl: item.videoSource,
+    //           toFile: filePath,
+    //         };
+    //         const result = await RNFS.downloadFile(downloadOptions).promise;
+    //         if (result && result.statusCode === 200) {
+    //           setCachedUri(`file://${filePath}`);
+    //         } else {
+    //           setCachedUri(item.videoSource);
+    //         }
+    //       }
+    //     } catch (error) {
+    //       setCachedUri(item.videoSource);
+    //     }
+    //   };
 
-      cacheVideo();
-    }, [item.videoSource, index]);
+    //   cacheVideo();
+    // }, [item.videoSource, index]);
 
     const spinValue = useRef(new Animated.Value(0)).current;
     useEffect(() => {
@@ -241,7 +244,7 @@ const ClipItem = memo(
       if (profile.username === item.username) {
         navigation.navigate('Profile');
       } else {
-        navigation.navigate('OtherProfileScreen', {username: item.username});
+        navigation.navigate('OtherProfileScreen', { username: item.username });
       }
     };
 
@@ -258,7 +261,7 @@ const ClipItem = memo(
       sendWatchTime(item.videoId, currentTime);
     };
     return (
-      <View style={[styles.container, {width, height}]}>
+      <View style={[styles.container, { width, height }]}>
         <Pressable
           style={StyleSheet.absoluteFill}
           onPress={handlePress}
@@ -266,7 +269,7 @@ const ClipItem = memo(
           onPressOut={handlePressOut}
           delayLongPress={300}>
           <Video
-            source={{uri: cachedUri || item.videoSource}}
+            source={{ uri: cachedUri || item.videoSource }}
             poster={item.thumbnail}
             style={StyleSheet.absoluteFill}
             resizeMode="contain"
@@ -301,18 +304,18 @@ const ClipItem = memo(
             ignoreSilentSwitch="obey"
           />
         </Pressable>
-        {/* {localOverlayVisible && (
+        {localOverlayVisible && (
           <View
-            style={[styles.progressBarContainer, {width}]}
+            style={[styles.progressBarContainer, { width }]}
             onLayout={e => {
               setContainerLayout(e.nativeEvent.layout);
             }}
             {...progressPanResponder.panHandlers}>
             <Animated.View
-              style={[styles.progressBar, {width: progressAnim}]}
+              style={[styles.progressBar, { width: progressAnim }]}
             />
           </View>
-        )} */}
+        )}
         {loadingStates[item.id] && (
           <View style={styles.loadingContainer}>
             <CustomLoadingIndicator />
@@ -326,9 +329,9 @@ const ClipItem = memo(
               top: 0,
               left: 0,
               transform: [
-                {translateX: animationTranslate.x},
-                {translateY: animationTranslate.y},
-                {scale: animationScale},
+                { translateX: animationTranslate.x },
+                { translateY: animationTranslate.y },
+                { scale: animationScale },
               ],
               opacity: animationOpacity,
             }}>
@@ -379,31 +382,38 @@ const ClipItem = memo(
                 )}
               </View>
               <Text style={styles.caption}>{item.caption}</Text>
-              <View style={styles.musicRow}>
+              <TouchableOpacity style={styles.musicRow}>
                 <Icon name="musical-notes" size={12} color="#fff" />
-                <Text style={styles.musicTitle}>{item.musicTitle}</Text>
-              </View>
+                <Text style={styles.musicTitle} numberOfLines={1} ellipsizeMode='tail'>{item.musicTitle || 'Unknown'}</Text>
+              </TouchableOpacity>
             </View>
             <View style={styles.bottomRight}>
               <TouchableOpacity
                 onPress={handlePressOfProfile}
                 style={styles.profileContainer}>
-                <>
+                <>{!avatarError && item.profilePic ?
                   <DynamicImage
                     uri={item.profilePic}
                     isConnected={isConnected}
                     style={styles.profileImage}
-                    resizeMode="cover"
-                  />
-                  <View style={styles.followIcon}>
-                    <Entypo name="plus" size={14} color="#fff" />
+                    resizeMode="cover" onError={() => { setAvatarError(true) }}
+                  /> : <Image source={require("../../assets/images/emptyAvatar.png")} style={styles.profileImage} />}
+                  {item.userId !== profile.userId && <View style={styles.followIcon}>
+                    {item.followedByCurrentUser ? <MaterialCommunityIcons name="check" size={14} color="#fff" /> :
+                      <Entypo name="plus" size={14} color="#fff" />}
                   </View>
+                  }
                 </>
               </TouchableOpacity>
               <Animated.View
                 style={{
-                  transform: [{scale: likeIconScale}],
-                }}>
+                  transform: [{
+                    scale: likeAnimations.current[item.id]
+                      ? likeIconScale
+                      : 1
+                  }],
+                }}
+              >
                 <TouchableOpacity
                   ref={likeIconRef}
                   onPress={() => handleLike(item.videoId)}
@@ -438,7 +448,7 @@ const ClipItem = memo(
                 </>
               </TouchableOpacity>
               <Animated.View
-                style={[styles.musicDisk, {transform: [{rotate: spin}]}]}>
+                style={[styles.musicDisk, { transform: [{ rotate: spin }] }]}>
                 <DynamicImage
                   uri={item.thumbnail}
                   isConnected={isConnected}
@@ -448,7 +458,7 @@ const ClipItem = memo(
                 <View style={styles.overlayLayer} />
                 <View style={styles.musicIconOverlay}>
                   {noteAnimations.map(
-                    ({translateX, translateY, opacity}, i) => (
+                    ({ translateX, translateY, opacity }, i) => (
                       <Animated.View
                         key={i}
                         style={{
@@ -457,9 +467,9 @@ const ClipItem = memo(
                           left: 5,
                           opacity,
                           transform: [
-                            {translateX},
-                            {translateY},
-                            {scale: opacity}, // shrink as it fades
+                            { translateX },
+                            { translateY },
+                            { scale: opacity }, // shrink as it fades
                           ],
                         }}>
                         <Icon name="musical-notes" size={12} color="#fff" />

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,11 +11,11 @@ import {
   Vibration,
   Keyboard,
 } from 'react-native';
-import {TouchableRipple} from 'react-native-paper';
-import {PrimaryColor} from '../../../Components/CommonData';
+import { TouchableRipple } from 'react-native-paper';
+import { PrimaryColor } from '../../../Components/CommonData';
 import apiClient from '../../../Services/api/apiInterceptor';
 import CustomHeader from '../../../Components/CustomHeader';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import CustomLoadingIndicator from '../../../Components/CustomLoadingIndicator';
 import AlertBox from '../../../Components/AlertMessage';
 
@@ -29,13 +29,13 @@ const ForgotPassword = () => {
     heading: '',
     isRight: false,
     rightButtonText: 'OK',
-    triggerFunction: () => {},
-    setShowAlert: () => {},
+    triggerFunction: () => { },
+    setShowAlert: () => { },
     showAlert: false,
-    leftTriggerFunction: () => {},
+    leftTriggerFunction: () => { },
   });
   const closeAlert = () => {
-    setIsMessage(prev => ({...prev, showAlert: false}));
+    setIsMessage(prev => ({ ...prev, showAlert: false }));
   };
   const validateEmail = email => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -69,7 +69,7 @@ const ForgotPassword = () => {
         heading: 'Alert',
         isRight: false,
         rightButtonText: 'OK',
-        triggerFunction: () => {},
+        triggerFunction: () => { },
         setShowAlert: () => {
           isMessage.setShowAlert(false);
         },
@@ -84,7 +84,7 @@ const ForgotPassword = () => {
           heading: 'Alert',
           isRight: false,
           rightButtonText: 'OK',
-          triggerFunction: () => {},
+          triggerFunction: () => { },
           setShowAlert: () => {
             isMessage.setShowAlert(false);
           },
@@ -97,7 +97,7 @@ const ForgotPassword = () => {
           heading: 'Alert',
           isRight: false,
           rightButtonText: 'OK',
-          triggerFunction: () => {},
+          triggerFunction: () => { },
           setShowAlert: () => {
             isMessage.setShowAlert(false);
           },
@@ -110,7 +110,7 @@ const ForgotPassword = () => {
           heading: 'Alert',
           isRight: false,
           rightButtonText: 'OK',
-          triggerFunction: () => {},
+          triggerFunction: () => { },
           setShowAlert: () => {
             isMessage.setShowAlert(false);
           },
@@ -124,7 +124,7 @@ const ForgotPassword = () => {
 
   return (
     <>
-      <CustomHeader navigation={navigation} />
+      <CustomHeader navigation={navigation} style={{ backgroundColor: '#000', borderBottomWidth: 0 }} iconColor={"#fff"} />
       {loading && (
         <View style={styles.loadingIndicator}>
           <CustomLoadingIndicator />
@@ -173,13 +173,13 @@ export default ForgotPassword;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#000',
     padding: 20,
-    justifyContent: 'center',
+    justifyContent: 'center', paddingBottom: 60
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: 'bold', color: "#fff",
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
     textAlign: 'center',
-    color: '#555',
+    color: '#aaa',
   },
   input: {
     height: 50,
@@ -195,6 +195,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 15,
+    backgroundColor: '#f9f9f9',
     marginBottom: 10,
   },
   error: {

@@ -1,6 +1,9 @@
 export const AppName = 'Nexus';
+import { Platform } from 'react-native'; import mime from 'mime'; // install with: npm install mime
+
 import axios from 'axios';
-export const PrimaryColor = '#0887ff'; // utils/relativeTime.js
+export const PrimaryColor = '#0887ff';
+export const SecondaryColor = '#FF004F';
 export const getRelativeTime = timestamp => {
   // Simulated current time to match the test data
   const simulatedNow = new Date('2025-03-03T10:10:00Z'); // Set this to match your test data
@@ -28,7 +31,7 @@ export const getRelativeTime = timestamp => {
   }
 };
 // linkPreviewHelper.js
-import {getLinkPreview} from 'link-preview-js';
+import { getLinkPreview } from 'link-preview-js';
 
 export const fetchLinkPreview = async url => {
   try {
@@ -83,6 +86,141 @@ export const formatTime = ms => {
   )}`;
 };
 
-import {MMKV} from 'react-native-mmkv';
+import { MMKV } from 'react-native-mmkv';
 
 export const storage = new MMKV();
+
+
+import { captureRef } from 'react-native-view-shot';
+import { FFmpegKit, FFprobeKit } from 'ffmpeg-kit-react-native';
+import RNFS from 'react-native-fs';
+import apiClient from '../Services/api/apiInterceptor';
+
+/**
+ * Exports media based on its type.
+ * @param {Object} media - The media object with { uri, type }.
+ * @param {React.RefObject} ref - The ref to the view (for screenshots).
+ * @returns {Promise<string|null>} - The URI of the exported media or null on failure.
+ */
+export const exportMedia = async (media, ref, transform) => {
+  if (!media?.uri || !media?.type || !ref?.current) {
+    console.warn("⚠️ Missing ref or media data.");
+    return null;
+  }
+
+  if (media.type.startsWith('image')) {
+    try {
+      const uri = await captureRef(ref.current, {
+        format: 'jpg',
+        quality: 0.8,
+      });
+      return uri;
+    } catch (error) {
+      console.error('❌ Failed to capture image:', error);
+      return null;
+    }
+  }
+
+  if (media.type.startsWith("video")) {
+    try {
+      const { scale, translateX, translateY, rotation } = transform;
+      // Fallback to 0 if rotation is undefined.
+      const rotationValue = rotation !== undefined ? rotation : 0;
+
+      const originalUri = media.uri.replace("file://", "");
+      const tempExists = await RNFS.exists(originalUri);
+      if (!tempExists) {
+        console.error("❌ Original media file does not exist:", originalUri);
+        return null;
+      }
+
+      // Copy file for FFmpeg access.
+      const inputPath = `${RNFS.CachesDirectoryPath}/ffmpeg_input_${Date.now()}.mp4`;
+      await RNFS.copyFile(originalUri, inputPath);
+
+      const outputPath = `${RNFS.CachesDirectoryPath}/export_${Date.now()}.mp4`;
+      const safeUri = media.uri.replace("file://", "").replace(/'/g, "'\\''").replace(/ /g, '\\ ');
+      const safeOutput = outputPath.replace(/'/g, "'\\''").replace(/ /g, '\\ ');
+
+      // Canvas and video scaling settings.
+      const canvasWidth = 1080;
+      const canvasHeight = 1920;
+      const scaledWidth = media.width * scale;
+      const scaledHeight = media.height * scale;
+
+      // Pre-rotation offset (if needed)
+      const offsetX = translateX + (canvasWidth - scaledWidth) / 2;
+      const offsetY = translateY + (canvasHeight - scaledHeight) / 2;
+
+      // Retrieve video duration
+      const info = await FFprobeKit.getMediaInformation(media.uri);
+      const duration = parseFloat(info.getMediaInformation()?.getDuration() > 15 ? 15 : info.getMediaInformation()?.getDuration() || '15');
+
+      // Calculate required padding so the video does not get clipped during rotation.
+      const paddedSize = Math.ceil(Math.sqrt(scaledWidth ** 2 + scaledHeight ** 2));
+      const padX = Math.floor((paddedSize - scaledWidth) / 2);
+      const padY = Math.floor((paddedSize - scaledHeight) / 2);
+
+      // Build the FFmpeg command.
+      // The rotated output's dimensions are available as overlay_w and overlay_h.
+      const command = `-y -r 30 -t ${duration} -i '${safeUri}' -filter_complex `
+        + `"[0:v]scale=${scaledWidth}:${scaledHeight},pad=${paddedSize}:${paddedSize}:${padX}:${padY}:color=black,`
+        + `rotate=${rotationValue}:ow=rotw(${rotationValue}):oh=roth(${rotationValue}):c=none[v];`
+        + `color=black:s=${canvasWidth}x${canvasHeight}[bg];`
+        + `[bg][v]overlay=(((${canvasWidth}-overlay_w)/2)+${translateX}):(((`
+        + `${canvasHeight}-overlay_h)/2)+${translateY})" `
+        + `-c:v libx264 -preset ultrafast -crf 23 -c:a copy -movflags +faststart -shortest '${safeOutput}'`;
+
+      const session = await FFmpegKit.execute(command);
+      const returnCode = await session.getReturnCode();
+
+      if (returnCode.isValueSuccess()) {
+        return `file://${outputPath}`;
+      } else {
+        console.error("❌ FFmpeg failed:", await session.getAllLogsAsString());
+        return null;
+      }
+    } catch (error) {
+      console.error("❌ Error during video processing:", error);
+      return null;
+    }
+  }
+
+
+  return null;
+};
+export const uploadStory = async (mediaUri) => {
+  if (!mediaUri) throw new Error('No media selected');
+
+  const token = storage.getString('token');
+  const userId = JSON.parse(storage.getString('profile')).userId;
+
+  const uri = Platform.OS === 'ios' ? mediaUri.replace('file://', '') : mediaUri;
+  const fileName = uri.split('/').pop();
+  const mimeType = mime.getType(uri) || 'image/jpeg';
+
+  const formData = new FormData();
+  formData.append('file', {
+    uri,
+    name: fileName,
+    type: mimeType,
+  });
+
+  // 👇 Append userId as a separate field
+  formData.append('userId', userId.toString());
+
+
+  try {
+    const response = await apiClient.post('stories', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Upload failed:', error.response?.data || error.message);
+    throw error;
+  }
+};

@@ -1,8 +1,8 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {PrimaryColor} from '../CommonData';
+import { StyleSheet, Dimensions } from 'react-native';
+import { PrimaryColor, SecondaryColor } from '../CommonData';
 const CARD_WIDTH = Dimensions.get('window').width * 0.5;
 const CARD_HEIGHT = 300;
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
@@ -63,19 +63,32 @@ const HomeScreenStyles = StyleSheet.create({
     alignItems: 'center',
   },
   storyContainer: {
-    alignItems: 'center',
-    marginRight: 15,
+    alignItems: "center",
+    marginHorizontal: 8,
   },
   storyAvatar: {
     width: 70,
     height: 70,
     borderRadius: 35,
-    borderWidth: 3,
-    borderColor: PrimaryColor,
+    borderWidth: 3.5,
+    borderColor: SecondaryColor,
+  }, plusIconContainer: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: "#fff", borderRadius: "50%",
+    justifyContent: "center",
+    alignItems: "center",
   },
+  plusIcon: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
   storyName: {
     marginTop: 5,
-    fontSize: 12,
+    fontSize: 14,
     textAlign: 'center',
     color: '#000',
     maxWidth: 70,
@@ -195,11 +208,11 @@ const HomeScreenStyles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    transform: [{translateX: -50}, {translateY: -50}],
+    transform: [{ translateX: -50 }, { translateY: -50 }],
   },
 });
 const MessagesOutsideStyles = StyleSheet.create({
-  container: {backgroundColor: '#fff', flex: 1},
+  container: { backgroundColor: '#fff', flex: 1 },
   searchMessagesContainer: {
     justifyContent: 'center',
     alignContent: 'center',
@@ -420,7 +433,7 @@ const ProfileScreenstyles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    transform: [{translateX: -12}, {translateY: -12}],
+    transform: [{ translateX: -12 }, { translateY: -12 }],
   },
 });
 
@@ -561,7 +574,7 @@ const ChatscreenStyles = StyleSheet.create({
   chatText: {
     fontSize: 15,
   },
-  timestamp: {textAlign: 'right', color: '#8e8e93', fontSize: 11},
+  timestamp: { textAlign: 'right', color: '#8e8e93', fontSize: 11 },
   replyPreviewContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -675,10 +688,15 @@ const ClipItemStyles = StyleSheet.create({
   musicRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#rgba(225,225,225,0.25)',
+    padding: 3,
+    borderRadius: 5,
+    maxWidth: 250
   },
   musicTitle: {
     color: '#fff',
-    fontSize: 13,
+    fontSize: 12,
     marginLeft: 4,
   },
   followButton: {
@@ -704,7 +722,7 @@ const ClipItemStyles = StyleSheet.create({
   profileContainer: {
     marginBottom: 20,
     alignItems: 'center',
-    borderRadius: '50%',
+    borderRadius: '50%', backgroundColor: '#ccc',
   },
   profileImage: {
     width: 45,
@@ -755,18 +773,20 @@ const ClipItemStyles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    transform: [{translateX: -9}, {translateY: -9}],
+    transform: [{ translateX: -9 }, { translateY: -9 }],
   },
 });
 
+
+
 const NotificationScreenStyles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#fff'},
+  container: { flex: 1, backgroundColor: '#fff' },
   dotNotification: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#ff0000',
-    alignSelf: 'flex-end',
+    backgroundColor: SecondaryColor,
+    alignSelf: 'flex-end', position: 'absolute', bottom: 0, left: 0
   },
   notificationList: {
     paddingVertical: 10,
@@ -805,10 +825,10 @@ const NotificationScreenStyles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#1DA1F2',
+    borderColor: SecondaryColor,
   },
   followButtonText: {
-    color: '#1DA1F2',
+    color: SecondaryColor,
     fontSize: 14,
   },
   videoThumbnail: {
@@ -838,7 +858,7 @@ const NotificationScreenStyles = StyleSheet.create({
 });
 
 const MainExploreScreenStyle = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#fff'},
+  container: { flex: 1, backgroundColor: '#fff' },
   searchInput: {
     margin: 16,
   },
@@ -846,7 +866,7 @@ const MainExploreScreenStyle = StyleSheet.create({
     paddingTop: 90,
     paddingBottom: 20,
   },
-  searchHeaderText: {color: '#666'},
+  searchHeaderText: { color: '#666' },
   searchHeaderTextContainer: {
     padding: 5,
     borderRadius: '40%',
@@ -871,7 +891,7 @@ const MainExploreScreenStyle = StyleSheet.create({
     paddingHorizontal: 16,
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     backgroundColor: '#fff',

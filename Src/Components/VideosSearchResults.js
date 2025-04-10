@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useImperativeHandle, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useImperativeHandle, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -12,10 +12,10 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../Services/api/apiInterceptor';
-import {useDebounce} from '../Services/Hooks/useDebounce';
-import {formatNumber, storage} from './CommonData';
+import { useDebounce } from '../Services/Hooks/useDebounce';
+import { formatNumber, storage } from './CommonData';
 
-const VideoCard = ({item, handleProfileNavigate, cardWidth, navigation}) => {
+const VideoCard = ({ item, handleProfileNavigate, cardWidth, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -25,15 +25,15 @@ const VideoCard = ({item, handleProfileNavigate, cardWidth, navigation}) => {
     if (profile.username === item.username) {
       navigation.navigate('Profile');
     } else {
-      navigation.navigate('OtherProfileScreen', {username: item.username});
+      navigation.navigate('OtherProfileScreen', { username: item.username });
     }
   };
   return (
     <TouchableOpacity
       onPress={() => handleProfileNavigate(item)}
-      style={[styles.cardContainer, {width: cardWidth}]}>
+      style={[styles.cardContainer, { width: cardWidth }]}>
       <Image
-        source={{uri: item.thumbnail}}
+        source={{ uri: item.thumbnail }}
         style={styles.thumbnail}
         resizeMode="cover"
         onLoadStart={() => {
@@ -60,7 +60,7 @@ const VideoCard = ({item, handleProfileNavigate, cardWidth, navigation}) => {
           handlePressOfProfile(item);
         }}
         style={styles.profilePicContainer}>
-        <Image source={{uri: item.profilePic}} style={styles.profilePic} />
+        <Image source={item.profilePic ? { uri: item.profilePic } : require("../../assets/images/emptyAvatar.png")} style={styles.profilePic} />
       </TouchableOpacity>
 
       <View style={styles.overlayContainer} />
@@ -90,10 +90,10 @@ const VideoCard = ({item, handleProfileNavigate, cardWidth, navigation}) => {
 };
 
 const VideosSearchResults = React.forwardRef(
-  ({searchVal, loading, setLoading}, ref) => {
+  ({ searchVal, loading, setLoading }, ref) => {
     const [videos, setVideos] = useState([]);
     const navigation = useNavigation();
-    const {width: deviceWidth} = useWindowDimensions();
+    const { width: deviceWidth } = useWindowDimensions();
 
     const cardMinWidth = 175;
     const numColumns =
@@ -117,9 +117,9 @@ const VideosSearchResults = React.forwardRef(
       }
     };
 
+
     useEffect(() => {
-      if (debouncedSearchVal.length === 0) return;
-      fetchVideos();
+      debouncedSearchVal.length === 0 ? setVideos([]) : fetchVideos();
     }, [debouncedSearchVal]);
 
     useImperativeHandle(ref, () => ({
@@ -129,7 +129,7 @@ const VideosSearchResults = React.forwardRef(
     }));
 
     const handleProfileNavigate = item => {
-      navigation.navigate('VideoDetail', {videoId: item.videoId});
+      navigation.navigate('VideoDetail', { videoId: item.videoId });
     };
 
     return (
@@ -141,8 +141,8 @@ const VideosSearchResults = React.forwardRef(
             nestedScrollEnabled={true}
             scrollEnabled={false}
             key={numColumns}
-            renderItem={({item}) => (
-              <View style={{margin: margin}}>
+            renderItem={({ item }) => (
+              <View style={{ margin: margin }}>
                 <VideoCard
                   item={item}
                   handleProfileNavigate={handleProfileNavigate}
@@ -151,7 +151,7 @@ const VideosSearchResults = React.forwardRef(
                 />
               </View>
             )}
-            contentContainerStyle={{paddingVertical: 20}}
+            contentContainerStyle={{ paddingVertical: 20 }}
             keyExtractor={item => item.id}
           />
         )}
@@ -164,7 +164,7 @@ const VideosSearchResults = React.forwardRef(
             }}>
             <Text>
               Sorry, No videos were found for "
-              <Text style={{fontWeight: 'bold'}}>{debouncedSearchVal}</Text>".
+              <Text style={{ fontWeight: 'bold' }}>{debouncedSearchVal}</Text>".
             </Text>
           </View>
         )}
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   profilePic: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 20, backgroundColor: '#ccc',
   },
   infoContainer: {
     position: 'absolute',

@@ -1,6 +1,6 @@
 import NetInfo from '@react-native-community/netinfo';
-import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Animated,
   FlatList,
@@ -12,20 +12,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {createThumbnail} from 'react-native-create-thumbnail';
-import {RefreshControl} from 'react-native-gesture-handler';
+import { createThumbnail } from 'react-native-create-thumbnail';
+import { RefreshControl } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AlertBox from '../../Components/AlertMessage';
-import {formatNumber} from '../../Components/CommonData';
+import { formatNumber } from '../../Components/CommonData';
 import CustomHeader from '../../Components/CustomHeader';
 import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
-import {ProfileScreenstyles as styles} from '../../Components/Styles/Styles';
+import { ProfileScreenstyles as styles } from '../../Components/Styles/Styles';
 import apiClient from '../../Services/api/apiInterceptor';
+import { NavigationContext } from '../../Services/Hooks/NavigationProvider';
+import Video from 'react-native-video';
 
-const ReelItem = ({item}) => {
+const ReelItem = ({ item }) => {
   const [thumbnail, setThumbnail] = useState(null);
   useEffect(() => {
     if (item?.videoUrl) {
@@ -44,13 +46,13 @@ const ReelItem = ({item}) => {
   return (
     <TouchableOpacity style={styles.gridItem}>
       {item.thumbnail && (
-        <Image source={{uri: item.thumbnail}} style={styles.gridImage} />
+        <Image source={{ uri: item.thumbnail }} style={styles.gridImage} />
       )}
       {item.thumbnail === null &&
         (thumbnail ? (
-          <Image source={{uri: thumbnail}} style={styles.gridImage} />
+          <Image source={{ uri: thumbnail }} style={styles.gridImage} />
         ) : (
-          <View style={[styles.gridImage, {backgroundColor: 'grey'}]} />
+          <View style={[styles.gridImage, { backgroundColor: 'grey' }]} />
         ))}
       <View style={styles.playButton}>
         <FontAwesome name="play" size={24} color="white" />
@@ -61,23 +63,23 @@ const ReelItem = ({item}) => {
 
 const Profile = () => {
   const [selectedTab, setSelectedTab] = useState('reels');
+  const { mediaKey, setMediaKey } = useContext(NavigationContext);
   const [profile, setProfileData] = useState(null);
   const [isConnected, setIsConnected] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const spinAnim = useState(new Animated.Value(0))[0];
-  const [mediaKey, setMediaKey] = useState(0);
   const navigation = useNavigation();
   const [isMessage, setIsMessage] = useState({
     message: '',
     heading: '',
     isRight: false,
     rightButtonText: 'OK',
-    triggerFunction: () => {},
-    setShowAlert: () => {},
+    triggerFunction: () => { },
+    setShowAlert: () => { },
     showAlert: false,
   });
   const closeAlert = () => {
-    setIsMessage(prev => ({...prev, showAlert: false}));
+    setIsMessage(prev => ({ ...prev, showAlert: false }));
   };
   useEffect(() => {
     Animated.loop(
@@ -97,15 +99,15 @@ const Profile = () => {
     if (selectedTab === 'reels') {
       return profile?.videos
         ? [...profile.videos].sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-          )
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+        )
         : [];
     } else if (selectedTab === 'likes') {
       return profile?.likedVideos
         ? [...profile.likedVideos].sort(
-            (a, b) =>
-              new Date(b.likes?.[0]?.likedAt) - new Date(a.likes?.[0]?.likedAt),
-          )
+          (a, b) =>
+            new Date(b.likes?.[0]?.likedAt) - new Date(a.likes?.[0]?.likedAt),
+        )
         : [];
     }
     return [];
@@ -125,7 +127,7 @@ const Profile = () => {
           heading: 'Error',
           isRight: false,
           rightButtonText: 'OK',
-          triggerFunction: () => {},
+          triggerFunction: () => { },
           setShowAlert: () => {
             isMessage.setShowAlert(false);
           },
@@ -146,7 +148,7 @@ const Profile = () => {
     return () => unsubscribe();
   }, []);
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     return <ReelItem item={item} />;
   };
   return (
@@ -169,14 +171,14 @@ const Profile = () => {
         isLeftIcon={true}
         leftIcon={<FontAwesome5 name="user-edit" size={20} color="black" />}
         leftIconFunction={() => {
-          navigation.navigate('EditProfile', {profileData: profile});
+          navigation.navigate('EditProfile', { profileData: profile });
         }}
         rightIcon={<Ionicons name="menu" size={25} color="black" />}
         rightIconFunction={() => {
           navigation.navigate('ProfileMenu');
         }}
         headerTitle={profile?.username}
-        style={{borderBottomWidth: 1, borderBottomColor: '#ddd', height: 50}}
+        style={{ borderBottomWidth: 1, borderBottomColor: '#ddd', height: 50 }}
       />
       <ScrollView
         style={styles.container}
@@ -195,17 +197,17 @@ const Profile = () => {
             <View style={styles.avatarContainer}>
               {profile?.profilePic ? (
                 <Image
-                  source={{uri: profile?.profilePic}}
+                  source={{ uri: profile?.profilePic }}
                   style={styles.avatar}
                 />
               ) : (
                 <Image
                   source={require('../../../assets/images/emptyAvatar.png')}
-                  style={[styles.avatar, {backgroundColor: '#ddd'}]}
+                  style={[styles.avatar, { backgroundColor: '#ddd' }]}
                 />
               )}
               <Animated.View
-                style={[styles.streakBorder, {transform: [{rotate: spin}]}]}
+                style={[styles.streakBorder, { transform: [{ rotate: spin }] }]}
               />
             </View>
             <View style={styles.statsContainer}>
@@ -239,7 +241,7 @@ const Profile = () => {
                   <Animated.View
                     style={[
                       styles.streakProgress,
-                      {transform: [{rotate: spin}]},
+                      { transform: [{ rotate: spin }] },
                     ]}
                   />
                 </View>
@@ -255,7 +257,7 @@ const Profile = () => {
             <Text
               onPress={() => {
                 if (profile?.bio === null) {
-                  navigation.navigate('EditProfile', {profileData: profile});
+                  navigation.navigate('EditProfile', { profileData: profile });
                 }
               }}
               style={styles.bio}>
@@ -273,7 +275,7 @@ const Profile = () => {
                 style={styles.location}
                 onPress={() => {
                   if (profile?.location === null) {
-                    navigation.navigate('EditProfile', {profileData: profile});
+                    navigation.navigate('EditProfile', { profileData: profile });
                   } else {
                     // Encode the bio text to safely include it in a URL
                     const query = encodeURIComponent(profile.bio);
@@ -291,7 +293,7 @@ const Profile = () => {
                         heading: 'Error',
                         isRight: false,
                         rightButtonText: 'OK',
-                        triggerFunction: () => {},
+                        triggerFunction: () => { },
                         setShowAlert: () => {
                           isMessage.setShowAlert(false);
                         },
@@ -309,7 +311,7 @@ const Profile = () => {
         </View>
 
         <View style={styles.tabsContainer}>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             {['reels', 'likes'].map(tab => (
               <TouchableOpacity
                 key={tab}
@@ -341,7 +343,7 @@ const Profile = () => {
           showsVerticalScrollIndicator={false}
           extraData={mediaKey}
           scrollEnabled={false}
-          contentContainerStyle={{paddingBottom: 50}}
+          contentContainerStyle={{ paddingBottom: 50 }}
         />
       </ScrollView>
     </>

@@ -1,24 +1,25 @@
-import React, {useContext, useEffect, useState, useCallback} from 'react';
-import {Image, View} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { Image, View } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 
 import AlertBox from '../Components/AlertMessage';
-import {PrimaryColor, storage} from '../Components/CommonData';
+import { PrimaryColor, storage } from '../Components/CommonData';
 import CustomAddPostButton from '../Components/CustomAddPostButton';
 import UploadProgressBar from '../Components/UploadProgressModal';
 
-import {ExploreLayout} from '../Screens/Explore/ExploreLayout';
+import { ExploreLayout } from '../Screens/Explore/ExploreLayout';
 import AddPost from '../Screens/Home/AddPost';
 import ClipVideo from '../Screens/Home/ClipVideo';
 import NotificationScreen from '../Screens/Home/NotificationScreen';
 import Profile from '../Screens/Home/Profile';
 
 import apiClient from '../Services/api/apiInterceptor';
-import {NavigationContext} from '../Services/Hooks/NavigationProvider';
+import { NavigationContext } from '../Services/Hooks/NavigationProvider';
+import { MessagesOutsideStyles } from '../Components/Styles/Styles';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,7 +31,7 @@ export default function BottomStack() {
     setUploadProgress,
     isMessage,
     setIsMessage,
-    currentIndex,
+    currentIndex, mediaKey,
     setCurrentIndex,
   } = useContext(NavigationContext);
 
@@ -46,10 +47,10 @@ export default function BottomStack() {
       }
     };
     fetchProfile();
-  }, []);
+  }, [mediaKey]);
 
   const closeAlert = () => {
-    setIsMessage(prev => ({...prev, showAlert: false}));
+    setIsMessage(prev => ({ ...prev, showAlert: false }));
   };
 
   const renderIcon = useCallback(
@@ -58,7 +59,7 @@ export default function BottomStack() {
 
       switch (routeName) {
         case 'Home':
-          return <AntDesign name="home" size={size} color={iconColor} />;
+          return <AntDesign name="home" size={22} color={iconColor} />;
         case 'Explore':
           return (
             <Icon
@@ -78,7 +79,7 @@ export default function BottomStack() {
         case 'Notification':
           return (
             <View>
-              <View
+              {false && <View
                 style={{
                   height: 8,
                   width: 8,
@@ -89,15 +90,15 @@ export default function BottomStack() {
                   top: 0,
                   zIndex: 999,
                 }}
-              />
+              />}
               <Entypo name="notification" size={22} color={iconColor} />
             </View>
           );
         case 'Profile':
           return profilePicture ? (
-            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               <Image
-                source={{uri: profilePicture}}
+                source={{ uri: profilePicture }}
                 style={{
                   width: 24,
                   height: 24,
@@ -118,14 +119,14 @@ export default function BottomStack() {
   );
 
   const screenOptions = useCallback(
-    ({route}) => ({
-      tabBarIcon: ({focused, color, size}) =>
+    ({ route }) => ({
+      tabBarIcon: ({ focused, color, size }) =>
         renderIcon(route.name, focused, color, size),
       headerShown: false,
       tabBarActiveTintColor: PrimaryColor,
       tabBarInactiveTintColor: 'gray',
       tabBarStyle: {
-        height: 60,
+        height: 55,
         paddingBottom: 5,
         backgroundColor: currentIndex === 0 ? '#151515' : '#fff',
       },
@@ -142,17 +143,17 @@ export default function BottomStack() {
         <Tab.Screen
           name="Home"
           component={ClipVideo}
-          listeners={{focus: () => setCurrentIndex(0)}}
+          listeners={{ focus: () => setCurrentIndex(0) }}
         />
         <Tab.Screen
           name="Explore"
           component={ExploreLayout}
-          listeners={{focus: () => setCurrentIndex(1)}}
+          listeners={{ focus: () => setCurrentIndex(1) }}
         />
         <Tab.Screen
           name="AddPost"
           component={AddPost}
-          options={({navigation}) => ({
+          options={({ navigation }) => ({
             tabBarIcon: () => null,
             tabBarLabel: () => null,
             tabBarButton: () => (
@@ -172,17 +173,17 @@ export default function BottomStack() {
               </View>
             ),
           })}
-          listeners={{focus: () => setCurrentIndex(2)}}
+          listeners={{ focus: () => setCurrentIndex(2) }}
         />
         <Tab.Screen
           name="Notification"
           component={NotificationScreen}
-          listeners={{focus: () => setCurrentIndex(3)}}
+          listeners={{ focus: () => setCurrentIndex(3) }}
         />
         <Tab.Screen
           name="Profile"
           component={Profile}
-          listeners={{focus: () => setCurrentIndex(4)}}
+          listeners={{ focus: () => setCurrentIndex(4) }}
         />
       </Tab.Navigator>
 

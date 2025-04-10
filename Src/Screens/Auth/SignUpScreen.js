@@ -1,5 +1,5 @@
-import {CommonActions, useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import { CommonActions, useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
   Alert,
   Dimensions,
@@ -12,14 +12,14 @@ import {
   Vibration,
   View,
 } from 'react-native';
-import {TouchableRipple} from 'react-native-paper';
+import { TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {AppName, PrimaryColor, storage} from '../../Components/CommonData';
+import { AppName, PrimaryColor, storage } from '../../Components/CommonData';
 import apiClient from '../../Services/api/apiInterceptor';
 import AlertBox from '../../Components/AlertMessage';
 import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const SignupScreen = () => {
   const navigation = useNavigation();
@@ -40,7 +40,7 @@ const SignupScreen = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{name: 'Signin'}],
+        routes: [{ name: 'Signin' }],
       }),
     );
   };
@@ -49,13 +49,13 @@ const SignupScreen = () => {
     heading: '',
     isRight: false,
     rightButtonText: 'OK',
-    triggerFunction: () => {},
-    setShowAlert: () => {},
+    triggerFunction: () => { },
+    setShowAlert: () => { },
     showAlert: false,
-    leftTriggerFunction: () => {},
+    leftTriggerFunction: () => { },
   });
   const closeAlert = () => {
-    setIsMessage(prev => ({...prev, showAlert: false}));
+    setIsMessage(prev => ({ ...prev, showAlert: false }));
   };
   const validateFields = () => {
     let valid = true;
@@ -102,7 +102,7 @@ const SignupScreen = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{name: 'BottomTabs'}],
+        routes: [{ name: 'BottomTabs' }],
       }),
     );
   };
@@ -145,7 +145,7 @@ const SignupScreen = () => {
           heading: 'Error',
           isRight: false,
           rightButtonText: 'OK',
-          triggerFunction: () => {},
+          triggerFunction: () => { },
           setShowAlert: () => {
             isMessage.setShowAlert(false);
           },
@@ -158,7 +158,7 @@ const SignupScreen = () => {
         heading: 'Error',
         isRight: false,
         rightButtonText: 'OK',
-        triggerFunction: () => {},
+        triggerFunction: () => { },
         setShowAlert: () => {
           isMessage.setShowAlert(false);
         },
@@ -199,7 +199,7 @@ const SignupScreen = () => {
       </View>
 
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Welcome To Nexus</Text>
+        <Text style={styles.title}>Welcome To {AppName}</Text>
         <Text style={styles.subText}>Create Account and Create Memories</Text>
 
         <TextInput
@@ -288,7 +288,7 @@ export default SignupScreen;
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#000',
     justifyContent: 'space-evenly',
     alignItems: 'center',
     paddingHorizontal: 20,
@@ -300,12 +300,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: PrimaryColor,
+    color: '#fff',
     marginBottom: 10,
   },
   subText: {
     fontSize: 16,
-    color: '#666',
+    color: '#ccc',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: PrimaryColor,
+    color: '#fff',
   },
   formContainer: {
     width: '100%',

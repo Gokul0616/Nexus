@@ -1,5 +1,5 @@
-import {CommonActions, useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import { CommonActions, useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -12,14 +12,14 @@ import {
   Vibration,
   Keyboard,
 } from 'react-native';
-import {TouchableRipple} from 'react-native-paper';
-import {AppName, PrimaryColor, storage} from '../../Components/CommonData';
+import { TouchableRipple } from 'react-native-paper';
+import { AppName, PrimaryColor, storage } from '../../Components/CommonData';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AlertBox from '../../Components/AlertMessage';
 import CustomLoadingIndicator from '../../Components/CustomLoadingIndicator';
 import apiClient from '../../Services/api/apiInterceptor';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const SignInScreen = () => {
   const navigation = useNavigation();
@@ -35,21 +35,21 @@ const SignInScreen = () => {
     heading: '',
     isRight: false,
     rightButtonText: 'OK',
-    triggerFunction: () => {},
-    setShowAlert: () => {},
+    triggerFunction: () => { },
+    setShowAlert: () => { },
     showAlert: false,
-    leftTriggerFunction: () => {},
+    leftTriggerFunction: () => { },
   });
 
   const closeAlert = () => {
-    setIsMessage(prev => ({...prev, showAlert: false}));
+    setIsMessage(prev => ({ ...prev, showAlert: false }));
   };
 
   const clearStackAndNavigate = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{name: 'Signup'}],
+        routes: [{ name: 'Signup' }],
       }),
     );
   };
@@ -72,7 +72,7 @@ const SignInScreen = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{name: 'BottomTabs'}],
+        routes: [{ name: 'BottomTabs' }],
       }),
     );
   };
@@ -138,7 +138,7 @@ const SignInScreen = () => {
           heading: 'Error',
           isRight: false,
           rightButtonText: 'OK',
-          triggerFunction: () => {},
+          triggerFunction: () => { },
           setShowAlert: () => {
             isMessage.setShowAlert(false);
           },
@@ -151,7 +151,7 @@ const SignInScreen = () => {
         heading: 'Error',
         isRight: false,
         rightButtonText: 'OK',
-        triggerFunction: () => {},
+        triggerFunction: () => { },
         setShowAlert: () => {
           isMessage.setShowAlert(false);
         },
@@ -261,7 +261,7 @@ export default SignInScreen;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: '#000',
     justifyContent: 'space-between',
     flexGrow: 1,
   },
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: PrimaryColor,
+    color: '#fff',
   },
   content: {
     flex: 1,
@@ -294,12 +294,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: PrimaryColor,
+    color: '#fff',
     marginBottom: 10,
   },
   subText: {
     fontSize: 16,
-    color: '#666',
+    color: '#ccc',
     textAlign: 'center',
     marginBottom: 20,
   },

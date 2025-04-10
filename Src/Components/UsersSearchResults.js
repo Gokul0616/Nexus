@@ -1,19 +1,19 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useImperativeHandle, useState} from 'react';
-import {FlatList, Image, Text, TouchableOpacity, View} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useImperativeHandle, useState } from 'react';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import apiClient from '../Services/api/apiInterceptor';
-import {useDebounce} from '../Services/Hooks/useDebounce';
-import {storage} from './CommonData';
+import { useDebounce } from '../Services/Hooks/useDebounce';
+import { storage } from './CommonData';
 
 const UsersSearchResults = React.forwardRef(
-  ({searchVal, loading, setLoading}, ref) => {
+  ({ searchVal, loading, setLoading }, ref) => {
     const [users, setUsers] = useState([]);
     const navigation = useNavigation();
     const debouncedSearchVal = useDebounce(searchVal, 500);
 
     const fetchUsers = async () => {
       if (searchVal.length === 0) return;
-
+      console.log("user")
       try {
         setLoading(true);
         const response = await apiClient.get(
@@ -28,8 +28,7 @@ const UsersSearchResults = React.forwardRef(
     };
 
     useEffect(() => {
-      if (debouncedSearchVal.length === 0) return;
-      fetchUsers();
+      debouncedSearchVal.length === 0 ? setUsers([]) : fetchUsers();
     }, [debouncedSearchVal]);
 
     useImperativeHandle(ref, () => ({
@@ -44,19 +43,19 @@ const UsersSearchResults = React.forwardRef(
       if (profile.username === item.username) {
         navigation.navigate('Profile');
       } else {
-        navigation.navigate('OtherProfileScreen', {username: item.username});
+        navigation.navigate('OtherProfileScreen', { username: item.username });
       }
     };
 
-    const renderItem = ({item}) => (
+    const renderItem = ({ item }) => (
       <TouchableOpacity
         onPress={() => handlePressOfProfile(item)}
-        style={{flexDirection: 'row', alignItems: 'center', padding: 10}}>
+        style={{ flexDirection: 'row', alignItems: 'center', padding: 10, }}>
         <Image
-          source={{uri: item.profilePic}}
-          style={{width: 50, height: 50, borderRadius: 25}}
+          source={item.profilePic ? { uri: item.profilePic } : require("../../assets/images/emptyAvatar.png")}
+          style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#ccc' }}
         />
-        <Text style={{marginLeft: 10}}>{item.username}</Text>
+        <Text style={{ marginLeft: 10 }}>{item.username}</Text>
       </TouchableOpacity>
     );
 
@@ -69,7 +68,7 @@ const UsersSearchResults = React.forwardRef(
             nestedScrollEnabled={true}
             renderItem={renderItem}
             keyExtractor={item => item.userId}
-            contentContainerStyle={{paddingVertical: 20}}
+            contentContainerStyle={{ paddingVertical: 20 }}
           />
         )}
         {users.length === 0 && debouncedSearchVal.length > 0 && (
@@ -81,7 +80,7 @@ const UsersSearchResults = React.forwardRef(
             }}>
             <Text>
               Sorry, No users were found for "
-              <Text style={{fontWeight: 'bold'}}>{debouncedSearchVal}</Text>".
+              <Text style={{ fontWeight: 'bold' }}>{debouncedSearchVal}</Text>".
             </Text>
           </View>
         )}

@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   Animated,
   Modal,
@@ -11,8 +11,8 @@ import {
   Keyboard,
 } from 'react-native';
 
-const CustomBottomSheet = ({modalVisible, setModalVisible, children}) => {
-  const {height: windowHeight} = useWindowDimensions();
+const CustomBottomSheet = ({ modalVisible, setModalVisible, children }) => {
+  const { height: windowHeight } = useWindowDimensions();
   const translateY = useRef(new Animated.Value(windowHeight)).current;
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
@@ -31,7 +31,7 @@ const CustomBottomSheet = ({modalVisible, setModalVisible, children}) => {
   }, []);
 
   const modalHeight = Math.min(
-    windowHeight * 0.75,
+    windowHeight * 0.35,
     windowHeight - keyboardHeight - 20,
   );
 
@@ -88,7 +88,7 @@ const CustomBottomSheet = ({modalVisible, setModalVisible, children}) => {
         <Animated.View
           style={[
             styles.bottomSheet,
-            {height: modalHeight, transform: [{translateY}]},
+            { height: modalHeight, transform: [{ translateY }] },
           ]}
           {...panResponder.panHandlers}>
           <View style={styles.handle} />

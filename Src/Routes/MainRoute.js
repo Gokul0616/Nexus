@@ -1,12 +1,12 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import EditProfile from '../Components/EditProfile';
 import FullscreenVideoplayer from '../Components/FullscreenVideoplayer';
 import OtherProfileScreen from '../Components/OtherProfile';
 import ProfileMenu from '../Components/ProfileMenu';
 import UploadScreen from '../Components/UploadScreen';
-import {WebScreen} from '../Components/WebView';
+import { WebScreen } from '../Components/WebView';
 import AddStories from '../Screens/AddStories/AddStories';
 import ForgotPassword from '../Screens/Auth/ForgetPassword/ForgotPassword';
 import LandingHome from '../Screens/Auth/LandingHome';
@@ -18,8 +18,10 @@ import NotificationScreen from '../Screens/Home/NotificationScreen';
 import MessageChatScreen from '../Screens/Messages/MessageChatScreen';
 import MessagesOutside from '../Screens/Messages/MessagesOutside';
 import BottomStack from './BottomStack';
-import {Linking} from 'react-native';
+import { Linking } from 'react-native';
 import SelectThumbnail from '../Components/SelctThumbnail';
+import AddPostCamera from '../Components/AddPostCamera';
+import Test from '../Components/Test';
 const Stack = createStackNavigator();
 
 export const MainStack = () => {
@@ -59,8 +61,9 @@ export const MainStack = () => {
         initialRouteName="LandingHome"
         screenOptions={{
           gestureEnabled: false,
+          animationEnabled: true,
           headerShown: false,
-          cardStyleInterpolator: ({current, next, inverted, layouts}) => {
+          cardStyleInterpolator: ({ current, next, inverted, layouts }) => {
             return {
               cardStyle: {
                 transform: [
@@ -93,11 +96,15 @@ export const MainStack = () => {
         />
         <Stack.Screen name="ChatScreen" component={MessageChatScreen} />
         <Stack.Screen name="WebScreen" component={WebScreen} />
-        <Stack.Screen name="AddPosts" component={AddPost} />
+        <Stack.Screen name="AddPosts" component={AddPostCamera} />
         <Stack.Screen name="UploadScreen" component={UploadScreen} />
         <Stack.Screen
           name="NotificationScreen"
           component={NotificationScreen}
+        />
+        <Stack.Screen
+          name="Test"
+          component={Test}
         />
         <Stack.Screen
           name="FullScreenVideoPlayer"

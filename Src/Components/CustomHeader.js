@@ -1,6 +1,6 @@
 import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {TouchableRipple} from 'react-native-paper';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const CustomHeader = ({
@@ -11,6 +11,7 @@ const CustomHeader = ({
   rightIconFunction,
   rightIcon,
   style,
+  iconColor,
   isLeftIcon = true,
 }) => {
   const handlePress = side => {
@@ -38,7 +39,7 @@ const CustomHeader = ({
           {leftIcon ? (
             leftIcon
           ) : (
-            <Icon name="chevron-back" size={28} color="#000" />
+            <Icon name="chevron-back" size={28} color={iconColor ? iconColor : "#000"} />
           )}
         </TouchableRipple>
       ) : (
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
     elevation: 5,
     borderBottomColor: '#ddd',

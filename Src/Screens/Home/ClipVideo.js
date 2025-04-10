@@ -1,6 +1,6 @@
 import NetInfo from '@react-native-community/netinfo';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import React, {
   useCallback,
   useContext,
@@ -18,22 +18,22 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ClipItem from '../../Components/ClipItem';
 import Comment from '../../Components/Comment';
-import {NavigationContext} from '../../Services/Hooks/NavigationProvider';
+import { NavigationContext } from '../../Services/Hooks/NavigationProvider';
 import apiClient from '../../Services/api/apiInterceptor';
 
 export default function ClipVideo() {
-  const {isConnected, setIsMessage, isMessage} = useContext(NavigationContext);
+  const { isConnected, setIsMessage, isMessage } = useContext(NavigationContext);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [commentVisible, setCommentVisible] = useState(false);
   const insets = useSafeAreaInsets();
-  const {width, height: windowHeight} = useWindowDimensions();
+  const { width, height: windowHeight } = useWindowDimensions();
   const [videoData, setVideoData] = useState([]);
-  const [likeDataOfUser, setLikeDataOfUser] = useState([]);
+  const [likeDataOfUser, setLikeDataOfUser] = useState([]); const [page, setPage] = useState(0);
   const [overlayVisible, setOverlayVisible] = useState(true);
   const [hasFullyWatched, setHasFullyWatched] = useState(false);
 
@@ -46,7 +46,7 @@ export default function ClipVideo() {
   const [loadingStates, setLoadingStates] = useState({});
   const [autoplayEnabled, setAutoplayEnabled] = useState(true);
 
-  const viewabilityConfig = useRef({viewAreaCoveragePercentThreshold: 50});
+  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 });
   const lastTapTimes = useRef({});
   const likeAnimations = useRef({});
   const previousVideoIdRef = useRef(null);
@@ -75,35 +75,50 @@ export default function ClipVideo() {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await apiClient.get('recommendation');
-        // const response = await apiClient.get('post/getRecommendation');
-
-        const data = response.data;
-        setVideoData(data);
-
-        const likedVideos = data
-          .filter(video => video.likedByCurrentUser)
-          .map(video => video.videoId);
-        setLikeDataOfUser(likedVideos);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setIsMessage({
-          message: error.response?.data?.message || 'Unable to load data',
-          heading: 'Error',
-          isRight: false,
-          rightButtonText: 'OK',
-          triggerFunction: () => {},
-          setShowAlert: () => {
-            isMessage.setShowAlert(false);
-          },
-          showAlert: true,
-        });
-      }
-    };
     fetchData();
   }, []);
+  const fetchData = async () => {
+    try {
+      const response = await apiClient.get('/recommendation', {
+        params: {
+          page: page,
+          limit: 30,
+          strategy: 'hybrid',
+        }
+      });
+
+
+
+      const data = response.data;
+      if (videoData.length === 0) {
+        setVideoData(data);
+      } else {
+        setVideoData((prev) => {
+          return [...prev, ...data];
+        });
+      }
+
+      const likedVideos = data
+        .filter(video => video.likedByCurrentUser)
+        .map(video => video.videoId);
+      setLikeDataOfUser(likedVideos);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setIsMessage({
+        message: error.response?.data?.message || 'Unable to load data',
+        heading: 'Error',
+        isRight: false,
+        rightButtonText: 'OK',
+        triggerFunction: () => { },
+        setShowAlert: () => {
+          isMessage.setShowAlert(false);
+        },
+        showAlert: true,
+      });
+    } finally {
+      loadingNextPage.current = false;
+    }
+  };
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       if (
@@ -118,7 +133,9 @@ export default function ClipVideo() {
     });
     return () => unsubscribe();
   }, []);
-  const onViewableItemsChanged = useCallback(({viewableItems}) => {
+  const loadingNextPage = useRef(false);
+
+  const onViewableItemsChanged = useCallback(({ viewableItems }) => {
     if (viewableItems.length > 0) {
       const visibleItem = viewableItems[0].item;
       const newVideoId = visibleItem.videoId;
@@ -132,14 +149,16 @@ export default function ClipVideo() {
 
       previousVideoIdRef.current = newVideoId;
       setCurrentVideoId(visibleItem.id);
+
+
     }
-  }, []);
+  }, [videoData, hasFullyWatched]);
   const handleTimeUpdate = (videoId, time) => {
     videoWatchTimes.current.set(videoId, time);
   };
 
   const viewabilityConfigCallbackPairs = useRef([
-    {viewabilityConfig: viewabilityConfig.current, onViewableItemsChanged},
+    { viewabilityConfig: viewabilityConfig.current, onViewableItemsChanged },
   ]);
 
   useEffect(() => {
@@ -152,11 +171,11 @@ export default function ClipVideo() {
   }, [currentVideoId]);
 
   const handleLoadStart = id => {
-    setLoadingStates(prev => ({...prev, [id]: true}));
+    setLoadingStates(prev => ({ ...prev, [id]: true }));
   };
 
   const handleLoad = id => {
-    setLoadingStates(prev => ({...prev, [id]: false}));
+    setLoadingStates(prev => ({ ...prev, [id]: false }));
   };
 
   const handleVideoPress = id => {
@@ -169,13 +188,12 @@ export default function ClipVideo() {
   };
   const likeIconRef = useRef(null);
   const [likeIconPos, setLikeIconPos] = useState({
-    x: 317.6666564941406,
-    y: 453.6666259765625,
+    x: 0, y: 0
   });
-  const animationTranslate = useRef(new Animated.ValueXY({x: 0, y: 0})).current;
+  const animationTranslate = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const animationScale = useRef(new Animated.Value(1)).current;
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
-  const screenCenter = {x: width / 2 - 40, y: windowHeight / 2 - 40}; // adjust icon size offset
+  const screenCenter = { x: width / 2 - 40, y: windowHeight / 2 - 40 };
   const animationOpacity = useRef(new Animated.Value(1)).current;
   const triggerLikeAnimation = destination => {
     setShowLikeAnimation(true);
@@ -199,7 +217,7 @@ export default function ClipVideo() {
       Animated.delay(400),
       Animated.parallel([
         Animated.timing(animationTranslate, {
-          toValue: {x: destination.x - 10, y: destination.y - 10},
+          toValue: { x: destination.x - 10, y: destination.y - 10 },
           duration: 400,
           easing: Easing.out(Easing.ease),
           useNativeDriver: true,
@@ -219,67 +237,36 @@ export default function ClipVideo() {
       ]),
     ]).start(() => {
       setShowLikeAnimation(false);
-      pulseLikeIcon();
+      pulseLikeIcon(destination.id);
     });
   };
 
-  // const triggerLikeAnimation = () => {
-  //   setShowLikeAnimation(true);
-  //   animationTranslate.setValue(screenCenter);
-  //   animationScale.setValue(1);
-  //   animationOpacity.setValue(1);
 
-  //   // Pulse before flying
-  //   Animated.sequence([
-  //     Animated.timing(animationScale, {
-  //       toValue: 1.3,
-  //       duration: 100,
-  //       easing: Easing.out(Easing.ease),
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.timing(animationScale, {
-  //       toValue: 1,
-  //       duration: 100,
-  //       easing: Easing.out(Easing.ease),
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.parallel([
-  //       Animated.timing(animationTranslate, {
-  //         toValue: {x: likeIconPos.x, y: likeIconPos.y},
-  //         duration: 400,
-  //         easing: Easing.out(Easing.ease),
-  //         useNativeDriver: true,
-  //       }),
-  //       Animated.timing(animationScale, {
-  //         toValue: 0.3,
-  //         duration: 400,
-  //         easing: Easing.out(Easing.ease),
-  //         useNativeDriver: true,
-  //       }),
-  //       Animated.timing(animationOpacity, {
-  //         toValue: 0,
-  //         duration: 300,
-  //         delay: 100,
-  //         useNativeDriver: true,
-  //       }),
-  //     ]),
-  //   ]).start(() => {
-  //     pulseLikeIcon();
-  //     setShowLikeAnimation(false);
-  //   });
-  // };
-  const measureLikeIconPosition = () => {
+  const measureLikeIconPosition = (id) => {
+
     if (likeIconRef.current) {
       likeIconRef.current.measureInWindow((x, y, width, height) => {
-        setLikeIconPos({x, y});
-        triggerLikeAnimation({x, y}); // pass position
+        setLikeIconPos({ x, y });
+        triggerLikeAnimation({ x, y, id });
       });
     }
   };
-  const pulseLikeIcon = () => {
+  useEffect(() => {
+    const interval = setInterval(() => {
+      likeIconRef.current?.measureInWindow((x, y, width, height) => {
+        if (x != null && y != null) {
+          setLikeIconPos({ x, y });
+          clearInterval(interval);
+        }
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+  const pulseLikeIcon = (id) => {
     Animated.sequence([
       Animated.timing(likeIconScale, {
-        toValue: 1.4,
+        toValue: 1.2,
         duration: 120,
         useNativeDriver: true,
       }),
@@ -288,8 +275,11 @@ export default function ClipVideo() {
         duration: 120,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]).start(() => {
+      delete likeAnimations.current[id];
+    });
   };
+
 
   const handleDoubleTap = (id, videoId) => {
     const now = Date.now();
@@ -301,7 +291,7 @@ export default function ClipVideo() {
       if (!likeAnimations.current[id]) {
         likeAnimations.current[id] = new Animated.Value(0);
       }
-      measureLikeIconPosition();
+      measureLikeIconPosition(id);
 
       addLike(videoId);
 
@@ -319,7 +309,7 @@ export default function ClipVideo() {
       prevData.map(video => {
         if (video.videoId === videoId && !video.likedByCurrentUser) {
           const currentLikes = video.likes || 0;
-          return {...video, likes: currentLikes + 1, likedByCurrentUser: true};
+          return { ...video, likes: currentLikes + 1, likedByCurrentUser: true };
         }
         return video;
       }),
@@ -328,14 +318,18 @@ export default function ClipVideo() {
     setLikeDataOfUser(prevData => [...prevData, videoId]);
 
     try {
-      await apiClient.post(`post/addLike`, {videoId});
+      await apiClient.post(`post/addLike`, { videoId });
     } catch (error) {
       console.log('Error adding like:', error);
     } finally {
       togglingLikes.current.delete(videoId);
     }
   };
-
+  useEffect(() => {
+    if (page > 0) {
+      fetchData();
+    }
+  }, [page])
   const removeLike = async videoId => {
     if (togglingLikes.current.has(videoId)) return;
     togglingLikes.current.add(videoId);
@@ -355,7 +349,7 @@ export default function ClipVideo() {
     );
 
     try {
-      await apiClient.post(`post/removeLike`, {videoId});
+      await apiClient.post(`post/removeLike`, { videoId });
     } catch (error) {
       console.log('Error removing like:', error);
     } finally {
@@ -368,8 +362,8 @@ export default function ClipVideo() {
         removeLike(videoId);
         return prevData.filter(id => id !== videoId);
       } else {
+        pulseLikeIcon(videoId);
         addLike(videoId);
-
         return [...prevData, videoId];
       }
     });
@@ -384,7 +378,7 @@ export default function ClipVideo() {
     }
   }, [isFocused]);
   const renderItem = useCallback(
-    ({item, index}) => {
+    ({ item, index }) => {
       const isPlaying =
         item.id === currentVideoId && isFocused && autoplayEnabled;
       return (
@@ -439,7 +433,7 @@ export default function ClipVideo() {
   return (
     <View style={styles.container}>
       {overlayVisible && (
-        <View style={[styles.headerContainer, {top: insets.top + 10}]}>
+        <View style={[styles.headerContainer, { top: insets.top + 10 }]}>
           <View>
             <Text style={[styles.headerText, styles.inactiveHeader]}>
               For You
@@ -467,6 +461,9 @@ export default function ClipVideo() {
         snapToInterval={availableHeight - tabBarHeight}
         snapToAlignment="start"
         initialNumToRender={3}
+        onEndReached={() => {
+          setPage(prev => prev + 1);
+        }}
         maxToRenderPerBatch={3}
         windowSize={5}
         removeClippedSubviews={false}
@@ -498,7 +495,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginHorizontal: 15,
   },
-  activeHeader: {borderBottomWidth: 0.5, borderBottomColor: '#fff'},
+  activeHeader: { borderBottomWidth: 0.5, borderBottomColor: '#fff' },
   inactiveHeader: {
     opacity: 0.6,
   },

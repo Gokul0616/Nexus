@@ -47,6 +47,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF004F',
     right: -OVERLAP_OFFSET,
   },
+  // leftTeal: {
+  //   backgroundColor: '#00F2EA',
+  //   left: -OVERLAP_OFFSET, // Shift to the left so it peeks out
+  // },
+  // rightPink: {
+  //   backgroundColor: '#FF004F',
+  //   right: -OVERLAP_OFFSET, // Shift to the right so it peeks out
+  // },
   centerShape: {
     position: 'absolute',
     width: BUTTON_WIDTH,

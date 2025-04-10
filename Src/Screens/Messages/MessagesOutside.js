@@ -4,7 +4,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   BackHandler,
   FlatList,
@@ -13,7 +13,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {TouchableRipple} from 'react-native-paper';
+import { TouchableRipple } from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
 import CustomHeader from '../../Components/CustomHeader';
 import {
@@ -24,8 +24,8 @@ import {
 import DynamicImage from '../../Components/DynamicImage';
 import NexusInput from '../../Components/NexusInput';
 import Notes from '../../Components/Notes';
-import {MessagesOutsideStyles as styles} from '../../Components/Styles/Styles';
-import {useChatInput} from '../../Services/Hooks/useChatInput';
+import { MessagesOutsideStyles as styles } from '../../Components/Styles/Styles';
+import { useChatInput } from '../../Services/Hooks/useChatInput';
 import CustomBottomSheet from '../../Components/CustomBottomSheet';
 
 const MessagesOutside = () => {
@@ -39,7 +39,7 @@ const MessagesOutside = () => {
   const [selectedNote, setSelectedNote] = useState(null);
   const [searchResults, setSearchResults] = useState(initialDummySearchResults);
   useEffect(() => {
-    navigation.setParams({swipeEnabled: !searchActive});
+    navigation.setParams({ swipeEnabled: !searchActive });
   }, [searchActive, navigation]);
 
   const naviBack = () => {
@@ -76,7 +76,7 @@ const MessagesOutside = () => {
     setSelectedNote(note);
     setNoteVisible(true);
   };
-  const {clearInputValue} = useChatInput();
+  const { clearInputValue } = useChatInput();
 
   const filteredResults = searchResults.filter(item =>
     item.name.toLowerCase().includes(searchVal.toLowerCase()),
@@ -90,7 +90,7 @@ const MessagesOutside = () => {
   const handleRemoveRecent = id => {
     setSearchResults(prevResults =>
       prevResults.map(item =>
-        item.id === id ? {...item, recent: false} : item,
+        item.id === id ? { ...item, recent: false } : item,
       ),
     );
   };
@@ -101,7 +101,7 @@ const MessagesOutside = () => {
         style={styles.messageContactsContainer}
         onPress={() => {
           clearInputValue();
-          navigation.navigate('ChatScreen', {receiverDetails: item});
+          navigation.navigate('ChatScreen', { receiverDetails: item });
         }}
         rippleColor="rgba(0, 0, 0, .15)">
         <>
@@ -137,7 +137,7 @@ const MessagesOutside = () => {
         showsVerticalScrollIndicator={false}
         windowSize={5}
         updateCellsBatchingPeriod={50}
-        contentContainerStyle={{paddingBottom: 60}}
+        contentContainerStyle={{ paddingBottom: 60 }}
         removeClippedSubviews={true}
         onEndReachedThreshold={0.5}
         ListHeaderComponent={() => {
@@ -154,7 +154,7 @@ const MessagesOutside = () => {
             </>
           );
         }}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return renderMessage(item);
         }}
       />
@@ -175,7 +175,7 @@ const MessagesOutside = () => {
           <NexusInput
             value={searchVal}
             onChangeText={setSearchVal}
-            style={{width: '90%', alignSelf: 'center'}}
+            style={{ width: '90%', alignSelf: 'center' }}
             autoFocus={true}
             placeholder="Search"
           />
@@ -183,9 +183,9 @@ const MessagesOutside = () => {
             data={displayResults}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{padding: 10}}
+            contentContainerStyle={{ padding: 10 }}
             keyExtractor={(item, index) => `${index}-${item.name}`}
-            renderItem={({item, index}) => (
+            renderItem={({ item, index }) => (
               <Pressable style={styles.searchResultsContainer}>
                 <View
                   style={{
@@ -215,8 +215,8 @@ const MessagesOutside = () => {
               </Pressable>
             )}
             ListEmptyComponent={() => (
-              <View style={{alignItems: 'center', marginTop: 20}}>
-                <Text style={{fontSize: 16, color: '#666'}}>
+              <View style={{ alignItems: 'center', marginTop: 20 }}>
+                <Text style={{ fontSize: 16, color: '#666' }}>
                   {searchVal.trim() === ''
                     ? 'Search for people'
                     : 'No results found'}

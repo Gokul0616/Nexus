@@ -1,9 +1,9 @@
-import React, {createContext, useEffect, useState} from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import Toast from 'react-native-simple-toast';
 export const NavigationContext = createContext();
 
-export const NavigationProvider = ({children}) => {
+export const NavigationProvider = ({ children }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeEnabled, setSwipeEnabled] = useState(true);
   const [topStackIndex, setTopStackIndex] = useState(true);
@@ -16,8 +16,8 @@ export const NavigationProvider = ({children}) => {
     heading: '',
     isRight: false,
     rightButtonText: 'OK',
-    triggerFunction: () => {},
-    setShowAlert: () => {},
+    triggerFunction: () => { },
+    setShowAlert: () => { },
     showAlert: false,
   });
   useEffect(() => {
@@ -45,6 +45,7 @@ export const NavigationProvider = ({children}) => {
         setTopStackIndex,
         isConnected,
         mediaKey,
+        setMediaKey,
         progressmodalVisible,
         setProgressmodalVisible,
         uploadProgress,

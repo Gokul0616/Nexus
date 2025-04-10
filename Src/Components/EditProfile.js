@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useRef, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useContext, useRef, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -9,18 +9,20 @@ import {
   Text,
   View,
 } from 'react-native';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {TouchableRipple} from 'react-native-paper';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { TouchableRipple } from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../Services/api/apiInterceptor';
 import AlertBox from './AlertMessage';
-import {fetchCityData} from './CommonData';
+import { fetchCityData } from './CommonData';
 import CustomHeader from './CustomHeader';
 import CustomLoadingIndicator from './CustomLoadingIndicator';
 import NexusInput from './NexusInput';
-const {height, width} = Dimensions.get('window');
-const EditProfile = ({route}) => {
-  const {profileData} = route.params;
+import { NavigationContext } from '../Services/Hooks/NavigationProvider';
+const { height, width } = Dimensions.get('window');
+const EditProfile = ({ route }) => {
+  const { profileData } = route.params;
+  const { setMediaKey } = useContext(NavigationContext);
   const navigation = useNavigation();
   const [name, setName] = useState(profileData?.fullName);
   const [username, setUsername] = useState(profileData?.username);
@@ -36,12 +38,12 @@ const EditProfile = ({route}) => {
     heading: '',
     isRight: false,
     rightButtonText: 'OK',
-    triggerFunction: () => {},
-    setShowAlert: () => {},
+    triggerFunction: () => { },
+    setShowAlert: () => { },
     showAlert: false,
   });
   const closeAlert = () => {
-    setIsMessage(prev => ({...prev, showAlert: false}));
+    setIsMessage(prev => ({ ...prev, showAlert: false }));
   };
   const handleSave = async profilePic => {
     try {
@@ -60,8 +62,10 @@ const EditProfile = ({route}) => {
           isRight: true,
           rightButtonText: 'OK',
           triggerFunction: () => {
-            isMessage.setShowAlert(false);
-
+            setIsMessage((prev) => ({
+              ...prev, showAlert: false
+            }))
+            setMediaKey(prev => prev + 1);
             navigation.goBack();
           },
           setShowAlert: () => {
@@ -77,7 +81,7 @@ const EditProfile = ({route}) => {
         heading: 'Error',
         isRight: false,
         rightButtonText: 'OK',
-        triggerFunction: () => {},
+        triggerFunction: () => { },
         setShowAlert: () => {
           isMessage.setShowAlert(false);
         },
@@ -149,7 +153,7 @@ const EditProfile = ({route}) => {
         heading: 'Error',
         isRight: false,
         rightButtonText: 'OK',
-        triggerFunction: () => {},
+        triggerFunction: () => { },
         setShowAlert: () => {
           isMessage.setShowAlert(false);
         },
@@ -203,7 +207,7 @@ const EditProfile = ({route}) => {
               setLocationPressed(false);
             }}
           />
-          <View style={{paddingHorizontal: 10, paddingVertical: 5}}>
+          <View style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
             <NexusInput
               style={styles.input}
               autofocus={locationPressed ? true : false}
@@ -213,14 +217,14 @@ const EditProfile = ({route}) => {
             />
           </View>
           {cityLoading && (
-            <CustomLoadingIndicator style={{borderColor: '#ccc'}} />
+            <CustomLoadingIndicator style={{ borderColor: '#ccc' }} />
           )}
           {cityResults.length > 0 && (
             <FlatList
               data={cityResults}
               keyExtractor={item => item.place_id.toString()}
               keyboardShouldPersistTaps="handled"
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <TouchableRipple
                   rippleColor={'rgb(0,0,0,0.5)'}
                   onPress={() => handleCitySelect(item)}>
@@ -255,10 +259,10 @@ const EditProfile = ({route}) => {
                     <Image
                       source={
                         profilePic
-                          ? {uri: profilePic}
-                          : {uri: profileData?.profilePic}
+                          ? { uri: profilePic }
+                          : { uri: profileData?.profilePic }
                       }
-                      style={[styles.avatar, {borderWidth: 0}]}
+                      style={[styles.avatar, { borderWidth: 0 }]}
                     />
                   ) : (
                     <Image
@@ -272,8 +276,8 @@ const EditProfile = ({route}) => {
                     style={[
                       styles.cameraIcon,
                       profileData?.profilePic
-                        ? {color: '#eee'}
-                        : {color: '#666'},
+                        ? { color: '#eee' }
+                        : { color: '#666' },
                     ]}
                     size={30}
                   />
@@ -293,7 +297,7 @@ const EditProfile = ({route}) => {
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Bio</Text>
               <NexusInput
-                style={[styles.input, {height: 80, textAlignVertical: 'top'}]}
+                style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
                 value={bio}
                 onChangeText={val => {
                   if (val.length <= 100) {
@@ -303,7 +307,7 @@ const EditProfile = ({route}) => {
                 placeholder="Tell us about yourself"
                 multiline
               />
-              <Text style={{alignSelf: 'flex-end'}}>
+              <Text style={{ alignSelf: 'flex-end' }}>
                 {bio?.length ? bio.length : 0}/100
               </Text>
             </View>

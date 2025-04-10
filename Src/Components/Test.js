@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,8 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import {storage} from './CommonData';
-import {tokens} from 'react-native-paper/lib/typescript/styles/themes/v3/tokens';
+import { storage } from './CommonData';
+import { tokens } from 'react-native-paper/lib/typescript/styles/themes/v3/tokens';
 
 const WebSocketExample = () => {
   const [ws, setWs] = useState(null);

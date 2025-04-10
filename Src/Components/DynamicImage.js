@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {Image, Dimensions, View, Text, StyleSheet} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Image, Dimensions, View, Text, StyleSheet } from 'react-native';
 import RNFS from 'react-native-fs';
 import md5 from 'md5';
 
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
 const DynamicImage = ({
   uri,
@@ -11,7 +11,7 @@ const DynamicImage = ({
   resizeMode = 'contain',
   item,
   isConnected,
-  setLoadingPosts,
+  setLoadingPosts, onError,
   ...props
 }) => {
   const [imgHeight, setImgHeight] = useState(screenWidth);
@@ -36,7 +36,7 @@ const DynamicImage = ({
         return;
       }
 
-      RNFS.downloadFile({fromUrl: uri, toFile: filePath})
+      RNFS.downloadFile({ fromUrl: uri, toFile: filePath })
         .promise.then(result => {
           if (result.statusCode === 200) {
             const localUri = `file://${filePath}`;
@@ -67,7 +67,7 @@ const DynamicImage = ({
           RNFS.stat(filePath)
             .then(stat => {
               const lastModified = new Date(stat.mtime).getTime();
-              fetch(uri, {method: 'HEAD'})
+              fetch(uri, { method: 'HEAD' })
                 .then(response => {
                   const remoteLastModified = new Date(
                     response.headers.get('Last-Modified'),
@@ -92,12 +92,17 @@ const DynamicImage = ({
       })
       .catch(() => updateImage());
   }, [uri, isConnected]);
+  useEffect(() => {
+    if (onError && errorMsg !== null) {
 
+      onError(errorMsg)
+    }
+  }, [errorMsg])
   if (errorMsg) {
     return (
       <View
         style={[
-          {width: screenWidth, height: imgHeight},
+          { width: screenWidth, height: imgHeight },
           style,
           styles.errorContainer,
         ]}>
@@ -106,24 +111,24 @@ const DynamicImage = ({
     );
   }
 
-  return (
+  return (<>
     <Image
-      source={{uri: cachedUri || uri}}
-      style={[{width: screenWidth, height: imgHeight}, style]}
+      source={{ uri: cachedUri || uri }}
+      style={[{ width: screenWidth, height: imgHeight }, style]}
       resizeMode={resizeMode}
       onLoadStart={() => {
         if (item) {
-          setLoadingPosts(prev => ({...prev, [item.id]: true}));
+          setLoadingPosts(prev => ({ ...prev, [item.id]: true }));
         }
       }}
       onLoadEnd={() => {
         if (item) {
-          setLoadingPosts(prev => ({...prev, [item.id]: false}));
+          setLoadingPosts(prev => ({ ...prev, [item.id]: false }));
         }
       }}
       {...props}
     />
-  );
+  </>);
 };
 
 const styles = StyleSheet.create({
