@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { FlatList, TouchableOpacity, View, Text } from "react-native";
+import { FlatList, TouchableOpacity, View, Text, Pressable } from "react-native";
 import DynamicImage from "./DynamicImage"; import AntDesign from "react-native-vector-icons/AntDesign";
 import { HomeScreenStyles as styles } from "./Styles/Styles";
 import { SecondaryColor, storage } from "./CommonData";
@@ -33,8 +33,7 @@ const RenderStories = ({
   gestureCaptured,
   onPress
 }) => {
-
-  const currentUser = JSON.parse(storage.getString("profile"));
+  const currentUser = JSON.parse(storage.getString('profile'));
 
 
   let newStories = [...stories];
@@ -63,7 +62,6 @@ const RenderStories = ({
 
   const sortedOtherStories = otherStories.sort(compareStories);
 
-
   const sortedStories = currentUserStory ? [currentUserStory, ...sortedOtherStories] : sortedOtherStories;
 
   const renderStoryItem = ({ item }) => {
@@ -73,26 +71,32 @@ const RenderStories = ({
       <TouchableOpacity
         style={styles.storyContainer}
         onPress={() => {
+
           onPress(item);
         }}
       >
         <View style={styles.avatarContainer}>
-          <DynamicImage
-            uri={item.avatar}
-            style={[
-              styles.storyAvatar,
-              (item.isCurrentUserPlaceholder && item.slides.length === 0) && { borderWidth: 0 },
-              !item.isCurrentUserPlaceholder && areAllSlidesViewed(item) && { borderColor: "#ccc" }
-            ]}
+          <View style={[{ borderWidth: 3, borderColor: SecondaryColor, borderRadius: 50, padding: 2 },
+          (item.isCurrentUserPlaceholder && item.slides.length === 0) && { borderColor: 'transparent' },
+          !item.isCurrentUserPlaceholder && areAllSlidesViewed(item) && { borderColor: "#ccc" }
+          ]}>
 
-            resizeMode="contain"
-            isConnected={isConnected}
-            item={item}
-            setLoadingPosts={setLoadingPosts}
-          />
+            <DynamicImage
+              uri={item.avatar}
+              style={[
+                styles.storyAvatar,
+
+              ]}
+
+              resizeMode="contain"
+              isConnected={isConnected}
+              item={item}
+              setLoadingPosts={setLoadingPosts}
+            />
+          </View>
           {showPlusIcon && (
-            <View style={styles.plusIconContainer}>
-              <AntDesign name="pluscircle" size={20} color={SecondaryColor} /></View>
+            <Pressable onPress={() => navigation.navigate("AddPosts")} style={styles.plusIconContainer}>
+              <AntDesign name="pluscircle" size={20} color={SecondaryColor} /></Pressable>
           )}
         </View>
         <Text style={styles.storyName} numberOfLines={1}>

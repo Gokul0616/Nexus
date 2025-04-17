@@ -9,6 +9,7 @@ import {
     StyleSheet,
     Text,
     TextInput,
+    TouchableWithoutFeedback,
     View,
 } from "react-native";
 import Video from "react-native-video";
@@ -36,11 +37,29 @@ export default function StoryViewer({ visible, story, onClose, onReply }) {
     const currentStory = stories[currentStoryIndex];
     const currentItem = currentStory?.slides?.[currentSlideIndex];
     const [isInputFocused, setIsInputFocused] = useState(false);
+    const [transformStyle, setTransformStyle] = useState({});
 
 
     useEffect(() => {
-        markSlideAsViewed(currentItem)
-    }, [currentItem])
+        markSlideAsViewed(currentItem);
+        try {
+            const placement = JSON.parse(currentItem?.placement || '{}');
+            const style = {
+                transform: [
+                    { translateX: placement.translateX || 0 },
+                    { translateY: placement.translateY || 0 },
+                    { scale: placement.scale > 0.8 ? 0.8 : placement.scale || 1 },
+                    { rotate: `${placement.rotation || 0}deg` }
+                ]
+            };
+            setTransformStyle(style);
+        } catch (err) {
+            console.warn("Failed to parse placement:", err);
+            setTransformStyle({});
+        }
+    }, [currentItem]);
+
+
     useEffect(() => {
 
         if (visible) {
@@ -79,13 +98,14 @@ export default function StoryViewer({ visible, story, onClose, onReply }) {
 
 
     const markSlideAsViewed = async (slideId) => {
+        const id = slideId.id
         try {
             const response = await apiClient.post("stories/view", {
-                storyId: slideId.id
+                storyId: id
             });
             slideId.viewed = true;
         } catch (err) {
-            console.log("Failed to mark story as viewed", err.response);
+            console.log("Failed to mark story as viewed", err);
         }
     };
 
@@ -253,11 +273,14 @@ export default function StoryViewer({ visible, story, onClose, onReply }) {
 
                     {/* Middle area: Story content */}
                     <View style={styles.content}>
+
                         {currentItem?.type === "video" ? (
                             <Video
                                 source={{ uri: currentItem?.uri }}
-                                style={styles.media}
+                                style={[styles.media, transformStyle]}
+                                useTextureView={true}
                                 resizeMode="contain"
+
                                 muted={false}
                                 repeat={false}
                                 paused={isInputFocused}
@@ -276,14 +299,14 @@ export default function StoryViewer({ visible, story, onClose, onReply }) {
                         ) : (
                             <Image
                                 source={{ uri: currentItem?.uri }}
-                                style={styles.media}
+                                style={[styles.media, transformStyle]}
                                 resizeMode="contain"
                                 onLoadStart={() => setIsLoading(true)}
                                 onLoadEnd={() => {
                                     setIsLoading(false);
                                     animateProgress(5000, true);
                                 }}
-
+                                pointerEvents="none"
                             />
                         )}
                     </View>
@@ -360,8 +383,8 @@ const styles = StyleSheet.create({
         paddingBottom: 50,
     },
     media: {
-        width: width,
-        height: height,
+        width: '100%',
+        height: '100%',
     },
     bottomArea: {
         position: "absolute",

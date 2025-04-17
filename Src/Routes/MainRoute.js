@@ -1,10 +1,13 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
+import { Linking } from 'react-native';
 import EditProfile from '../Components/EditProfile';
 import FullscreenVideoplayer from '../Components/FullscreenVideoplayer';
 import OtherProfileScreen from '../Components/OtherProfile';
 import ProfileMenu from '../Components/ProfileMenu';
+import SelectThumbnail from '../Components/SelctThumbnail';
+import Test from '../Components/Test';
 import UploadScreen from '../Components/UploadScreen';
 import { WebScreen } from '../Components/WebView';
 import AddStories from '../Screens/AddStories/AddStories';
@@ -13,15 +16,12 @@ import LandingHome from '../Screens/Auth/LandingHome';
 import LandingScreen from '../Screens/Auth/LandingScreen';
 import SignInScreen from '../Screens/Auth/SignInScreen';
 import SignUpScreen from '../Screens/Auth/SignUpScreen';
-import AddPost from '../Screens/Home/AddPost';
+import AddPostCamera from '../Screens/Home/AddPostCamera';
 import NotificationScreen from '../Screens/Home/NotificationScreen';
 import MessageChatScreen from '../Screens/Messages/MessageChatScreen';
 import MessagesOutside from '../Screens/Messages/MessagesOutside';
 import BottomStack from './BottomStack';
-import { Linking } from 'react-native';
-import SelectThumbnail from '../Components/SelctThumbnail';
-import AddPostCamera from '../Components/AddPostCamera';
-import Test from '../Components/Test';
+import ChatScreen from '../Components/Test/ChatScreen';
 const Stack = createStackNavigator();
 
 export const MainStack = () => {
@@ -106,6 +106,10 @@ export const MainStack = () => {
           name="Test"
           component={Test}
         />
+        {/* <Stack.Screen
+          name="Test"
+          component={ChatScreen}
+        /> */}
         <Stack.Screen
           name="FullScreenVideoPlayer"
           component={FullscreenVideoplayer}

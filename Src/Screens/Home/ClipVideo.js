@@ -246,7 +246,6 @@ export default function ClipVideo() {
 
     if (likeIconRef.current) {
       likeIconRef.current.measureInWindow((x, y, width, height) => {
-        setLikeIconPos({ x, y });
         triggerLikeAnimation({ x, y, id });
       });
     }

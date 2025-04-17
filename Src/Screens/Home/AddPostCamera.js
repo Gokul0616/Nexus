@@ -1,15 +1,14 @@
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Animated, BackHandler, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Camera, useCameraDevices } from 'react-native-vision-camera';
-import { launchImageLibrary } from 'react-native-image-picker';
-import AlertBox from './AlertMessage';
-import RecordButton from './RecordButton';
-import { FlatList } from 'react-native-gesture-handler';
-import StoryEditor from './StoryEditor';
-import { uploadStory } from './CommonData';
+import AlertBox from '../../Components/AlertMessage';
+import { uploadStory } from '../../Components/CommonData';
+import RecordButton from '../../Components/RecordButton';
+import StoryEditor from '../../Components/StoryEditor';
 
 const MAX_RECORDING_DURATION = 120;
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
@@ -334,10 +333,10 @@ const AddPostCamera = () => {
             { cancelable: true }
         );
     };
-    const handleSendStory = async (media) => {
-
+    const handleSendStory = async (media, transform) => {
+        transform.rotation = transform.rotation * (180 / Math.PI)
         try {
-            const result = await uploadStory(media); // selectedMedia from image picker
+            const result = await uploadStory(media, transform);
         } catch (e) {
             Alert.alert('Upload failed', e.message || 'Try again.');
         }
@@ -362,11 +361,11 @@ const AddPostCamera = () => {
                         onCancel={() => {
                             setEditorVisible(false);
                             if (videoRef.current) {
-                                videoRef.current.pause(); // Stop playback when component unmounts
+                                videoRef.current.pause();
                             }
                         }}
-                        onPost={(finalMedia) => {
-                            handleSendStory(finalMedia)
+                        onPost={(finalMedia, transform) => {
+                            handleSendStory(finalMedia, transform)
                             setPickedMedia(null)
                             setEditorVisible(false);
                         }}

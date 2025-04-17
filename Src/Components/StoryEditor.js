@@ -53,10 +53,11 @@ export default function StoryEditor({ media, onPost, onCancel, setMedia, videoRe
     const [draftText, setDraftText] = useState("");
     const [drawColor, setDrawColor] = useState("#FF0000"); const [realUrl, setRealUrl] = useState(null)
     const [textColor, setTextColor] = useState("#FFFFFF");
-    const editorRef = useRef(null); const [videoTransform, setVideoTransform] = useState({
+    const editorRef = useRef(null); const [transform, setTransform] = useState({
         scale: 1,
         translateX: 0,
         translateY: 0,
+        rotation: 0
     });
 
     const pan = useRef(new Animated.ValueXY()).current;
@@ -143,13 +144,12 @@ export default function StoryEditor({ media, onPost, onCancel, setMedia, videoRe
         })
     ).current;
     const handlePost = async () => {
-        const uri = await exportMedia(media, editorRef, videoTransform);
+        // const uri = await exportMedia(media, editorRef, transform);
         setMedia(null)
         if (videoRef.current) {
-            videoRef.current.pause(); // Stop playback when component unmounts
+            videoRef.current.pause();
         }
-        setRealUrl(uri);
-        onPost(uri);
+        onPost(media.uri, transform);
         setPaths([]);
         setTexts([]);
         setCurrentPath([]);
@@ -171,13 +171,15 @@ export default function StoryEditor({ media, onPost, onCancel, setMedia, videoRe
                     <DraggableMedia
                         source={{ uri: media.uri }}
                         type={"video"}
-                        onTransformChange={(transform) => setVideoTransform(transform)}
+                        onTransformChange={(transform) => setTransform(transform)}
                         ref={videoRef}
                     />
                 ) : (
                     <DraggableMedia
                         source={{ uri: media.uri }}
                         type={"image"}
+                        onTransformChange={(transform) => setTransform(transform)}
+
                     />
                 )}
 

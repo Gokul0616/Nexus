@@ -1,12 +1,9 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
-  Alert,
   FlatList,
   Image,
-  Platform,
   Text,
-  ToastAndroid,
   View
 } from 'react-native';
 import { TouchableRipple } from 'react-native-paper';
@@ -17,9 +14,10 @@ import { notificationsData } from '../../Components/DummyData';
 import RenderStories from '../../Components/Stories';
 import StoryViewer from '../../Components/StoryViewer';
 import { NotificationScreenStyles as styles } from '../../Components/Styles/Styles';
+import apiClient from '../../Services/api/apiInterceptor';
+import CustomToast from '../../Services/Hooks/Customtoast/CustomToast';
 import { NavigationContext } from '../../Services/Hooks/NavigationProvider';
 import useStoryWebSocket from '../../Services/Websocket/StoryWebsocket';
-import apiClient from '../../Services/api/apiInterceptor';
 const NotificationScreen = () => {
   const [loadingPosts, setLoadingPosts] = useState({});
   const { isConnected } = useContext(NavigationContext);
@@ -54,20 +52,7 @@ const NotificationScreen = () => {
         setStoryList(response.data);
       }
     } catch (error) {
-
-      Platform.OS === 'android' &&
-        ToastAndroid.show(
-          'Error fetching Stories',
-          ToastAndroid.SHORT,
-        );
-      Platform.OS === 'ios' &&
-        Alert.alert(
-          'Error',
-          'Error fetching stories',
-          [{ text: 'OK' }],
-          { cancelable: false },
-        );
-
+      CustomToast.show('Error fetching Stories', true);
     }
   }
   const handleNewStory = (newStory) => {
@@ -165,7 +150,8 @@ const NotificationScreen = () => {
         headerTitle={'Notifications'}
         rightIcon={renderMessageIcon()}
         rightIconFunction={() => {
-          navigation.navigate('Message');
+          navigation.navigate('Test');
+          // navigation.navigate('Message');
         }}
       />
       <FlatList
@@ -183,8 +169,8 @@ const NotificationScreen = () => {
               gestureCaptured={gestureCaptured}
               setGestureCaptured={setGestureCaptured}
               onPress={(item) => {
+                // setSelectedStory(storyList)
                 setSelectedStory(storyList.find(story => story.id === item.id));
-                console.log(item)
               }}
             />
             <View style={styles.activityHeaderContainer}>

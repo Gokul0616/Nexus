@@ -43,6 +43,7 @@ const ReelItem = ({ item }) => {
         });
     }
   }, [item]);
+
   return (
     <TouchableOpacity style={styles.gridItem}>
       {item.thumbnail && (

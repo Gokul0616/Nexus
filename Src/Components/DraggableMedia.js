@@ -139,6 +139,7 @@ const DraggableMedia = forwardRef(({ source, type, onTransformChange }, ref) => 
     const savedTranslationX = useSharedValue(0);
     const savedTranslationY = useSharedValue(0);
     const savedRotation = useSharedValue(0);
+    const radToDeg = (rad) => rad * (180 / Math.PI);
 
     const pinchGesture = Gesture.Pinch()
         .onUpdate((event) => {

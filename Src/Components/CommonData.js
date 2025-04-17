@@ -189,7 +189,7 @@ export const exportMedia = async (media, ref, transform) => {
 
   return null;
 };
-export const uploadStory = async (mediaUri) => {
+export const uploadStory = async (mediaUri, transform) => {
   if (!mediaUri) throw new Error('No media selected');
 
   const token = storage.getString('token');
@@ -205,11 +205,11 @@ export const uploadStory = async (mediaUri) => {
     name: fileName,
     type: mimeType,
   });
-
-  // 👇 Append userId as a separate field
   formData.append('userId', userId.toString());
+  formData.append('placement', JSON.stringify(transform));
 
 
+  console.log(formData)
   try {
     const response = await apiClient.post('stories', formData, {
       headers: {

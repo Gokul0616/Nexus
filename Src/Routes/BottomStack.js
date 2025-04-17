@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { Image, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { Image, View } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
-import Entypo from 'react-native-vector-icons/Entypo';
 
 import AlertBox from '../Components/AlertMessage';
 import { PrimaryColor, storage } from '../Components/CommonData';
@@ -12,15 +12,13 @@ import CustomAddPostButton from '../Components/CustomAddPostButton';
 import UploadProgressBar from '../Components/UploadProgressModal';
 
 import { ExploreLayout } from '../Screens/Explore/ExploreLayout';
-import AddPost from '../Screens/Home/AddPost';
 import ClipVideo from '../Screens/Home/ClipVideo';
 import NotificationScreen from '../Screens/Home/NotificationScreen';
 import Profile from '../Screens/Home/Profile';
 
+import AddPostCamera from '../Screens/Home/AddPostCamera';
 import apiClient from '../Services/api/apiInterceptor';
 import { NavigationContext } from '../Services/Hooks/NavigationProvider';
-import { MessagesOutsideStyles } from '../Components/Styles/Styles';
-
 const Tab = createBottomTabNavigator();
 
 export default function BottomStack() {
@@ -152,7 +150,7 @@ export default function BottomStack() {
         />
         <Tab.Screen
           name="AddPost"
-          component={AddPost}
+          component={AddPostCamera}
           options={({ navigation }) => ({
             tabBarIcon: () => null,
             tabBarLabel: () => null,

@@ -1,6 +1,7 @@
-import React, { createContext, useEffect, useState } from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import Toast from 'react-native-simple-toast';
+import React, { createContext, useEffect, useState } from 'react';
+import CustomToast from './Customtoast/CustomToast';
+
 export const NavigationContext = createContext();
 
 export const NavigationProvider = ({ children }) => {
@@ -20,6 +21,8 @@ export const NavigationProvider = ({ children }) => {
     setShowAlert: () => { },
     showAlert: false,
   });
+  const [hasLoaded, setHasLoaded] = useState(false);  // Track if app has been loaded
+
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
@@ -27,13 +30,22 @@ export const NavigationProvider = ({ children }) => {
     });
     return () => unsubscribe();
   }, []);
+
   useEffect(() => {
-    if (!isConnected) {
-      Toast.show('No Internet Connection');
+    // Skip showing the "Internet Recovered" toast on initial load
+    if (!hasLoaded) {
+      setHasLoaded(true);
+      return;
+    }
+
+    // Only show the "Internet Recovered" toast when the app is online after being offline
+    if (isConnected) {
+      CustomToast.show('Internet Recovered', true);
     } else {
-      Toast.show('Internet Recovered');
+      CustomToast.show('No Internet Connection', true);
     }
   }, [isConnected]);
+
   return (
     <NavigationContext.Provider
       value={{
