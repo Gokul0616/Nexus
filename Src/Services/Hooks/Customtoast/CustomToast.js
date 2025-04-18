@@ -5,7 +5,7 @@ export const setToastRef = (ref) => {
 };
 
 const CustomToast = {
-    show: (message, withIcon = false, duration = 2000) => {
+    show: (message, withIcon = false, duration = 1500) => {
         if (toastInstance) {
             toastInstance.show(message, withIcon, duration);
         } else {

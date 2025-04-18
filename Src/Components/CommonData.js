@@ -95,6 +95,7 @@ import { captureRef } from 'react-native-view-shot';
 import { FFmpegKit, FFprobeKit } from 'ffmpeg-kit-react-native';
 import RNFS from 'react-native-fs';
 import apiClient from '../Services/api/apiInterceptor';
+import CustomToast from '../Services/Hooks/Customtoast/CustomToast';
 
 /**
  * Exports media based on its type.
@@ -224,3 +225,12 @@ export const uploadStory = async (mediaUri, transform) => {
     throw error;
   }
 };
+export const saveFCMToken = (token) => {
+  apiClient.post("user/saveFcmToken", {
+    fcmToken: token
+  }).then(res => {
+    // console.log(res)
+  }).catch(err => {
+    CustomToast.show(err.response?.data?.error || "Unexpected error occurred while saving FCM token" || err?.message)
+  })
+}

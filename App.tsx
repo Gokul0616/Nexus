@@ -3,13 +3,14 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {PaperProvider} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MainStack} from './Src/Routes/MainRoute';
-import {NavigationProvider} from './Src/Services/Hooks/NavigationProvider';
-import {ChatInputProvider} from './Src/Services/Hooks/useChatInput';
+import {setToastRef} from './Src/Services/Hooks/Customtoast/CustomToast';
 import {
   ToastContext,
   ToastProvider,
 } from './Src/Services/Hooks/Customtoast/CustomToastContext';
-import {setToastRef} from './Src/Services/Hooks/Customtoast/CustomToast';
+import {NavigationProvider} from './Src/Services/Hooks/NavigationProvider';
+import {ChatInputProvider} from './Src/Services/Hooks/useChatInput';
+
 const ToastInitializer = () => {
   const toast = useContext(ToastContext);
 

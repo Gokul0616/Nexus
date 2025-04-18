@@ -34,11 +34,7 @@ const RenderStories = ({
   onPress
 }) => {
   const currentUser = JSON.parse(storage.getString('profile'));
-
-
   let newStories = [...stories];
-
-
   const currentUserStoryExists = stories.some(
     story => story.id === currentUser.userId || story.userId === currentUser.userId
   );
@@ -80,14 +76,11 @@ const RenderStories = ({
           (item.isCurrentUserPlaceholder && item.slides.length === 0) && { borderColor: 'transparent' },
           !item.isCurrentUserPlaceholder && areAllSlidesViewed(item) && { borderColor: "#ccc" }
           ]}>
-
             <DynamicImage
               uri={item.avatar}
               style={[
                 styles.storyAvatar,
-
               ]}
-
               resizeMode="contain"
               isConnected={isConnected}
               item={item}

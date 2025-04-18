@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 
 import AlertBox from '../Components/AlertMessage';
-import { PrimaryColor, storage } from '../Components/CommonData';
+import { PrimaryColor, saveFCMToken, storage } from '../Components/CommonData';
 import CustomAddPostButton from '../Components/CustomAddPostButton';
 import UploadProgressBar from '../Components/UploadProgressModal';
 
@@ -18,7 +18,9 @@ import Profile from '../Screens/Home/Profile';
 
 import AddPostCamera from '../Screens/Home/AddPostCamera';
 import apiClient from '../Services/api/apiInterceptor';
+import messaging from '@react-native-firebase/messaging';
 import { NavigationContext } from '../Services/Hooks/NavigationProvider';
+import CustomToast from '../Services/Hooks/Customtoast/CustomToast';
 const Tab = createBottomTabNavigator();
 
 export default function BottomStack() {
@@ -50,6 +52,51 @@ export default function BottomStack() {
   const closeAlert = () => {
     setIsMessage(prev => ({ ...prev, showAlert: false }));
   };
+
+  React.useEffect(() => {
+    const requestPermission = async () => {
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+      if (enabled) {
+        const token = await messaging().getToken();
+        if (token) {
+          saveFCMToken(token)
+        } else {
+          CustomToast.show('Failed to get FCM token');
+        }
+      }
+
+      messaging().setBackgroundMessageHandler(async remoteMessage => {
+        console.log('Message handled in the background!', remoteMessage);
+      });
+    };
+
+    requestPermission();
+
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      // CustomToast.show(
+      //   `${remoteMessage?.notification?.title} : ${remoteMessage?.notification?.body}`,
+      //   true,
+      // );
+      setIsMessage({
+        message:
+          remoteMessage?.notification?.body || 'You have new Notifications',
+        heading: remoteMessage?.notification?.title || 'New Notification',
+        isRight: false,
+        rightButtonText: 'OK',
+        triggerFunction: () => { },
+        setShowAlert: () => {
+          isMessage.setShowAlert(false);
+        },
+        showAlert: true,
+      });
+    });
+
+    return unsubscribe;
+  }, []);
 
   const renderIcon = useCallback(
     (routeName, focused, color, size) => {

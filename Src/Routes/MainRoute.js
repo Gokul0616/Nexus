@@ -21,7 +21,7 @@ import NotificationScreen from '../Screens/Home/NotificationScreen';
 import MessageChatScreen from '../Screens/Messages/MessageChatScreen';
 import MessagesOutside from '../Screens/Messages/MessagesOutside';
 import BottomStack from './BottomStack';
-import ChatScreen from '../Components/Test/ChatScreen';
+
 const Stack = createStackNavigator();
 
 export const MainStack = () => {
@@ -31,10 +31,7 @@ export const MainStack = () => {
     const checkInitialURL = async () => {
       try {
         const url = await Linking.getInitialURL();
-        console.log('Initial URL:', url);
         if (url) {
-          // Parse the URL to determine which route to use.
-          // Using the global URL object which is available in modern React Native versions.
           const parsedUrl = new URL(url);
           if (parsedUrl.pathname.includes('reset-password')) {
             setInitialRoute('ResetPassword');
@@ -54,7 +51,6 @@ export const MainStack = () => {
     checkInitialURL();
   }, []);
 
-  console.log(initialRoute);
   return (
     <NavigationContainer>
       <Stack.Navigator

@@ -70,8 +70,6 @@ const HomeScreenStyles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    // borderWidth: 3.5,
-    // borderColor: SecondaryColor,
   }, plusIconContainer: {
     position: "absolute",
     bottom: 2.5,

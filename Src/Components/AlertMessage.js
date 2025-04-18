@@ -1,12 +1,7 @@
-import React from 'react';
-import {
-  Dimensions,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, Modal, StyleSheet, Text, TouchableOpacity, View, Appearance, Keyboard } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 const AlertBox = ({
   heading,
@@ -19,6 +14,39 @@ const AlertBox = ({
   rightButtonText = 'OK',
   isLeft = true,
 }) => {
+  const [theme, setTheme] = useState(Appearance.getColorScheme());
+  const [backgroundColor, setBackgroundColor] = useState('white');
+  const [textColor, setTextColor] = useState('black');
+  const [messageColor, setMessageColor] = useState('grey');
+  const [buttonColor, setButtonColor] = useState('#007AFF');
+
+  useEffect(() => {
+    const colorSchemeListener = Appearance.addChangeListener(({ colorScheme }) => {
+      setTheme(colorScheme);
+    });
+
+    return () => colorSchemeListener.remove();
+  }, []);
+  useEffect(() => {
+    if (Keyboard.isVisible()) {
+      Keyboard.dismiss();
+    }
+  }, [])
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      setBackgroundColor('#333');
+      setTextColor('white');
+      setMessageColor('lightgrey');
+      setButtonColor('#00B0FF');
+    } else {
+      setBackgroundColor('white');
+      setTextColor('black');
+      setMessageColor('grey');
+      setButtonColor('#007AFF');
+    }
+  }, [theme]);
+
   if (!showAlert) return null;
 
   return (
@@ -28,25 +56,19 @@ const AlertBox = ({
       visible={showAlert}
       style={styles.modal}
       onRequestClose={() => setShowAlert(false)}>
-      <View style={styles.overlay}>
-        <View style={styles.alertContainer}>
-          {/* Heading */}
-          <Text style={styles.heading}>{heading}</Text>
+      <View style={[styles.overlay, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+        <View style={[styles.alertContainer, { backgroundColor }]}>
+          <Text style={[styles.heading, { color: textColor }]}>{heading}</Text>
           <View style={styles.spacing} />
-          {/* Message */}
-          <Text style={styles.message}>{message}</Text>
+          <Text style={[styles.message, { color: messageColor }]}>{message}</Text>
           <View style={styles.largeSpacing} />
           <View style={styles.divider} />
           <View style={styles.buttonRow}>
             {isRight && (
               <TouchableOpacity
                 onPress={triggerFunction}
-                style={[
-                  styles.button,
-                  styles.rightButton,
-                  isRight && {borderRightWidth: 0},
-                ]}>
-                <Text style={styles.buttonText}>{rightButtonText}</Text>
+                style={[styles.button, styles.rightButton, isRight && { borderRightWidth: 0 }]}>
+                <Text style={[styles.buttonText, { color: buttonColor }]}>{rightButtonText}</Text>
               </TouchableOpacity>
             )}
             {isLeft && (
@@ -58,7 +80,7 @@ const AlertBox = ({
                   }
                 }}
                 style={styles.button}>
-                <Text style={styles.buttonText}>Cancel</Text>
+                <Text style={[styles.buttonText, { color: buttonColor }]}>Cancel</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -68,11 +90,9 @@ const AlertBox = ({
   );
 };
 
-const {width} = Dimensions.get('window');
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -84,13 +104,11 @@ const styles = StyleSheet.create({
   alertContainer: {
     width: width * 0.75,
     padding: 20,
-    backgroundColor: 'white',
     borderRadius: 10,
   },
   heading: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'black',
     textAlign: 'center',
     fontFamily: 'Roboto-Medium',
   },
@@ -102,7 +120,6 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: 14,
-    color: 'grey',
     textAlign: 'center',
     fontFamily: 'Roboto-Medium',
   },
@@ -124,7 +141,6 @@ const styles = StyleSheet.create({
     borderRightColor: '#DDDDDD',
   },
   buttonText: {
-    color: '#007AFF',
     fontWeight: 'bold',
     fontSize: 16,
     fontFamily: 'Roboto-Medium',
@@ -132,39 +148,3 @@ const styles = StyleSheet.create({
 });
 
 export default AlertBox;
-
-//usage mandatory props
-//  const [isMessage, setIsMessage] = useState({
-//    message: '',
-//    heading: '',
-//    isRight: false,
-//    rightButtonText: 'OK',
-//    triggerFunction: () => {},
-//    setShowAlert: () => {},
-//    showAlert: false,
-//  });
-//  const closeAlert = () => {
-//    setIsMessage(prev => ({...prev, showAlert: false}));
-//  };
-
-// set values like this
-//  setIsMessage({
-//    message:"",
-//    heading: 'Alert',
-//    isRight: false,
-//    rightButtonText: 'OK',
-//    triggerFunction: () => {},
-//    setShowAlert: () => {
-//      isMessage.setShowAlert(false);
-//    },
-//    showAlert: true,
-//  });
-// <AlertBox
-//   heading={isMessage.heading}
-//   message={isMessage.message}
-//   setShowAlert={closeAlert}
-//   showAlert={isMessage.showAlert}
-//   triggerFunction={isMessage.triggerFunction}
-//   isRight={isMessage.isRight}
-//   rightButtonText={isMessage.rightButtonText}
-// />
