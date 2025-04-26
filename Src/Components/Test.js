@@ -8,6 +8,7 @@ import {
     View,
 } from 'react-native';
 import { storage } from './CommonData';
+import { wsUrl } from '../Services/api/EndPoint';
 
 const WebSocketExample = () => {
     const [ws, setWs] = useState(null);
@@ -18,7 +19,7 @@ const WebSocketExample = () => {
     useEffect(() => {
         const token = storage.getString('token');
         const socket = new WebSocket(
-            `ws://192.168.1.19:8080/api/v1/ws?token=${token}`,
+            `${wsUrl}ws?token=${token}`,
             null,
             {
                 headers: {
@@ -28,24 +29,14 @@ const WebSocketExample = () => {
         );
 
         socket.onopen = () => {
-            console.log('WebSocket connected');
             setChatLog(prev => [...prev, 'Connected to the server.']);
         };
 
-        socket.onmessage = e => {
-            console.log('Received: ', e.data);
-            setChatLog(prev => [...prev, `Server: ${e.data}`]);
-        };
+        socket.onmessage = e => { setChatLog(prev => [...prev, `Server: ${e.data}`]); };
 
-        socket.onerror = e => {
-            console.log('WebSocket error: ', e.message);
-            setChatLog(prev => [...prev, `Error: ${e.message}`]);
-        };
+        socket.onerror = e => { setChatLog(prev => [...prev, `Error: ${e.message}`]); };
 
-        socket.onclose = e => {
-            console.log('WebSocket closed: ', e.code, e.reason);
-            setChatLog(prev => [...prev, 'Disconnected from the server.']);
-        };
+        socket.onclose = e => { setChatLog(prev => [...prev, 'Disconnected from the server.']); };
 
         setWs(socket);
 
@@ -125,7 +116,9 @@ const WebSocketExample = () => {
                 onChangeText={handleInputChange}
                 placeholder="Type your message"
             />
-            <Button title="Send" onPress={sendMessage} />
+            <Button title="Send" onPress={() => {
+                sendMessage();
+            }} />
         </View>
     );
 };

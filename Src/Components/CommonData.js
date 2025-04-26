@@ -210,7 +210,7 @@ export const uploadStory = async (mediaUri, transform) => {
   formData.append('placement', JSON.stringify(transform));
 
 
-  console.log(formData)
+  console.log(formData);
   try {
     const response = await apiClient.post('stories', formData, {
       headers: {
@@ -231,6 +231,47 @@ export const saveFCMToken = (token) => {
   }).then(res => {
     // console.log(res)
   }).catch(err => {
-    CustomToast.show(err.response?.data?.error || "Unexpected error occurred while saving FCM token" || err?.message)
-  })
+    CustomToast.show(err.response?.data?.error || "Unexpected error occurred while saving FCM token" || err?.message);
+  });
+};
+/**
+ * Given an ISO timestamp, returns:
+ * - "Just now"            (< 60s)
+ * - "Xm" (e.g. "5m")      (< 60m)
+ * - "Xh" (e.g. "3h")      (< 24h)
+ * - "Xd" (e.g. "2d")      (< 7d)
+ * - "Mon D" (e.g. "Apr 8") (>= 7d)
+ *
+ * @param {string} isoTimestamp  ISO 8601 timestamp, e.g. "2025-04-25T10:41:47.829811"
+ * @returns {string}
+ */
+export function formatStoryTime(isoTimestamp) {
+  const now = new Date();
+  const then = new Date(isoTimestamp);
+  const diffMs = now - then;
+  const diffSec = Math.floor(diffMs / 1000);
+
+  if (diffSec < 60) {
+    return 'Just now';
+  }
+
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) {
+    return `${diffMin}m`;
+  }
+
+  const diffHrs = Math.floor(diffMin / 60);
+  if (diffHrs < 24) {
+    return `${diffHrs}h`;
+  }
+
+  const diffDays = Math.floor(diffHrs / 24);
+  if (diffDays < 7) {
+    return `${diffDays}d`;
+  }
+
+  // 7 days or more → show "Mon D"
+  // e.g. April 8 → "Apr 8"
+  const opts = { month: 'short', day: 'numeric' };
+  return then.toLocaleDateString(undefined, opts);
 }

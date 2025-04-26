@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { storage } from '../../Components/CommonData';
+import { wsUrl } from '../api/EndPoint';
 const useStoryWebSocket = (onNewStory) => {
     const socketRef = useRef(null);
 
     useEffect(() => {
         const token = storage.getString('token');
         const socket = new WebSocket(
-            `ws://192.168.1.19:8080/api/v1/ws?token=${token}`,
+            `${wsUrl}ws?token=${token}`,
             null,
             {
                 headers: {

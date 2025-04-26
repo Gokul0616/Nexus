@@ -45,18 +45,18 @@ const ReelItem = ({ item }) => {
   }, [item]);
 
   return (
-    <TouchableOpacity style={styles.gridItem}>
-      {item.thumbnail && (
-        <Image source={{ uri: item.thumbnail }} style={styles.gridImage} />
-      )}
-      {item.thumbnail === null &&
+    <TouchableOpacity style={ styles.gridItem }>
+      { item.thumbnail && (
+        <Image source={ { uri: item.thumbnail } } style={ styles.gridImage } />
+      ) }
+      { item.thumbnail === null &&
         (thumbnail ? (
-          <Image source={{ uri: thumbnail }} style={styles.gridImage} />
+          <Image source={ { uri: thumbnail } } style={ styles.gridImage } />
         ) : (
-          <View style={[styles.gridImage, { backgroundColor: 'grey' }]} />
-        ))}
-      <View style={styles.playButton}>
-        <FontAwesome name="play" size={24} color="white" />
+          <View style={ [styles.gridImage, { backgroundColor: 'grey' }] } />
+        )) }
+      <View style={ styles.playButton }>
+        <FontAwesome name="play" size={ 24 } color="white" />
       </View>
     </TouchableOpacity>
   );
@@ -150,119 +150,119 @@ const Profile = () => {
   }, []);
 
   const renderItem = ({ item }) => {
-    return <ReelItem item={item} />;
+    return <ReelItem item={ item } />;
   };
   return (
     <>
-      {isLoading && (
-        <View style={styles.loadingIndicator}>
+      { isLoading && (
+        <View style={ styles.loadingIndicator }>
           <CustomLoadingIndicator />
         </View>
-      )}
+      ) }
       <AlertBox
-        heading={isMessage.heading}
-        message={isMessage.message}
-        setShowAlert={closeAlert}
-        showAlert={isMessage.showAlert}
-        triggerFunction={isMessage.triggerFunction}
-        isRight={isMessage.isRight}
-        rightButtonText={isMessage.rightButtonText}
+        heading={ isMessage.heading }
+        message={ isMessage.message }
+        setShowAlert={ closeAlert }
+        showAlert={ isMessage.showAlert }
+        triggerFunction={ isMessage.triggerFunction }
+        isRight={ isMessage.isRight }
+        rightButtonText={ isMessage.rightButtonText }
       />
       <CustomHeader
-        isLeftIcon={true}
-        leftIcon={<FontAwesome5 name="user-edit" size={20} color="black" />}
-        leftIconFunction={() => {
+        isLeftIcon={ true }
+        leftIcon={ <FontAwesome5 name="user-edit" size={ 20 } color="black" /> }
+        leftIconFunction={ () => {
           navigation.navigate('EditProfile', { profileData: profile });
-        }}
-        rightIcon={<Ionicons name="menu" size={25} color="black" />}
-        rightIconFunction={() => {
+        } }
+        rightIcon={ <Ionicons name="menu" size={ 25 } color="black" /> }
+        rightIconFunction={ () => {
           navigation.navigate('ProfileMenu');
-        }}
-        headerTitle={profile?.username}
-        style={{ borderBottomWidth: 1, borderBottomColor: '#ddd', height: 50 }}
+        } }
+        headerTitle={ profile?.username }
+        style={ { borderBottomWidth: 1, borderBottomColor: '#ddd', height: 50 } }
       />
       <ScrollView
-        style={styles.container}
-        stickyHeaderIndices={[1]}
-        showsVerticalScrollIndicator={false}
+        style={ styles.container }
+        stickyHeaderIndices={ [1] }
+        showsVerticalScrollIndicator={ false }
         refreshControl={
           <RefreshControl
-            refreshing={isLoading}
-            onRefresh={() => {
+            refreshing={ isLoading }
+            onRefresh={ () => {
               setMediaKey(prev => prev + 1);
-            }}
+            } }
           />
         }>
         <View>
-          <View style={styles.header}>
-            <View style={styles.avatarContainer}>
-              {profile?.profilePic ? (
+          <View style={ styles.header }>
+            <View style={ styles.avatarContainer }>
+              { profile?.profilePic ? (
                 <Image
-                  source={{ uri: profile?.profilePic }}
-                  style={styles.avatar}
+                  source={ { uri: profile?.profilePic } }
+                  style={ styles.avatar }
                 />
               ) : (
                 <Image
-                  source={require('../../../assets/images/emptyAvatar.png')}
-                  style={[styles.avatar, { backgroundColor: '#ddd' }]}
+                  source={ require('../../../assets/images/emptyAvatar.png') }
+                  style={ [styles.avatar, { backgroundColor: '#ddd' }] }
                 />
-              )}
+              ) }
               <Animated.View
-                style={[styles.streakBorder, { transform: [{ rotate: spin }] }]}
+                style={ [styles.streakBorder, { transform: [{ rotate: spin }] }] }
               />
             </View>
-            <View style={styles.statsContainer}>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>
-                  {formatNumber(profile?.postCount ? profile?.postCount : 0)}
+            <View style={ styles.statsContainer }>
+              <View style={ styles.statItem }>
+                <Text style={ styles.statNumber }>
+                  { formatNumber(profile?.postCount ? profile?.postCount : 0) }
                 </Text>
-                <Text style={styles.statLabel}>Posts</Text>
+                <Text style={ styles.statLabel }>Posts</Text>
               </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>
-                  {formatNumber(
+              <View style={ styles.statItem }>
+                <Text style={ styles.statNumber }>
+                  { formatNumber(
                     profile?.followerCount ? profile?.followerCount : 0,
-                  )}
+                  ) }
                 </Text>
-                <Text style={styles.statLabel}>Followers</Text>
+                <Text style={ styles.statLabel }>Followers</Text>
               </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>
-                  {formatNumber(
+              <View style={ styles.statItem }>
+                <Text style={ styles.statNumber }>
+                  { formatNumber(
                     profile?.followingCount ? profile?.followingCount : 0,
-                  )}
+                  ) }
                 </Text>
-                <Text style={styles.statLabel}>Following</Text>
+                <Text style={ styles.statLabel }>Following</Text>
               </View>
-              <View style={styles.statItem}>
-                <View style={styles.streakCircle}>
-                  <Text style={styles.streakPercentage}>
-                    {profile?.streakPercentage}%
+              <View style={ styles.statItem }>
+                <View style={ styles.streakCircle }>
+                  <Text style={ styles.streakPercentage }>
+                    { profile?.streakPercentage }%
                   </Text>
                   <Animated.View
-                    style={[
+                    style={ [
                       styles.streakProgress,
                       { transform: [{ rotate: spin }] },
-                    ]}
+                    ] }
                   />
                 </View>
-                <Text style={styles.statLabel}>Streak</Text>
+                <Text style={ styles.statLabel }>Streak</Text>
               </View>
             </View>
           </View>
 
-          <View style={styles.infoContainer}>
-            <Text style={styles.name}>{profile?.fullName}</Text>
-            <Text style={styles.username}>@{profile?.username}</Text>
+          <View style={ styles.infoContainer }>
+            <Text style={ styles.name }>{ profile?.fullName }</Text>
+            <Text style={ styles.username }>@{ profile?.username }</Text>
 
             <Text
-              onPress={() => {
+              onPress={ () => {
                 if (profile?.bio === null) {
                   navigation.navigate('EditProfile', { profileData: profile });
                 }
-              }}
-              style={styles.bio}>
-              {profile?.bio ? profile.bio : 'Add Bio'}
+              } }
+              style={ styles.bio }>
+              { profile?.bio ? profile.bio : 'Add Bio' }
             </Text>
             {/* <TouchableOpacity
               onPress={() =>
@@ -270,11 +270,11 @@ const Profile = () => {
               }>
               <Text style={styles.website}>{profile.website}</Text>
             </TouchableOpacity> */}
-            <View style={styles.locationContainer}>
-              <MaterialIcons name="location-on" size={16} color="gray" />
+            <View style={ styles.locationContainer }>
+              <MaterialIcons name="location-on" size={ 16 } color="gray" />
               <Text
-                style={styles.location}
-                onPress={() => {
+                style={ styles.location }
+                onPress={ () => {
                   if (profile?.location === null) {
                     navigation.navigate('EditProfile', { profileData: profile });
                   } else {
@@ -302,49 +302,49 @@ const Profile = () => {
                       });
                     });
                   }
-                }}
+                } }
                 ellipsizeMode="tail"
-                numberOfLines={1}>
-                {profile?.location ? profile?.location : 'Add Location'}
+                numberOfLines={ 1 }>
+                { profile?.location ? profile?.location : 'Add Location' }
               </Text>
             </View>
           </View>
         </View>
 
-        <View style={styles.tabsContainer}>
-          <View style={{ flexDirection: 'row' }}>
-            {['reels', 'likes'].map(tab => (
+        <View style={ styles.tabsContainer }>
+          <View style={ { flexDirection: 'row' } }>
+            { ['reels', 'likes'].map(tab => (
               <TouchableOpacity
-                key={tab}
-                style={[styles.tab, selectedTab === tab && styles.activeTab]}
-                onPress={() => setSelectedTab(tab)}>
-                {tab === 'reels' ? (
+                key={ tab }
+                style={ [styles.tab, selectedTab === tab && styles.activeTab] }
+                onPress={ () => setSelectedTab(tab) }>
+                { tab === 'reels' ? (
                   <FontAwesome
                     name="film"
-                    size={24}
-                    color={selectedTab === tab ? 'black' : 'gray'}
+                    size={ 24 }
+                    color={ selectedTab === tab ? 'black' : 'gray' }
                   />
                 ) : (
                   <FontAwesome
                     name="heart"
-                    size={24}
-                    color={selectedTab === tab ? 'black' : 'gray'}
+                    size={ 24 }
+                    color={ selectedTab === tab ? 'black' : 'gray' }
                   />
-                )}
+                ) }
               </TouchableOpacity>
-            ))}
+            )) }
           </View>
         </View>
 
         <FlatList
-          data={renderContent()}
-          keyExtractor={item => item.id}
-          numColumns={3}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-          extraData={mediaKey}
-          scrollEnabled={false}
-          contentContainerStyle={{ paddingBottom: 50 }}
+          data={ renderContent() }
+          keyExtractor={ item => item.id }
+          numColumns={ 3 }
+          renderItem={ renderItem }
+          showsVerticalScrollIndicator={ false }
+          extraData={ mediaKey }
+          scrollEnabled={ false }
+          contentContainerStyle={ { paddingBottom: 50 } }
         />
       </ScrollView>
     </>

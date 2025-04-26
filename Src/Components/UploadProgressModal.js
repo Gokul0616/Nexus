@@ -1,125 +1,118 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, Animated, StyleSheet, Pressable} from 'react-native';
-import Modal from 'react-native-modal';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {PrimaryColor} from './CommonData';
+import React, { useState, useEffect, useRef } from 'react';
+import notifee, {
+  AndroidImportance,
+  EventType,
+  AuthorizationStatus
+} from '@notifee/react-native';
+import { Platform } from 'react-native';
 
-const UploadProgressBar = ({
-  visible,
-  setModalVisible,
-  progress,
-  setProgress,
-}) => {
-  const animatedWidth = useRef(new Animated.Value(visible ? 10 : 0)).current;
-  const startY = useRef(0);
-  const [uploadCompleted, setUploadCompleted] = useState(false);
-  const handleTouchStart = e => {
-    startY.current = e.nativeEvent.pageY;
-  };
-
-  const handleTouchMove = e => {
-    const currentY = e.nativeEvent.pageY;
-    const deltaY = currentY - startY.current;
-
-    if (deltaY < -30) {
-      setModalVisible(false);
-    }
-  };
+const UploadProgressNotification = ({ visible, progress, setProgress }) => {
+  const [channelId, setChannelId] = useState(null);
+  const [permissionStatus, setPermissionStatus] = useState(null);
+  const notificationTimeout = useRef(null);
+  const isMounted = useRef(false);
 
   useEffect(() => {
-    setUploadCompleted(false);
-    if (progress === 100) {
-      setTimeout(() => {
-        setUploadCompleted(true);
-      }, 1000);
-      setTimeout(() => {
-        setModalVisible(false);
-      }, 3000);
-      setTimeout(() => {
-        setProgress(0);
-      }, 5000);
-    }
-  }, [progress, setModalVisible]);
-  React.useEffect(() => {
-    if (visible) {
-      Animated.timing(animatedWidth, {
-        toValue: progress,
-        duration: 500,
-        useNativeDriver: false,
-      }).start();
-    }
-  }, [progress, visible]);
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
-  const widthInterpolated = animatedWidth.interpolate({
-    inputRange: [0, 100],
-    outputRange: ['0%', '100%'],
-    extrapolate: 'clamp',
-  });
+  useEffect(() => {
+    const setupNotifications = async () => {
+      try {
+        const settings = await notifee.requestPermission();
+        setPermissionStatus(settings.authorizationStatus);
 
-  return (
-    <Modal
-      isVisible={visible}
-      coverScreen={false}
-      hasBackdrop={false}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      style={styles.modal}
-      animationIn="slideInDown"
-      animationOut="slideOutUp">
-      <View style={styles.container}>
-        <View style={styles.header}>
-          {uploadCompleted ? (
-            <Text style={styles.text}>Upload Complete</Text>
-          ) : (
-            <Text style={styles.text}>Uploading 1 video... {progress}%</Text>
-          )}
-          <Pressable onPress={() => setModalVisible(false)}>
-            <Ionicons name="close" size={24} color={PrimaryColor} />
-          </Pressable>
-        </View>
-        <View style={styles.progressBar}>
-          <Animated.View
-            style={[styles.progressFill, {width: widthInterpolated}]}
-          />
-        </View>
-      </View>
-    </Modal>
-  );
+        if (settings.authorizationStatus !== AuthorizationStatus.AUTHORIZED) return;
+
+        if (Platform.OS === 'android') {
+          await notifee.deleteChannel('upload_progress');
+
+          const cid = await notifee.createChannel({
+            id: 'upload_progress_v2',
+            name: 'Upload Notifications',
+            importance: AndroidImportance.HIGH,
+            vibration: false,
+            lights: false,
+          });
+          setChannelId(cid);
+        }
+      } catch (error) {
+        console.error('Notification setup failed:', error);
+      }
+    };
+
+    setupNotifications();
+
+    return notifee.onForegroundEvent(({ type }) => {
+      if (type === EventType.PRESS) {
+        console.log('Notification pressed');
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (
+      !visible ||
+      progress < 0 ||
+      permissionStatus !== AuthorizationStatus.AUTHORIZED ||
+      !channelId
+    ) return;
+
+    const showNotification = async () => {
+      try {
+
+        await notifee.setNotificationCategories([
+          { id: 'upload_category', actions: [] }
+        ]);
+
+        await notifee.displayNotification({
+          id: 'upload',
+          title: progress < 100 ? 'Uploading Video' : 'Upload Complete!',
+          body: progress < 100
+            ? `${Math.round(progress)}% complete`
+            : 'Your video has been uploaded',
+          android: {
+            channelId,
+            smallIcon: 'ic_launcher',
+            ongoing: progress < 100,
+            progress: {
+              max: 100,
+              current: progress,
+              indeterminate: false,
+              onlyAlertOnce: true,
+            },
+            pressAction: { id: 'default' },
+            groupId: 'upload_group',
+            groupSummary: true,
+          },
+          ios: {
+            foregroundPresentationOptions: {
+              alert: true,
+              badge: true,
+              sound: false,
+            },
+          },
+        });
+
+      } catch (error) {
+        console.error('Failed to show notification:', error);
+      }
+    };
+
+    showNotification();
+
+    return () => {
+      clearTimeout(notificationTimeout.current);
+      if (progress < 100 && isMounted.current) {
+        notifee.cancelNotification('upload');
+      }
+    };
+  }, [visible, progress, channelId, permissionStatus, setProgress]);
+
+  return null;
 };
 
-const styles = StyleSheet.create({
-  modal: {
-    justifyContent: 'flex-start',
-    margin: 0,
-  },
-  container: {
-    marginTop: 50,
-    marginHorizontal: 20,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    elevation: 5,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-  progressBar: {
-    marginTop: 10,
-    height: 5,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: PrimaryColor,
-  },
-});
-
-export default UploadProgressBar;
+export default UploadProgressNotification;

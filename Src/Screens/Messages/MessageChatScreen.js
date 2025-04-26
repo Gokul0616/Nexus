@@ -47,32 +47,29 @@ const DraggableChatBubble = ({
       const dragX = -event.nativeEvent.translationX;
       const maxDrag = containerWidth.current * DRAG_PERCENTAGE;
       const triggerReply = containerWidth.current * REPLY_TRIGGER_PERCENTAGE;
-
       if (dragX > triggerReply) {
         onSwipeReply(item);
         Vibration.vibrate(100);
       }
-
       Animated.spring(translateX, {
         toValue: 0,
         useNativeDriver: true,
       }).start();
     }
   };
-
   return (
     <View
-      onLayout={event => {
+      onLayout={ event => {
         containerWidth.current = event.nativeEvent.layout.width;
-      }}>
+      } }>
       <PanGestureHandler
-        onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-        simultaneousHandlers={flatListRef}
-        activeOffsetX={[-10, 500]}
-        failOffsetX={[-500, 0]}>
-        <Animated.View style={[style, { transform: [{ translateX }] }]}>
-          {children}
+        onGestureEvent={ onGestureEvent }
+        onHandlerStateChange={ onHandlerStateChange }
+        simultaneousHandlers={ flatListRef }
+        activeOffsetX={ [-10, 500] }
+        failOffsetX={ [-500, 0] }>
+        <Animated.View style={ [style, { transform: [{ translateX }] }] }>
+          { children }
         </Animated.View>
       </PanGestureHandler>
     </View>
@@ -114,36 +111,36 @@ const MessageChatScreen = ({ route }) => {
 
   const Header = () => {
     return (
-      <View style={styles.headerContainer}>
+      <View style={ styles.headerContainer }>
         <TouchableRipple
-          borderless={true}
-          style={styles.iconContainer}
+          borderless={ true }
+          style={ styles.iconContainer }
           rippleColor="rgba(0, 0, 0, .15)"
-          onPress={() => {
+          onPress={ () => {
             navigation.goBack();
-          }}>
-          <Icon name="chevron-back" size={28} color="#000" />
+          } }>
+          <Icon name="chevron-back" size={ 28 } color="#000" />
         </TouchableRipple>
-        <View style={styles.headerTitleContainer}>
+        <View style={ styles.headerTitleContainer }>
           <View>
             <DynamicImage
-              style={styles.messageContactsAvatar}
-              uri={receiverDetails.avatar}
-              isConnected={isConnected}
+              style={ styles.messageContactsAvatar }
+              uri={ receiverDetails.avatar }
+              isConnected={ isConnected }
             />
-            {receiverDetails?.isOnline && <View style={styles.onlineStatus} />}
+            { receiverDetails?.isOnline && <View style={ styles.onlineStatus } /> }
           </View>
-          <Text style={styles.headerTitle}>
-            {receiverDetails?.name.slice(0, 10)}
-            {receiverDetails?.name.length > 10 ? '...' : ''}
+          <Text style={ styles.headerTitle }>
+            { receiverDetails?.name.slice(0, 10) }
+            { receiverDetails?.name.length > 10 ? '...' : '' }
           </Text>
         </View>
         <TouchableRipple
-          borderless={true}
-          style={styles.iconContainer}
+          borderless={ true }
+          style={ styles.iconContainer }
           rippleColor="rgba(0, 0, 0, .15)"
-          onPress={() => { }}>
-          <Icon name="person" size={28} color="#000" />
+          onPress={ () => { } }>
+          <Icon name="person" size={ 28 } color="#000" />
         </TouchableRipple>
       </View>
     );
@@ -214,14 +211,11 @@ const MessageChatScreen = ({ route }) => {
         linkPreview: null,
       };
 
-      // Immediately update the messages.
       setMessages(prevMessages => [newMessage, ...prevMessages]);
 
-      // Clear the input field and reply state.
       setInputValue('');
       setReplyMessage(null);
 
-      // If a URL was found, fetch its preview.
       if (url) {
         fetchLinkPreview(url).then(linkPreview => {
           if (linkPreview) {
@@ -248,38 +242,38 @@ const MessageChatScreen = ({ route }) => {
 
     return (
       <>
-        {replyMessage && (
-          <View style={styles.replyPreviewContainer}>
-            <Text style={styles.replyLabel}>
-              Replying to:{' '}
-              <Text style={styles.replyText}>
-                {replyMessage.text.slice(0, 30)}
-                {replyMessage.text.length > 30 ? '...' : ''}
+        { replyMessage && (
+          <View style={ styles.replyPreviewContainer }>
+            <Text style={ styles.replyLabel }>
+              Replying to:{ ' ' }
+              <Text style={ styles.replyText }>
+                { replyMessage.text.slice(0, 30) }
+                { replyMessage.text.length > 30 ? '...' : '' }
               </Text>
             </Text>
             <TouchableOpacity
-              onPress={() => setReplyMessage(null)}
-              style={styles.replyCancelButton}>
-              <Icon name="close" size={20} color="#000" />
+              onPress={ () => setReplyMessage(null) }
+              style={ styles.replyCancelButton }>
+              <Icon name="close" size={ 20 } color="#000" />
             </TouchableOpacity>
           </View>
-        )}
-        <View style={styles.textInputContainer}>
+        ) }
+        <View style={ styles.textInputContainer }>
           <TextInput
-            autoFocus={replyMessage ? true : false}
-            ref={inputRef}
-            style={styles.textInput}
+            autoFocus={ replyMessage ? true : false }
+            ref={ inputRef }
+            style={ styles.textInput }
             cursorColor="#0887ff"
             multiline
             placeholder="Type a message..."
-            value={inputValue}
-            onChangeText={text => setInputValue(text)}
-            onSubmitEditing={handleSend}
+            value={ inputValue }
+            onChangeText={ text => setInputValue(text) }
+            onSubmitEditing={ handleSend }
           />
           <TouchableOpacity
-            style={styles.sendButtonContainer}
-            onPress={handleSend}>
-            <Icon name="paper-plane" size={22} color="#fff" />
+            style={ styles.sendButtonContainer }
+            onPress={ handleSend }>
+            <Icon name="paper-plane" size={ 22 } color="#fff" />
           </TouchableOpacity>
         </View>
       </>
@@ -299,15 +293,15 @@ const MessageChatScreen = ({ route }) => {
       if (/^((?:https?:\/\/)?[\w-]+\.[\w.-]+[^\s]*)$/.test(part)) {
         return (
           <Text
-            key={index}
-            onPress={() => navigation.navigate('WebScreen', { url: part })}
-            onLongPress={() => handleLongPress(part)}
-            style={{ textDecorationLine: 'underline', color: '#fff' }}>
-            {part}
+            key={ index }
+            onPress={ () => navigation.navigate('WebScreen', { url: part }) }
+            onLongPress={ () => handleLongPress(part) }
+            style={ { textDecorationLine: 'underline', color: '#fff' } }>
+            { part }
           </Text>
         );
       } else {
-        return <Text key={index}>{part}</Text>;
+        return <Text key={ index }>{ part }</Text>;
       }
     });
   };
@@ -315,70 +309,70 @@ const MessageChatScreen = ({ route }) => {
   const renderBubbles = item => {
     return (
       <DraggableChatBubble
-        item={item}
-        onSwipeReply={() => setReplyMessage(item)}
-        flatListRef={flatListRef}>
-        {item.isLink &&
+        item={ item }
+        onSwipeReply={ () => setReplyMessage(item) }
+        flatListRef={ flatListRef }>
+        { item.isLink &&
           (item.linkPreview ? (
             <TouchableRipple
-              borderless={true}
-              rippleColor={'rgba(0, 0, 0, .15)'}
-              onPress={() =>
+              borderless={ true }
+              rippleColor={ 'rgba(0, 0, 0, .15)' }
+              onPress={ () =>
                 navigation.navigate('WebScreen', { url: item.linkPreview.url })
               }
-              style={[
+              style={ [
                 styles.linkPreviewContainer,
                 item.isSender
                   ? { alignSelf: 'flex-end' }
                   : { alignSelf: 'flex-start' },
-              ]}>
+              ] }>
               <>
-                {item.linkPreview.image && (
-                  <View style={{ height: '70%' }}>
+                { item.linkPreview.image && (
+                  <View style={ { height: '70%' } }>
                     <Image
-                      source={{ uri: item.linkPreview.image }}
-                      style={styles.previewImage}
+                      source={ { uri: item.linkPreview.image } }
+                      style={ styles.previewImage }
                     />
                   </View>
-                )}
-                <View style={styles.previewTextContainer}>
+                ) }
+                <View style={ styles.previewTextContainer }>
                   <Text
-                    style={styles.previewTitle}
-                    numberOfLines={2}
+                    style={ styles.previewTitle }
+                    numberOfLines={ 2 }
                     ellipsizeMode="tail">
-                    {item.linkPreview.title}
+                    { item.linkPreview.title }
                   </Text>
                   <Text
-                    style={styles.previewLink}
-                    numberOfLines={2}
+                    style={ styles.previewLink }
+                    numberOfLines={ 2 }
                     ellipsizeMode="tail">
-                    {item.linkPreview.url}
+                    { item.linkPreview.url }
                   </Text>
                 </View>
               </>
             </TouchableRipple>
           ) : item.text.match(/https?:\/\/[^\s]+/) ? (
             <CustomLoadingIndicator />
-          ) : null)}
-        {item?.hasReply && (
+          ) : null) }
+        { item?.hasReply && (
           <TouchableRipple
-            borderless={true}
-            onPress={() => handleReplyPress(item?.hasReply?.id)}
-            rippleColor={'rgba(0, 0, 0, .15)'}
-            style={[
+            borderless={ true }
+            onPress={ () => handleReplyPress(item?.hasReply?.id) }
+            rippleColor={ 'rgba(0, 0, 0, .15)' }
+            style={ [
               styles.replymessageContainer,
               item.isSender
                 ? { alignSelf: 'flex-end' }
                 : { alignSelf: 'flex-start' },
-            ]}>
-            <Text style={styles.replyMessageText}>
-              {item?.hasReply?.text.slice(0, 30)}
-              {item?.hasReply?.text.length > 30 ? '...' : ''}
+            ] }>
+            <Text style={ styles.replyMessageText }>
+              { item?.hasReply?.text.slice(0, 30) }
+              { item?.hasReply?.text.length > 30 ? '...' : '' }
             </Text>
           </TouchableRipple>
-        )}
+        ) }
         <View
-          style={[
+          style={ [
             styles.chatBubble,
             // {backgroundColor: item.isSender ? '#0887ff' : 'red'},
             (item.hasReply || item.linkPreview) && { marginVertical: 0 },
@@ -387,17 +381,17 @@ const MessageChatScreen = ({ route }) => {
               borderWidth: 2,
               borderColor: '#FFD700',
             },
-          ]}>
+          ] }>
           <Text
-            style={[
+            style={ [
               styles.chatText,
               item.isSender ? { color: '#fff' } : { color: '#000' },
-            ]}>
-            {item.linkPreview ? renderMessageContent(item.text) : item.text}
+            ] }>
+            { item.linkPreview ? renderMessageContent(item.text) : item.text }
           </Text>
           <Text
-            style={[styles.timestamp, item.isSender ? { color: '#fff' } : null]}>
-            {getRelativeTime(item.timestamp)}
+            style={ [styles.timestamp, item.isSender ? { color: '#fff' } : null] }>
+            { getRelativeTime(item.timestamp) }
           </Text>
         </View>
       </DraggableChatBubble>
@@ -405,20 +399,20 @@ const MessageChatScreen = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={ styles.container }>
       <Header />
       <FlatList
-        ref={flatListRef}
-        inverted={true}
-        data={messages}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => renderBubbles(item)}
-        contentContainerStyle={styles.chatList}
+        ref={ flatListRef }
+        inverted={ true }
+        data={ messages }
+        showsVerticalScrollIndicator={ false }
+        keyExtractor={ item => item.id }
+        renderItem={ ({ item }) => renderBubbles(item) }
+        contentContainerStyle={ styles.chatList }
       />
       <ChatInput
-        replyMessage={replyMessage}
-        setReplyMessage={setReplyMessage}
+        replyMessage={ replyMessage }
+        setReplyMessage={ setReplyMessage }
       />
     </View>
   );

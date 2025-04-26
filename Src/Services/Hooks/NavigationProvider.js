@@ -20,6 +20,7 @@ export const NavigationProvider = ({ children }) => {
     triggerFunction: () => { },
     setShowAlert: () => { },
     showAlert: false,
+    type: "error"
   });
   const [hasLoaded, setHasLoaded] = useState(false);  // Track if app has been loaded
 
@@ -48,7 +49,7 @@ export const NavigationProvider = ({ children }) => {
 
   return (
     <NavigationContext.Provider
-      value={{
+      value={ {
         currentIndex,
         setCurrentIndex,
         swipeEnabled,
@@ -64,8 +65,8 @@ export const NavigationProvider = ({ children }) => {
         setUploadProgress,
         isMessage,
         setIsMessage,
-      }}>
-      {children}
+      } }>
+      { children }
     </NavigationContext.Provider>
   );
 };

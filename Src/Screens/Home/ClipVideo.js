@@ -15,6 +15,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   useWindowDimensions,
   View,
 } from 'react-native';
@@ -192,58 +193,68 @@ export default function ClipVideo() {
   });
   const animationTranslate = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const animationScale = useRef(new Animated.Value(1)).current;
-  const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const screenCenter = { x: width / 2 - 40, y: windowHeight / 2 - 40 };
   const animationOpacity = useRef(new Animated.Value(1)).current;
   const triggerLikeAnimation = destination => {
-    setShowLikeAnimation(true);
+
+
     animationTranslate.setValue(screenCenter);
-    animationScale.setValue(1);
+    animationScale.setValue(0);
     animationOpacity.setValue(1);
 
-    Animated.sequence([
-      Animated.sequence([
-        Animated.timing(animationScale, {
-          toValue: 1.3,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-        Animated.timing(animationScale, {
-          toValue: 1,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-      ]),
-      Animated.delay(400),
+
+    const appearAndPulse = Animated.sequence([
       Animated.parallel([
-        Animated.timing(animationTranslate, {
-          toValue: { x: destination.x - 10, y: destination.y - 10 },
-          duration: 400,
-          easing: Easing.out(Easing.ease),
+        Animated.timing(animationOpacity, {
+          toValue: 1,
+          duration: 0,
           useNativeDriver: true,
         }),
         Animated.timing(animationScale, {
-          toValue: 0.3,
-          duration: 400,
+          toValue: 1.4,
+          duration: 200,
           easing: Easing.out(Easing.ease),
           useNativeDriver: true,
         }),
-        Animated.timing(animationOpacity, {
-          toValue: 0,
-          duration: 300,
-          delay: 100,
-          useNativeDriver: true,
-        }),
       ]),
+      Animated.spring(animationScale, {
+        toValue: 1,
+        friction: 4,
+        useNativeDriver: true,
+      }),
+    ]);
+    const pause = Animated.delay(200);
+    const flyOff = Animated.parallel([
+      Animated.timing(animationTranslate, {
+        toValue: { x: destination.x - 10, y: destination.y - 10 },
+        duration: 400,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(animationScale, {
+        toValue: 0.3,
+        duration: 400,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(animationOpacity, {
+        toValue: 0,
+        duration: 300,
+        delay: 100,
+        useNativeDriver: true,
+      }),
+    ]);
+    Animated.sequence([
+      appearAndPulse,
+      pause,
+      flyOff,
     ]).start(() => {
-      setShowLikeAnimation(false);
       pulseLikeIcon(destination.id);
     });
   };
 
 
   const measureLikeIconPosition = (id) => {
-
     if (likeIconRef.current) {
       likeIconRef.current.measureInWindow((x, y, width, height) => {
         triggerLikeAnimation({ x, y, id });
@@ -328,7 +339,7 @@ export default function ClipVideo() {
     if (page > 0) {
       fetchData();
     }
-  }, [page])
+  }, [page]);
   const removeLike = async videoId => {
     if (togglingLikes.current.has(videoId)) return;
     togglingLikes.current.add(videoId);
@@ -433,16 +444,16 @@ export default function ClipVideo() {
     <View style={styles.container}>
       {overlayVisible && (
         <View style={[styles.headerContainer, { top: insets.top + 10 }]}>
-          <View>
+          <TouchableOpacity >
             <Text style={[styles.headerText, styles.inactiveHeader]}>
               For You
             </Text>
-          </View>
-          <View>
+          </TouchableOpacity>
+          <TouchableOpacity>
             <Text style={[styles.headerText, styles.activeHeader]}>
               Following
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       )}
       <FlatList

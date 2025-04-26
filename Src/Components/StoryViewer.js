@@ -16,14 +16,13 @@ import Video from "react-native-video";
 import Modal from "react-native-modal";
 import CustomLoadingIndicator from "./CustomLoadingIndicator";
 import apiClient from "../Services/api/apiInterceptor";
+import { formatStoryTime, getRelativeTime } from "./CommonData";
 
 const { width, height } = Dimensions.get("window");
 
 export default function StoryViewer({ visible, story, onClose, onReply }) {
 
     const stories = Array.isArray(story) ? story : [story];
-
-
     const [isLoading, setIsLoading] = useState(true);
     const animationRef = useRef(null);
 
@@ -98,7 +97,7 @@ export default function StoryViewer({ visible, story, onClose, onReply }) {
 
 
     const markSlideAsViewed = async (slideId) => {
-        const id = slideId.id
+        const id = slideId.id;
         try {
             const response = await apiClient.post("stories/view", {
                 storyId: id
@@ -269,6 +268,7 @@ export default function StoryViewer({ visible, story, onClose, onReply }) {
                             style={styles.avatar}
                         />
                         <Text style={styles.username}>{stories[currentStoryIndex]?.username}</Text>
+                        <Text style={styles.timeText}>{formatStoryTime(currentItem?.createdAt)}</Text>
                     </Pressable>
 
                     {/* Middle area: Story content */}
@@ -280,7 +280,6 @@ export default function StoryViewer({ visible, story, onClose, onReply }) {
                                 style={[styles.media, transformStyle]}
                                 useTextureView={true}
                                 resizeMode="contain"
-
                                 muted={false}
                                 repeat={false}
                                 paused={isInputFocused}
@@ -359,6 +358,12 @@ const styles = StyleSheet.create({
         width: width,
         paddingHorizontal: 10,
         zIndex: 2,
+    },
+    timeText: {
+        color: "#ccc",
+        fontSize: 12,
+        marginLeft: 5,
+        fontWeight: 'bold'
     },
     progressBarContainer: {
         flexDirection: "row",

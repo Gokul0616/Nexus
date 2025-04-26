@@ -1,7 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Dimensions, Modal, StyleSheet, Text, TouchableOpacity, View, Appearance, Keyboard } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {
+  Animated,
+  Dimensions,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Appearance,
+  Keyboard,
+} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');
+
+/**
+ * Icon config per type
+ */
+const ICON_CONFIG = {
+  warning: { name: 'warning-outline', size: 28, color: '#FF9500' },
+  success: { name: 'checkmark-circle-outline', size: 28, color: '#28A745' },
+  error: { name: 'close-circle-outline', size: 28, color: '#FF3B30' },
+  notification: { name: 'notifications-outline', size: 28, color: '#007AFF' },
+};
 
 const AlertBox = ({
   heading,
@@ -10,140 +31,206 @@ const AlertBox = ({
   showAlert,
   leftTriggerFunction,
   setShowAlert,
-  isRight = false,
+
+
+  gender = 'female',
+
+
+
+
+
+  type = 'warning',
+  isRight = true,
   rightButtonText = 'OK',
   isLeft = true,
 }) => {
+
+  const { name: iconName, size: iconSize, color: iconColor } =
+    ICON_CONFIG[type] || ICON_CONFIG.notification;
+
+
   const [theme, setTheme] = useState(Appearance.getColorScheme());
-  const [backgroundColor, setBackgroundColor] = useState('white');
-  const [textColor, setTextColor] = useState('black');
-  const [messageColor, setMessageColor] = useState('grey');
-  const [buttonColor, setButtonColor] = useState('#007AFF');
+
+  const [backgroundColor, setBgColor] = useState('#FFF');
+  const [textColor, setTextColor] = useState('#000');
+  const [messageColor, setMsgColor] = useState('#555');
+
+  const [buttonColor, setBtnColor] = useState(
+    gender === 'female' ? '#FE2C55' : '#007AFF'
+  );
+  const scale = useRef(new Animated.Value(0)).current;
+
 
   useEffect(() => {
-    const colorSchemeListener = Appearance.addChangeListener(({ colorScheme }) => {
+    const sub = Appearance.addChangeListener(({ colorScheme }) => {
       setTheme(colorScheme);
     });
-
-    return () => colorSchemeListener.remove();
+    return () => sub.remove();
   }, []);
+
+
   useEffect(() => {
-    if (Keyboard.isVisible()) {
+    if (Keyboard.isVisible && Keyboard.isVisible()) {
       Keyboard.dismiss();
     }
-  }, [])
+  }, []);
+
 
   useEffect(() => {
     if (theme === 'dark') {
-      setBackgroundColor('#333');
-      setTextColor('white');
-      setMessageColor('lightgrey');
-      setButtonColor('#00B0FF');
+      setBgColor('#2C2C2E');
+      setTextColor('#FFF');
+      setMsgColor('#CCC');
+      setBtnColor(gender === 'female' ? '#FF375F' : '#0A84FF');
     } else {
-      setBackgroundColor('white');
-      setTextColor('black');
-      setMessageColor('grey');
-      setButtonColor('#007AFF');
+      setBgColor('#FFF');
+      setTextColor('#000');
+      setMsgColor('#555');
+      setBtnColor(gender === 'female' ? '#FE2C55' : '#007AFF');
     }
-  }, [theme]);
+  }, [theme, gender]);
+
+
+  useEffect(() => {
+    if (showAlert) {
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 7,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(scale, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [showAlert]);
 
   if (!showAlert) return null;
 
   return (
-    <Modal
-      transparent
-      animationType="none"
-      visible={showAlert}
-      style={styles.modal}
-      onRequestClose={() => setShowAlert(false)}>
-      <View style={[styles.overlay, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
-        <View style={[styles.alertContainer, { backgroundColor }]}>
-          <Text style={[styles.heading, { color: textColor }]}>{heading}</Text>
-          <View style={styles.spacing} />
-          <Text style={[styles.message, { color: messageColor }]}>{message}</Text>
-          <View style={styles.largeSpacing} />
-          <View style={styles.divider} />
-          <View style={styles.buttonRow}>
-            {isRight && (
-              <TouchableOpacity
-                onPress={triggerFunction}
-                style={[styles.button, styles.rightButton, isRight && { borderRightWidth: 0 }]}>
-                <Text style={[styles.buttonText, { color: buttonColor }]}>{rightButtonText}</Text>
-              </TouchableOpacity>
-            )}
-            {isLeft && (
-              <TouchableOpacity
-                onPress={() => {
-                  setShowAlert(false);
-                  if (leftTriggerFunction) {
-                    leftTriggerFunction();
-                  }
-                }}
-                style={styles.button}>
-                <Text style={[styles.buttonText, { color: buttonColor }]}>Cancel</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
+    <Modal transparent visible={ showAlert } animationType="none">
+      <View style={ styles.backdrop } />
+      <View style={ styles.centeredView }>
+        <Animated.View
+          style={ [
+            styles.modalView,
+            { backgroundColor: backgroundColor, transform: [{ scale }] },
+          ] }
+        >
+
+          <Ionicons
+            name={ iconName }
+            size={ iconSize }
+            color={ iconColor }
+            style={ styles.icon }
+          />
+
+
+          <Text style={ [styles.heading, { color: textColor }] }>
+            { heading }
+          </Text>
+
+
+          <Text style={ [styles.subheading, { color: messageColor }] }>
+            { message }
+          </Text>
+
+
+          { isLeft && (
+            <TouchableOpacity
+              style={ [styles.primaryButton, { backgroundColor: buttonColor }] }
+              onPress={ () => {
+                setShowAlert(false);
+                leftTriggerFunction && leftTriggerFunction();
+              } }
+              activeOpacity={ 0.8 }
+            >
+              <Text style={ styles.primaryButtonText }>Cancel</Text>
+            </TouchableOpacity>
+          ) }
+
+
+          { isRight && (
+            <TouchableOpacity
+              style={ [styles.secondaryButton, { borderColor: buttonColor }] }
+              onPress={ triggerFunction }
+              activeOpacity={ 0.6 }
+            >
+              <Text
+                style={ [styles.secondaryText, { color: buttonColor }] }
+              >
+                { rightButtonText }
+              </Text>
+            </TouchableOpacity>
+          ) }
+        </Animated.View>
       </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: {
+  backdrop: {
     flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  centeredView: {
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modal: {
-    flex: 1,
-    justifyContent: 'center',
+  modalView: {
+    width: width * 0.7,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    borderRadius: 16,
     alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 5,
   },
-  alertContainer: {
-    width: width * 0.75,
-    padding: 20,
-    borderRadius: 10,
+  icon: {
+    marginBottom: 8,
   },
   heading: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 17,
+    fontWeight: '700',
     textAlign: 'center',
-    fontFamily: 'Roboto-Medium',
+    marginBottom: 4,
   },
-  spacing: {
-    height: 10,
-  },
-  largeSpacing: {
-    height: 20,
-  },
-  message: {
-    fontSize: 14,
+  subheading: {
+    fontSize: 13,
     textAlign: 'center',
-    fontFamily: 'Roboto-Medium',
+    marginBottom: 16,
+    lineHeight: 18,
   },
-  divider: {
-    height: 1,
-    backgroundColor: '#DDDDDD',
-    marginVertical: 5,
+  primaryButton: {
+    width: '100%',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 10,
   },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  primaryButtonText: {
+    color: '#FFF',
+    fontSize: 15,
+    fontWeight: '600',
   },
-  button: {
-    flex: 1,
+  secondaryButton: {
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderRadius: 8,
+    width: '100%',
     alignItems: 'center',
   },
-  rightButton: {
-    borderRightWidth: 1,
-    borderRightColor: '#DDDDDD',
-  },
-  buttonText: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    fontFamily: 'Roboto-Medium',
+  secondaryText: {
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
 

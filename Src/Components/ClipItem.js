@@ -1,31 +1,27 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
-  Pressable,
   Animated,
   Easing,
-  PanResponder,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
   Image,
+  PanResponder,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import Video from 'react-native-video';
-import Icon from 'react-native-vector-icons/Ionicons';
-import Entypo from 'react-native-vector-icons/Entypo';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Feather from 'react-native-vector-icons/Feather';
+import { ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Video from 'react-native-video';
+import apiClient from '../Services/api/apiInterceptor';
+import { storage } from './CommonData';
 import CustomLoadingIndicator from './CustomLoadingIndicator';
 import DynamicImage from './DynamicImage';
 import { ClipItemStyles as styles } from './Styles/Styles';
-import { ActivityIndicator, TouchableRipple } from 'react-native-paper';
-import RNFS from 'react-native-fs';
-import { storage } from './CommonData';
-import { PanResponder as RN_PanResponder } from 'react-native';
-import apiClient from '../Services/api/apiInterceptor';
 
 const ClipItem = memo(
   ({
@@ -396,7 +392,7 @@ const ClipItem = memo(
                     uri={item.profilePic}
                     isConnected={isConnected}
                     style={styles.profileImage}
-                    resizeMode="cover" onError={() => { setAvatarError(true) }}
+                    resizeMode="cover" onError={() => { setAvatarError(true); }}
                   /> : <Image source={require("../../assets/images/emptyAvatar.png")} style={styles.profileImage} />}
                   {item.userId !== profile.userId && <View style={styles.followIcon}>
                     {item.followedByCurrentUser ? <MaterialCommunityIcons name="check" size={14} color="#fff" /> :

@@ -21,6 +21,7 @@ import apiClient from '../Services/api/apiInterceptor';
 import messaging from '@react-native-firebase/messaging';
 import { NavigationContext } from '../Services/Hooks/NavigationProvider';
 import CustomToast from '../Services/Hooks/Customtoast/CustomToast';
+import UploadProgressNotification from '../Components/UploadProgressModal';
 const Tab = createBottomTabNavigator();
 
 export default function BottomStack() {
@@ -63,7 +64,7 @@ export default function BottomStack() {
       if (enabled) {
         const token = await messaging().getToken();
         if (token) {
-          saveFCMToken(token)
+          saveFCMToken(token);
         } else {
           CustomToast.show('Failed to get FCM token');
         }
@@ -81,6 +82,7 @@ export default function BottomStack() {
       //   `${remoteMessage?.notification?.title} : ${remoteMessage?.notification?.body}`,
       //   true,
       // );
+      console.log('remoteMessage', remoteMessage);
       setIsMessage({
         message:
           remoteMessage?.notification?.body || 'You have new Notifications',
@@ -91,7 +93,7 @@ export default function BottomStack() {
         setShowAlert: () => {
           isMessage.setShowAlert(false);
         },
-        showAlert: true,
+        showAlert: true, type: 'notification',
       });
     });
 
@@ -232,9 +234,8 @@ export default function BottomStack() {
         />
       </Tab.Navigator>
 
-      <UploadProgressBar
+      <UploadProgressNotification
         visible={progressmodalVisible}
-        setModalVisible={setProgressmodalVisible}
         progress={uploadProgress}
         setProgress={setUploadProgress}
       />
@@ -247,6 +248,7 @@ export default function BottomStack() {
         triggerFunction={isMessage.triggerFunction}
         isRight={isMessage.isRight}
         rightButtonText={isMessage.rightButtonText}
+        type={isMessage.type}
       />
     </>
   );
